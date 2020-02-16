@@ -1,0 +1,7 @@
+{
+  "name": "PickEms",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

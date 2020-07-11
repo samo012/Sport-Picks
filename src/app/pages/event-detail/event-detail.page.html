@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{event?.shortName}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="event">
+    <ion-grid class="ion-margin-vertical">
+      <ion-row>
+        <ion-col class="align-center">
+          <ion-thumbnail>
+            <img [src]="event.teams[0].logo">
+          </ion-thumbnail>
+          <h6>{{event.teams[0].name}}</h6>
+          <p class="record">{{event.teams[0].record}}</p>
+        </ion-col>
+        <ion-col class="align-center">
+          <ng-container *ngIf="event.status!='TBA'">
+            {{event.date | date:'EEE, MMM d'}}
+            <p class="record">{{event.date | date: 'h:mm a'}}</p>
+          </ng-container>
+          <ng-container *ngIf="event.status=='TBA'">{{event.date | date:'EEE, MMM d'}}
+            <p class="record">TBA</p>
+          </ng-container>
+        </ion-col>
+        <ion-col class="align-center">
+          <ion-thumbnail>
+            <img [src]="event.teams[1].logo">
+          </ion-thumbnail>
+          <h6> {{event.teams[1].name}}</h6>
+          <p class="record"> {{event.teams[1].record}}</p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <ion-segment value="stats" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="stats">
+        <ion-label>Game Stats</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="picks">
+        <ion-label>League Picks</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+</ion-content>

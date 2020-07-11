@@ -1,0 +1,34 @@
+ion-content ion-toolbar {
+  --background: translucent;
+}
+.selected {
+  background-color: #5598df;
+  border-radius: 5px;
+  padding: 0.3rem;
+}
+.score {
+  font-size: larger;
+}
+.rank {
+  position: absolute;
+}
+.notifications {
+  font-size: 23px;
+}
+ion-label ion-skeleton-text {
+  margin: auto;
+}
+.record {
+  font-size: 10px;
+  position: absolute;
+  bottom: 5px;
+  background: #1c1c1c;
+  border-radius: 5px;
+  padding: 2px;
+}
+.l {
+  left: 67px;
+}
+.r {
+  right: 12px;
+}

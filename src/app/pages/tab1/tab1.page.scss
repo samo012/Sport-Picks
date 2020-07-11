@@ -1,0 +1,15 @@
+ion-content ion-toolbar {
+  --background: translucent;
+}
+.league {
+  display: flex;
+  -webkit-box-pack: space-evenly;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  margin-top: 15%;
+}
+.league ion-button {
+  width: 50%;
+  margin: 16px 0;
+}

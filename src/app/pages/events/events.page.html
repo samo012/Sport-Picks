@@ -1,0 +1,112 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      <!-- <ion-item>  -->
+      <!-- <ion-label>Filter Conference</ion-label> -->
+      <ion-select value="American">
+        <ion-select-option *ngFor="let conf of conferences | keyvalue" [value]="conf.value">{{conf.value}}
+        </ion-select-option>
+      </ion-select>
+      <!-- </ion-item> -->
+      <!-- {{currentDate ? (currentDate | date:'EEEE, MMM d'): 'Upcoming Games'}} -->
+    </ion-title>
+    <ion-buttons slot="end" (click)="log()">
+      <ion-icon class="notifications" name="notifications" size="default" color="primary"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+  <!-- <ion-item>
+    <ion-label>Filter Conference</ion-label>
+    <ion-select multiple>
+      <ion-select-option *ngFor="let conf of conferences | keyvalue">{{conf.value}}</ion-select-option>
+    </ion-select>
+  </ion-item> -->
+</ion-header>
+<!-- [scrollEvents]="true" (ionScroll)="logScrolling($event)" -->
+<ion-content [fullscreen]="true">
+  <!-- <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large" class="large-title">Events</ion-title>
+    </ion-toolbar>
+  </ion-header> -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list *ngIf="!loading">
+    <ng-container *ngFor="let date of dateEvents | keyvalue">
+      <ion-list-header>
+        {{date.key | date:'EEEE, MMM d'}}
+      </ion-list-header>
+      <ion-item-group *ngFor="let event of date.value; index as i">
+        <ion-item-divider *ngIf="event.date!=date.value[i-1]?.date">
+          <ion-label>
+            {{event.date | date:'h:mm a'}}
+          </ion-label>
+        </ion-item-divider>
+        <ion-item-sliding>
+          <ion-item lines="full">
+            <ion-thumbnail slot="start" [ngClass]="{'selected': event.teams[0].selected}"
+              (click)="selectTeam(event.teams,0,i)">
+              <img [src]="event.teams[0].logo">
+              <span class="record l">{{event.teams[0].record}}</span>
+            </ion-thumbnail>
+            <ion-label (click)="viewEvent(event)" style="text-align: center;">
+              <!-- <ion-icon name="lock-closed" size="small"></ion-icon> -->
+              <h2>{{event.shortName}}</h2>
+              <p>{{event.venue}}</p>
+            </ion-label>
+            <ion-thumbnail slot="end" [ngClass]="{'selected': event.teams[1].selected}"
+              (click)="selectTeam(event.teams,1,i)">
+              <img [src]="event.teams[1].logo">
+              <span class="record r">{{event.teams[1].record}}</span>
+            </ion-thumbnail>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option>
+              <ion-icon slot="icon-only" name="eye"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-item-group>
+      <!-- <ion-grid>
+        <ion-row *ngFor="let events of date.value">
+          <h5>{{events.shortName}}</h5>
+          <ion-col *ngFor="let team of events.teams; index as i" size="6">
+            <ion-card [ngClass]="{'selected': team.selected}"
+              (click)="team.selected=!team.selected; i%2===0 ? events.teams[i+1].selected=false:events.teams[i-1].selected=false">
+              <ion-thumbnail><img [src]="team.logo"></ion-thumbnail>
+              <ion-label>{{team.abbr}} <span class="rank">- #{{team.rank}}</span></ion-label>
+              <p>{{team.name}}</p>
+              <h1 class="score">{{team.score}}</h1>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid> -->
+
+    </ng-container>
+  </ion-list>
+  <ion-list *ngIf="loading">
+    <ion-list-header>
+      <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+    </ion-list-header>
+    <ion-item lines="full" *ngFor="let x of [].constructor(12)">
+      <ion-thumbnail slot="start">
+        <ion-skeleton-text></ion-skeleton-text>
+      </ion-thumbnail>
+      <ion-label style="text-align: center;">
+        <h2>
+          <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+        </h2>
+        <p>
+          <ion-skeleton-text animated style="width: 70%; margin-top: 7px;"></ion-skeleton-text>
+        </p>
+      </ion-label>
+      <ion-thumbnail slot="end">
+        <ion-skeleton-text></ion-skeleton-text>
+      </ion-thumbnail>
+    </ion-item>
+  </ion-list>
+</ion-content>

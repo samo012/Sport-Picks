@@ -1,0 +1,40 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Fantasy Football App
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <section class="league" *ngIf="firstTime">
+    <h2>Welcome to the <br> Fantasy Football App</h2>
+    <h6 class="ion-padding-bottom">Select an option below to get started</h6>
+    <ion-button color="primary">Create a League</ion-button>
+    <ion-button color="tertiary">Join a League</ion-button>
+  </section>
+
+  <ng-container *ngIf="!firstTime">
+    <ion-item>
+      <ion-label position="floating">Select a League</ion-label>
+      <ion-select [(ngModel)]="selectedLeague">
+        <ion-select-option *ngFor="let l of leagues" [value]="l">{{l.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-list>
+      <ion-list-header>
+        <ion-label>{{selectedLeague.name}}</ion-label>
+        <ion-button>See All</ion-button>
+      </ion-list-header>
+      <ion-item *ngFor="let user of selectedLeague.users">
+        <ion-note slot="start">{{user.rank}}</ion-note>
+        <ion-label>{{user.name}}</ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+</ion-content>

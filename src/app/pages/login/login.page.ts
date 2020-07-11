@@ -1,9 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { Router } from "@angular/router";
 import { AuthService } from "src/app/services/auth.service";
 import { AlertController } from "@ionic/angular";
 import { ToastController } from "@ionic/angular";
-import { NgModel } from "@angular/forms";
 import { User } from "src/app/models/user";
 
 @Component({
@@ -11,24 +10,45 @@ import { User } from "src/app/models/user";
   templateUrl: "./login.page.html",
   styleUrls: ["./login.page.scss"],
 })
-export class LoginPage implements OnInit {
+export class LoginPage {
   existing = localStorage.getItem("email") !== null;
   user: User;
   model = new Login();
   loading = false;
   forgot = false;
-
   constructor(
     public authService: AuthService,
     public router: Router,
     public alertController: AlertController,
     public toastController: ToastController
   ) {}
-  ngOnInit() {
+
+  ionViewWillEnter() {
     const email = localStorage.getItem("email");
-    if (email) this.model.email = email;
-    this.authService.getUser().then((user) => (this.user = user));
+    if (email) {
+      this.model.email = email;
+      this.existing = true;
+    }
   }
+  async singInWithApple() {
+    try {
+      const user = await this.authService.signInWithApple();
+      if (user) {
+        this.loading = true;
+        this.user = await this.authService.getUserDetails(user.uid);
+        this.goHome();
+      }
+      this.loading = false;
+    } catch (e) {
+      this.loading = false;
+      console.log(e);
+      var err = e;
+      if (e && e.message) err = e.message;
+      else if (e && e.localizedDescription) err = e.localizedDescription;
+      return this.presentAlert("Login Error", err);
+    }
+  }
+
   async signInWithFacebook() {
     try {
       const user = await this.authService.signInWithFacebook();
@@ -41,7 +61,7 @@ export class LoginPage implements OnInit {
     } catch (e) {
       this.loading = false;
       console.log(e);
-      return this.presentAlert("Login Error", JSON.stringify(e));
+      return this.presentAlert("Login Error", e.message);
     }
   }
 
@@ -59,6 +79,7 @@ export class LoginPage implements OnInit {
       this.presentAlert("Login Error", e.message);
     }
   }
+
   async login() {
     this.loading = true;
     try {
@@ -75,16 +96,28 @@ export class LoginPage implements OnInit {
         this.presentAlert("Login Error", "Please enter your email address");
       else if (!this.model.password)
         this.presentAlert("Login Error", "Please enter your password");
+      else if (e.code == "auth/user-not-found")
+        this.presentAlert(
+          "Not Found",
+          "There is no user record corresponding to this email."
+        );
       else if (e.code == "auth/wrong-password")
-        this.presentAlert("Incorrect Password", "");
+        this.presentAlert(
+          "Incorrect Password",
+          "To reset your password, please use the Forgot Password button"
+        );
       else this.presentAlert("Login Error", e.message);
     }
   }
+
   goHome() {
-    return this.router.navigateByUrl("/home");
+    return this.router.navigate(["/"]);
   }
 
-  async resetPassword(email: NgModel) {
+  // ionViewDidEnter() {
+  //   if (this.model.email) setTimeout(() => this.pswdField.setFocus(), 400);
+  // }
+  async resetPassword(email) {
     if (!email.model || email.invalid) {
       this.presentToast("Please enter a valid email", "danger");
       return;

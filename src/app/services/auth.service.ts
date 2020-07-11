@@ -1,14 +1,19 @@
 import { Injectable } from "@angular/core";
 import { AngularFireAuth } from "@angular/fire/auth";
-import { first, switchMap } from "rxjs/operators";
+import { first, switchMap, take } from "rxjs/operators";
 import * as firebase from "firebase/app";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { Router } from "@angular/router";
 import { Observable, of } from "rxjs";
+import { User } from "src/app/models/user";
 import { GooglePlus } from "@ionic-native/google-plus/ngx";
 import { Facebook } from "@ionic-native/facebook/ngx";
 import { Platform } from "@ionic/angular";
-import { User } from '../models/user';
+import {
+  SignInWithApple,
+  ASAuthorizationAppleIDRequest,
+  AppleSignInErrorResponse,
+} from "@ionic-native/sign-in-with-apple/ngx";
 
 @Injectable({
   providedIn: "root",
@@ -23,6 +28,7 @@ export class AuthService {
     private router: Router,
     private gplus: GooglePlus,
     private facebook: Facebook,
+    private apple: SignInWithApple,
     private platform: Platform
   ) {
     this.user$ = this.afAuth.authState.pipe(
@@ -40,7 +46,9 @@ export class AuthService {
     return this.user$.pipe(first()).toPromise();
   }
   get getUserId() {
-    return localStorage.getItem("uid");
+    if (!this.user) this.afAuth.currentUser.then((user) => (this.user = user));
+    if (this.user) return this.user.uid;
+    // else localStorage.getItem("uid")
   }
 
   async signInRegular(user) {
@@ -73,47 +81,48 @@ export class AuthService {
     }
   }
 
-  signOut() {
-    this.afAuth
-      .signOut()
-      .then(() => {
-        if (this.user.providerData[0])
-          this.user.providerData[0].providerId == "google.com"
-            ? this.gplus.disconnect()
-            : this.facebook.logout();
+  async signInWithApple() {
+    const appleRes = await this.apple.signin({
+      requestedScopes: [
+        ASAuthorizationAppleIDRequest.ASAuthorizationScopeFullName,
+        ASAuthorizationAppleIDRequest.ASAuthorizationScopeEmail,
+      ],
+    });
+    if (!appleRes) return null;
+    var provider = new firebase.auth.OAuthProvider("apple.com");
+    const res = await this.afAuth.signInWithCredential(
+      provider.credential({
+        idToken: appleRes.identityToken,
+        // rawNonce: unhashedNonce,
       })
-      .finally(() => this.router.navigateByUrl("/", { replaceUrl: true }));
+    );
+    if (!res) return null;
+    this.user = res.user;
+    const user = new User();
+    user.name =
+      appleRes.fullName.givenName + " " + appleRes.fullName.familyName;
+    user.email = appleRes.email;
+    return user;
+  }
+
+  signOut() {
+    this.router.navigateByUrl("/", { replaceUrl: true }).then(() =>
+      this.afAuth
+        .signOut()
+        .then(() => {
+          if (this.user.providerData[0])
+            this.user.providerData[0].providerId == "google.com"
+              ? this.gplus.disconnect()
+              : this.facebook.logout();
+        })
+        .finally(() => window.location.reload())
+    );
   }
 
   resetPassword(email: string) {
     return this.afAuth.sendPasswordResetEmail(email);
   }
 
-  // canRead(user: User): boolean {
-  //   const allowed = ["admin", "model", "moderator"];
-  //   return this.checkAuthorization(user, allowed);
-  // }
-
-  // canEdit(user: User): boolean {
-  //   const allowed = ["admin", "moderator"];
-  //   return this.checkAuthorization(user, allowed);
-  // }
-
-  // canDelete(user: User): boolean {
-  //   const allowed = ["admin"];
-  //   return this.checkAuthorization(user, allowed);
-  // }
-
-  // determines if user has matching role
-  // private checkAuthorization(user: User, allowedRoles: string[]): boolean {
-  //   if (!user) return false;
-  //   for (const role of allowedRoles) {
-  //     if (user.roles[role]) {
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // }
   addUser(user) {
     return this.afstore
       .doc(`users/${this.user.uid}`)
@@ -121,7 +130,6 @@ export class AuthService {
   }
 
   async registerUser(user: User, socialRegister: boolean) {
-    localStorage.setItem("email", user.email);
     if (socialRegister && this.user && this.user.uid) {
       //social sign up
       delete user.password;
@@ -134,6 +142,7 @@ export class AuthService {
         user.email,
         user.password
       );
+      localStorage.setItem("email", user.email);
       const userId = res.user.uid;
       user.uid = userId;
       delete user.password;
@@ -170,7 +179,18 @@ export class AuthService {
       .doc(this.user.uid)
       .update(Object.assign({}, user));
   }
-  
+  updateYelpId(yelpId: string) {
+    return this.afstore
+      .collection("users")
+      .doc(this.getUserId)
+      .update({ yelpId: yelpId });
+  }
+  updateFCMToken(token: string) {
+    return this.afstore
+      .collection("users")
+      .doc(this.getUserId)
+      .update({ token: token });
+  }
 
   async webSignIn(isGoogle: boolean) {
     let provider = isGoogle
@@ -232,5 +252,4 @@ export class AuthService {
 
     return false;
   }
-
 }

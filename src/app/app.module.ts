@@ -13,9 +13,11 @@ import { AngularFireModule } from "@angular/fire";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { AngularFireStorageModule } from "@angular/fire/storage";
 import { AngularFireAuthModule } from "@angular/fire/auth";
-import { environment } from 'src/environments/environment';
+import { environment } from "src/environments/environment";
 import { GooglePlus } from "@ionic-native/google-plus/ngx";
 import { Facebook } from "@ionic-native/facebook/ngx";
+import { SignInWithApple } from "@ionic-native/sign-in-with-apple/ngx";
+import { AuthGuard } from './services/auth.guard';
 
 @NgModule({
   declarations: [AppComponent],
@@ -31,13 +33,15 @@ import { Facebook } from "@ionic-native/facebook/ngx";
     AngularFireStorageModule, // needed for storage features
   ],
   providers: [
+    AuthGuard,
     StatusBar,
     SplashScreen,
     HttpClient,
     GooglePlus,
     Facebook,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    SignInWithApple,
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

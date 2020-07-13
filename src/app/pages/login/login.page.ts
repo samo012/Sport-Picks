@@ -36,6 +36,11 @@ export class LoginPage {
       if (user) {
         this.loading = true;
         this.user = await this.authService.getUserDetails(user.uid);
+        if (!this.user)
+          return this.presentAlert(
+            "Not Found",
+            "There is no user record corresponding to this email."
+          );
         this.goHome();
       }
       this.loading = false;
@@ -55,6 +60,11 @@ export class LoginPage {
       if (user) {
         this.loading = true;
         this.user = await this.authService.getUserDetails(user.uid);
+        if (!this.user)
+          return this.presentAlert(
+            "Not Found",
+            "There is no user record corresponding to this email."
+          );
         this.goHome();
       }
       this.loading = false;
@@ -68,9 +78,15 @@ export class LoginPage {
   async signInWithGoogle() {
     try {
       const user = await this.authService.signInWithGoogle();
+      console.log("user: ", user);
       if (user) {
         this.loading = true;
         this.user = await this.authService.getUserDetails(user.uid);
+        if (!this.user)
+          return this.presentAlert(
+            "Not Found",
+            "There is no user record corresponding to this email."
+          );
         this.goHome();
       }
       this.loading = false;
@@ -111,7 +127,7 @@ export class LoginPage {
   }
 
   goHome() {
-    return this.router.navigate(["/"]);
+    return this.router.navigate(["home/tabs/tab1"]);
   }
 
   // ionViewDidEnter() {

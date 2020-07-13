@@ -1,7 +1,7 @@
-ion-content {
-  // --background:url("../../../../assets/login-bg.PNG") no-repeat center center / cover;
-  --background: black;
-}
+// ion-content {
+//   // --background:url("../../../../assets/login-bg.PNG") no-repeat center center / cover;
+//   --background: black;
+// }
 ion-content.ios {
   --padding-top: 65px !important;
 }
@@ -14,7 +14,6 @@ ion-input {
   margin: 1rem 0;
   border-radius: 5px;
   --padding-start: 10px;
-  --background: white;
 }
 ion-label {
   color: #fff;
@@ -27,10 +26,10 @@ p {
 }
 h1 {
   text-align: center;
-  font-size: 11vw;
+  font-size: 15vw;
   font-weight: 900;
   letter-spacing: -4px;
-  color: #e3326f;
+  color: var(--ion-color-secondary);
 }
 section span {
   color: #fff !important;

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { AngularFireAuth } from "@angular/fire/auth";
 import { first, switchMap, take } from "rxjs/operators";
-import * as firebase from "firebase/app";
+import * as firebase from "firebase";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { Router } from "@angular/router";
 import { Observable, of } from "rxjs";
@@ -75,7 +75,7 @@ export class AuthService {
         );
         this.user = res.user;
         return res.user;
-      } else this.webSignIn(true);
+      } else return this.webSignIn(true);
     } catch (e) {
       alert(e);
     }

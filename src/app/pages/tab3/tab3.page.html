@@ -4,16 +4,25 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      Tab 3
+      My Profile
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ng-container *ngIf="user">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large"> {{user.name}}
+        </ion-title>
+        <!-- <ion-buttons slot="start">
+        <ion-back-button></ion-back-button>
+      </ion-buttons> -->
+        <ion-buttons slot="end">
+          <ion-icon id="icon" slot="icon-only" name="person-circle-outline"></ion-icon>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+  </ng-container>
 
 </ion-content>

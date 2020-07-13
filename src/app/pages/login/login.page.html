@@ -5,15 +5,13 @@
     <ng-container *ngIf="!existing&&!forgot">
       <div class="text-center">
         <h6>Welcome to</h6>
-        <img src="assets/icon/logo-text.png">
+        <h1>Pick Ems</h1>
       </div>
       <section>
         <h4>Create an account</h4>
-        <p>Please choose the type you will use</p>
       </section>
       <section>
-        <ion-button color="secondary" expand="block" class="model" routerLink="r-model">Model</ion-button>
-        <ion-button color="primary" expand="block" class="business" routerLink="business">Business
+        <ion-button color="primary" expand="block" class="business" routerLink="register">Register
         </ion-button>
       </section>
       <p class="already" (click)="existing=true">Already have an account?</p>
@@ -22,7 +20,7 @@
     <!-- Existing User -->
     <ng-container *ngIf="existing&&!forgot">
       <div class="text-center">
-        <img src="assets/icon/logo-text.png">
+        <h1>Pick Ems</h1>
       </div>
       <section>
         <h4>Welcome back,</h4>
@@ -78,7 +76,7 @@
           </ion-row>
         </ion-grid>
         <p class="forgot" (click)="forgot=true">Forgot Password?</p>
-        <p class="another" (click)="existing=false">Register Another User</p>
+        <p class="another" routerLink="register">Register Another User</p>
       </ng-container>
     </ng-container>
 

@@ -3,6 +3,10 @@ import { Component } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
+import { AuthService } from "./services/auth.service";
+import { Router } from "@angular/router";
+import { User } from "./models/user";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-root",
@@ -10,10 +14,14 @@ import { StatusBar } from "@ionic-native/status-bar/ngx";
   styleUrls: ["app.component.scss"],
 })
 export class AppComponent {
+  user: User;
+  user$: Observable<User>;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
-    private statusBar: StatusBar
+    private statusBar: StatusBar,
+    private as: AuthService,
+    private router: Router
   ) {
     this.initializeApp();
   }
@@ -22,7 +30,16 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.goHome();
     });
+  }
+  async goHome() {
+    this.user$ = this.as.user$;
+    this.user = await this.as.getUser();
+    if (this.user) this.router.navigate(["home/tabs/tab1"]);
+  }
+  logout() {
+    return this.as.signOut();
   }
   public selectedIndex = 0;
   public appPages = [

@@ -3,11 +3,11 @@ import { AuthService } from "src/app/services/auth.service";
 import { User } from "src/app/models/user";
 
 @Component({
-  selector: "app-tab3",
-  templateUrl: "tab3.page.html",
-  styleUrls: ["tab3.page.scss"],
+  selector: "app-profile",
+  templateUrl: "profile.page.html",
+  styleUrls: ["profile.page.scss"],
 })
-export class Tab3Page {
+export class ProfilePage {
   user: User;
   constructor(public as: AuthService) {
     this.as.getUser().then((user) => (this.user = user));

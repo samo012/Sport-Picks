@@ -127,7 +127,7 @@ export class LoginPage {
   }
 
   goHome() {
-    return this.router.navigate(["home/tabs/tab1"]);
+    return this.router.navigate(["home/tabs/leagues"]);
   }
 
   // ionViewDidEnter() {

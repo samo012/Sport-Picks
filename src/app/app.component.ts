@@ -36,7 +36,7 @@ export class AppComponent {
   async goHome() {
     this.user$ = this.as.user$;
     this.user = await this.as.getUser();
-    if (this.user) this.router.navigate(["home/tabs/tab1"]);
+    if (this.user) this.router.navigate(["home/tabs/leagues"]);
   }
   logout() {
     return this.as.signOut();

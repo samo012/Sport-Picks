@@ -7,7 +7,9 @@ export class SportsEvent {
   date: string;
   venue: string;
   visible: boolean;
+  status: string;
   clock: string;
   period: number;
   teams: Team[];
+  competitions?: any[];
 }

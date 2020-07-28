@@ -1,18 +1,19 @@
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 import { IonicModule } from "@ionic/angular";
-import { Tab3Page } from "./tab3.page";
 
-describe("Tab3Page", () => {
-  let component: Tab3Page;
-  let fixture: ComponentFixture<Tab3Page>;
+import { LeaguesPage } from "./leagues.page";
+
+describe("LeaguesPage", () => {
+  let component: LeaguesPage;
+  let fixture: ComponentFixture<LeaguesPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [Tab3Page],
-      imports: [IonicModule.forRoot()]
+      declarations: [LeaguesPage],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Tab3Page);
+    fixture = TestBed.createComponent(LeaguesPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

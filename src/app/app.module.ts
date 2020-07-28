@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
+import { CommonModule } from "@angular/common";
 import { RouteReuseStrategy } from "@angular/router";
 
 import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
@@ -17,13 +18,16 @@ import { environment } from "src/environments/environment";
 import { GooglePlus } from "@ionic-native/google-plus/ngx";
 import { Facebook } from "@ionic-native/facebook/ngx";
 import { SignInWithApple } from "@ionic-native/sign-in-with-apple/ngx";
-import { AuthGuard } from './services/auth.guard';
+import { AuthGuard } from "./services/auth.guard";
+import { LeagueModalComponent } from "./modals/league-modal/league-modal.component";
+import { FormsModule } from "@angular/forms";
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, LeagueModalComponent],
   entryComponents: [],
   imports: [
     BrowserModule,
+    FormsModule,
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,

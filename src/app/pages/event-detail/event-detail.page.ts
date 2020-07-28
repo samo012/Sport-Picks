@@ -23,7 +23,9 @@ export class EventDetailPage implements OnInit {
       } else this.router.navigate(["/tabs/events"]);
     });
   }
-  segmentChanged() {}
+  segmentChanged(event) {
+    console.log("event: ", event);
+  }
   getTeamsInfo() {
     this.espn.getTeamInfo(this.event.teams[0].id).then((info) => {
       this.event.teams[0].record = info.record;

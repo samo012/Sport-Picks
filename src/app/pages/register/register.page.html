@@ -48,7 +48,7 @@
     <form #formValidator="ngForm" (ngSubmit)="submit()" [hidden]="socialRegister">
       <ion-item>
         <ion-label position="floating">First Name</ion-label>
-        <ion-input autocomplete="given-name" [(ngModel)]="model.first" name="first" #fName="ngModel" required aut>
+        <ion-input autocomplete="given-name" [(ngModel)]="model.first" name="first" #fName="ngModel" required>
         </ion-input>
         <p *ngIf="fName.touched&&fName.invalid">First Name is required</p>
       </ion-item>

@@ -1,0 +1,43 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title>{{isCreate?'Create':'Join'}} a League</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">Cancel</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen>
+  <ng-container *ngIf="isCreate; else isJoin">
+    <form #formValidator="ngForm" (ngSubmit)="createLeague()">
+      <ion-item>
+        <ion-label position="stacked">League Name</ion-label>
+        <ion-input placeholder="Super Awesome League" [(ngModel)]="model.name" name="league-name" #lName="ngModel"
+          required>
+        </ion-input>
+        <p *ngIf="lName.touched&&lName.invalid">League Name is required</p>
+      </ion-item>
+      <ion-item>
+        <ion-label>Private?</ion-label>
+        <ion-toggle [(ngModel)]="model.isPrivate" name="p-toggle"></ion-toggle>
+      </ion-item>
+      <div class="text-center ion-margin-top">
+        <ion-button [disabled]="formValidator.invalid" type="submit">Create League</ion-button>
+      </div>
+    </form>
+  </ng-container>
+  <ng-template #isJoin>
+    <ion-item>
+      <ion-label position="floating">League Name</ion-label>
+      <ion-input name="league-join" (ionChange)="searchLeagues($event)">
+      </ion-input>
+    </ion-item>
+    <ion-list>
+      <ion-item *ngFor="let fl of filteredLeagues" (click)="selectedLeague=fl"
+        [color]="fl.id===selectedLeague?.id?'secondary':''">
+        <ion-label> {{fl.name}}</ion-label>
+      </ion-item>
+    </ion-list>
+    <ion-button class="ion-margin" *ngIf="selectedLeague" type="submit" (click)="join()" expand="block">
+      Join League</ion-button>
+  </ng-template>
+</ion-content>

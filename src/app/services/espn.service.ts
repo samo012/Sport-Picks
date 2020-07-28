@@ -19,7 +19,7 @@ export class EspnService {
       .get<any>(url, { params: params })
       .pipe(
         map((data) =>
-          (<any[]>data.events)
+          (data.events as SportsEvent[])
             .sort((a, b) => moment(a.date).diff(b.date))
             .map((ev) => {
               return {

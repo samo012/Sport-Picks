@@ -2,6 +2,11 @@
 //   // --background:url("../../../../assets/login-bg.PNG") no-repeat center center / cover;
 //   --background: black;
 // }
+.container {
+  max-width: 35rem;
+  margin: auto;
+  padding: 16px;
+}
 ion-content.ios {
   --padding-top: 65px !important;
 }
@@ -26,9 +31,8 @@ p {
 }
 h1 {
   text-align: center;
-  font-size: 15vw;
+  font-size: 12vw;
   font-weight: 900;
-  letter-spacing: -4px;
   color: var(--ion-color-secondary);
 }
 section span {

@@ -7,4 +7,5 @@ export class User {
   isAdmin = false;
   first?: string;
   last?: string;
+  rank?: number;
 }

@@ -10,10 +10,10 @@ import * as moment from "moment";
 export class EspnService {
   constructor(private httpClient: HttpClient) {}
   base =
-    "http://site.api.espn.com/apis/site/v2/sports/football/college-football/";
+    "https://site.api.espn.com/apis/site/v2/sports/football/college-football/";
 
-  getEvents(): Promise<SportsEvent[]> {
-    let params = { dates: "20180901", groups: "80", limit: "900" };
+  getEvents(group: string): Promise<SportsEvent[]> {
+    let params = { dates: "202009", groups: group, limit: "900" };
     const url = this.base + "scoreboard";
     return this.httpClient
       .get<any>(url, { params: params })
@@ -29,6 +29,7 @@ export class EspnService {
                 date: ev.date,
                 venue: ev.competitions[0].venue.fullName,
                 visible: true,
+                group: group,
                 status: ev.competitions[0].status.type.shortDetail,
                 clock: ev.competitions[0].status.displayClock,
                 period: ev.competitions[0].status.period,

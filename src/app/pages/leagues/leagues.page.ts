@@ -4,6 +4,7 @@ import { League } from "src/app/models/league";
 import { AuthService } from "src/app/services/auth.service";
 import { ModalController } from "@ionic/angular";
 import { LeagueModalComponent } from "src/app/modals/league-modal/league-modal.component";
+import { User } from "src/app/models/user";
 
 @Component({
   selector: "app-leagues",
@@ -47,6 +48,7 @@ export class LeaguesPage {
   selectedLeague: League;
   firstTime = true;
   loading = true;
+  users: User[];
   leagues: League[] = [];
   model = new League();
   constructor(
@@ -56,15 +58,19 @@ export class LeaguesPage {
   ) {
     this.getLeagues();
   }
-  users;
   getLeagues() {
     this.ls.getUsersLeagues(this.as.getUserId).subscribe((leagues) => {
-      this.leagues = leagues;
+      this.leagues = leagues || [];
       this.selectedLeague = this.leagues[0];
       this.firstTime = !this.leagues || this.leagues.length === 0;
-      this.ls
-        .getUsers(this.leagues.map((l) => l.uid))
-        .subscribe((users) => (this.users = users));
+      const uids = this.leagues.map((l) => l.uid);
+      if (uids && uids.length > 0)
+        this.ls.getUsers(uids).subscribe((users) => {
+          users.forEach(
+            (u) => (u.rank = leagues.find((l) => l.uid == u.uid).rank)
+          );
+          this.users = users;
+        });
     });
   }
   async openModal(isCreate: boolean) {
@@ -74,8 +80,10 @@ export class LeaguesPage {
     });
     return await modal.present();
   }
-  async joinLeague(l) {
-    const user = await this.as.getUser();
-    return this.ls.update(l);
+  async joinLeague(l: League) {
+    this.ls.getUsersByLeagueId(l.id).subscribe((users) => {
+      console.log(users);
+      // this.ls.join(this.as.getUserId, l.id, users.length);
+    });
   }
 }

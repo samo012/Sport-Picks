@@ -4,17 +4,34 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      <!-- <ion-item>  -->
-      <!-- <ion-label>Filter Conference</ion-label> -->
-      <ion-select value="American">
-        <ion-select-option *ngFor="let conf of conferences | keyvalue" [value]="conf.value">{{conf.value}}
+      <ion-select>
+        <ion-label>Select a League</ion-label>
+        <ion-select-option *ngFor="let l of leagues" [value]="l.name">{{l.name}}
         </ion-select-option>
       </ion-select>
-      <!-- </ion-item> -->
-      <!-- {{currentDate ? (currentDate | date:'EEEE, MMM d'): 'Upcoming Games'}} -->
     </ion-title>
     <ion-buttons slot="end" (click)="log()">
       <ion-icon class="notifications" name="notifications" size="default" color="primary"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-label>Filter Conference</ion-label>
+      <ion-select (ionChange)="filterConf($event)">
+        <ion-select-option *ngFor="let conf of conferences | keyvalue" [value]="conf.key">{{conf.key}}
+        </ion-select-option>
+        <ion-select-option valuea="all">All
+        </ion-select-option>
+      </ion-select>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-label>Filter Week</ion-label>
+      <ion-select (ionChange)="filterWeek($event)">
+        <ion-select-option *ngFor="let x of [1,2,3,4]" [value]="x">Week {{x}}
+        </ion-select-option>
+        <ion-select-option valuea="all">All
+        </ion-select-option>
+      </ion-select>
     </ion-buttons>
   </ion-toolbar>
   <!-- <ion-item>

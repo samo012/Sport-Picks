@@ -11,5 +11,6 @@ export class SportsEvent {
   clock: string;
   period: number;
   teams: Team[];
+  group: string;
   competitions?: any[];
 }

@@ -25,9 +25,10 @@ export class LeagueModalComponent implements OnInit {
     this.getPublicLeagues();
   }
   getPublicLeagues() {
-    return this.ls.leagues.subscribe((leagues) => (this.leagues = leagues));
+    this.ls.leagues.subscribe((leagues) => (this.leagues = leagues));
   }
   async createLeague() {
+    this.model.uid = this.as.getUserId;
     await this.ls.create(this.model);
     this.dismissModal();
   }
@@ -35,15 +36,17 @@ export class LeagueModalComponent implements OnInit {
     return this.modalController.dismiss();
   }
   searchLeagues(event) {
-    console.log(" this.leagues: ", this.leagues);
     this.filteredLeagues =
       this.leagues.filter((l) =>
         l.name.toLowerCase().includes(event.target.value.toLowerCase())
       ) || [];
-    console.log("this.filteredLeagues: ", this.filteredLeagues);
   }
   async join() {
-    await this.ls.join(this.as.getUserId, this.selectedLeague.id, 1);
-    this.dismissModal();
+    this.ls.getUsersByLeagueId(this.selectedLeague.id).subscribe((users) => {
+      console.log(users);
+      this.selectedLeague.rank = users.length;
+      this.selectedLeague.uid = this.as.getUserId;
+      this.ls.join(this.selectedLeague).then(() => this.dismissModal());
+    });
   }
 }

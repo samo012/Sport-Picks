@@ -31,8 +31,7 @@
         <ion-button>See All</ion-button>
       </ion-list-header>
       <ion-item *ngFor="let user of users">
-        <!-- <ion-note slot="start">{{user.rank}}</ion-note> -->
-        <ion-note slot="start">1</ion-note>
+        <ion-note slot="start">{{user.rank}}</ion-note>
         <ion-label>{{user.name}}</ion-label>
       </ion-item>
     </ion-list>

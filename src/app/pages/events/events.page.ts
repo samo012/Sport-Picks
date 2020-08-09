@@ -4,6 +4,9 @@ import { SportsEvent } from "src/app/models/event";
 import * as moment from "moment";
 import { Team } from "src/app/models/team";
 import { Router, ActivatedRoute } from "@angular/router";
+import { LeagueService } from "src/app/services/league.service";
+import { League } from "src/app/models/league";
+import { AuthService } from "src/app/services/auth.service";
 
 @Component({
   selector: "app-events",
@@ -12,20 +15,31 @@ import { Router, ActivatedRoute } from "@angular/router";
 })
 export class EventsPage implements OnInit {
   loading = true;
-  dateEvents = [];
   selectedTeams = [];
   // currentDate: string;
-  dates: string[] = [];
+  dateEvents = [];
+  ogDateEvents = [];
+
   // length = 0;
   // index = 0;
+  leagues: League[];
 
   constructor(
+    private as: AuthService,
     private espn: EspnService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private ls: LeagueService
   ) {}
+
   ngOnInit() {
     this.getEvents().then(() => this.getRankings());
+  }
+
+  getLeagues() {
+    this.ls
+      .getUsersLeagues(this.as.getUserId)
+      .subscribe((leagues) => (this.leagues = leagues));
   }
   viewEvent(event: SportsEvent) {
     this.router.navigate(["detail"], {
@@ -33,6 +47,7 @@ export class EventsPage implements OnInit {
       relativeTo: this.route,
     });
   }
+
   doRefresh(event) {
     this.getEvents()
       .catch((err) => console.log("err: ", err))
@@ -41,19 +56,26 @@ export class EventsPage implements OnInit {
   }
   async getEvents() {
     this.loading = true;
-    const events = await this.espn.getEvents();
+    const e = [
+      this.espn.getEvents("1"),
+      this.espn.getEvents("4"),
+      this.espn.getEvents("5"),
+      this.espn.getEvents("8"),
+      this.espn.getEvents("9"),
+    ];
+    const events: SportsEvent[] = [].concat.apply([], await Promise.all(e));
     events.forEach((ev) => {
       const sliceTime = ev.date.slice(0, 10);
       if (!this.dateEvents[sliceTime]) this.dateEvents[sliceTime] = [];
-      this.dateEvents[sliceTime].push(ev);
+      if (this.dateEvents[sliceTime].findIndex((f) => f.id === ev.id) < 0)
+        this.dateEvents[sliceTime].push(ev);
     });
-    console.log("this.dateEvents: ",this.dateEvents);
-    this.dates = Object.keys(this.dateEvents);
+    this.ogDateEvents = this.dateEvents;
     this.loading = false;
   }
   async getRankings() {
     let ranks = new Map<string, string>(await this.espn.getRankings());
-    this.dates.forEach((date) => {
+    Object.keys(this.dateEvents).forEach((date) => {
       this.dateEvents[date].forEach((event) => {
         event.teams[0].record = ranks.get(event.teams[0].id);
         event.teams[1].record = ranks.get(event.teams[1].id);
@@ -76,9 +98,40 @@ export class EventsPage implements OnInit {
     }
     this.selectedTeams[teamIndex] = teams[index].selected ? teams[index] : null;
   }
+
+  filterConf(event) {
+    const val = event.target.value;
+    if (val == "All") {
+      this.dateEvents = this.ogDateEvents;
+      return;
+    }
+    Object.keys(this.ogDateEvents).forEach((date) => {
+      const inGroup = this.dateEvents[date].filter(
+        (a) => a.group == this.conferences[val]
+      );
+      if (inGroup.length > 0) this.dateEvents[date] = inGroup;
+      else delete this.dateEvents[date];
+    });
+  }
+
+  filterWeek(event) {
+    const val = event.target.value;
+    if (val == "All") {
+      this.dateEvents = this.ogDateEvents;
+      return;
+    }
+    Object.keys(this.ogDateEvents).forEach((date) => {
+      const inWeek =
+        val == moment(date).week() - moment(date).startOf("month").week() + 1;
+      if (inWeek) this.dateEvents[date] = this.ogDateEvents[date];
+      else delete this.dateEvents[date];
+    });
+  }
+
   log() {
     console.log("   this.selectedTeams: ", this.selectedTeams);
   }
+
   // logScrolling(event) {
   //   if (!this.dates[this.index]) return;
   //   var count = (event.detail.scrollTop / 90) | 0;
@@ -93,17 +146,17 @@ export class EventsPage implements OnInit {
   //   console.log(" this.currentDate : ", this.currentDate );
   // }
   conferences = {
-    "80": "FBS",
-    "1": "ACC",
-    "151": "American",
-    "4": "Big 12",
-    "5": "Big Ten",
-    "12": "Conf USA",
-    "18": "FBS Ind",
-    "15": "MAC",
-    "17": "Mt. West",
-    "9": "Pac 12",
-    "8": "SEC",
-    "37": "Sun Belt",
+    // "80": "FBS",
+    ACC: "1",
+    // "151": "American",
+    "Big 12": "4",
+    "Big Ten": "5",
+    // "12": "Conf USA",
+    // "18": "FBS Ind",
+    // "15": "MAC",
+    // "17": "Mt. West",
+    SEC: "8",
+    "Pac 12": "9",
+    // "37": "Sun Belt",
   };
 }

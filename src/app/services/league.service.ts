@@ -15,19 +15,26 @@ export class LeagueService {
   leagues: Observable<League[]>;
   constructor(private readonly afs: AngularFirestore) {
     this.leagueCollection = this.afs.collection<League>("leagues", (ref) =>
-      ref.where("isPrivate", "==", false)
+      ref.where("isPrivate", "==", false).where("og", "==", true)
     );
     this.leagues = this.leagueCollection.valueChanges();
   }
   getLeagueByName(name: string) {
     return this.afs
-      .collection<League>("leagues", (ref) => ref.where("name", "==", name))
+      .collection<League>("leagues", (ref) =>
+        ref.where("name", "==", name).where("og", "==", true)
+      )
       .valueChanges();
   }
-  create(l: League) {
-    l.id = this.afs.createId();
+  async create(l: League) {
+    l.creator = l.uid;
+    l.og = true;
     l.created = Date.now();
-    return this.leagueCollection.doc(l.id).set(this.sanitize(l));
+    l.added = Date.now();
+    l.rank = 1;
+    l.id = this.afs.createId();
+    await this.leagueCollection.doc(l.id).set(this.sanitize(l));
+    return l.id;
   }
   update(l: League) {
     return this.leagueCollection.doc(l.id).update(this.sanitize(l));
@@ -48,18 +55,16 @@ export class LeagueService {
       .collection<User>("users", (ref) => ref.where("uid", "in", uids))
       .valueChanges();
   }
-  getUsersByLeagueId(leagueId: string) {
+  getUsersByLeagueId(id: string) {
     return this.afs
-      .collection<League>("leagues", (ref) =>
-        ref.where("leagueId", "==", leagueId)
-      )
+      .collection<League>("leagues", (ref) => ref.where("id", "==", id))
       .valueChanges();
   }
-  join(uid: string, leagueId: string, rank: number) {
-    const id = this.afs.createId();
+  join(l: League) {
+    l.og = false;
     return this.afs
       .collection<League>("leagues")
-      .doc(id)
-      .set({ id, uid, leagueId, rank });
+      .doc(l.id)
+      .set(this.sanitize(l));
   }
 }

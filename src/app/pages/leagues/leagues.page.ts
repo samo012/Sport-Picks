@@ -48,7 +48,7 @@ export class LeaguesPage {
   selectedLeague: League;
   firstTime = true;
   loading = true;
-  users: User[];
+  players: League[] = [];
   leagues: League[] = [];
   model = new League();
   constructor(
@@ -60,30 +60,35 @@ export class LeaguesPage {
   }
   getLeagues() {
     this.ls.getUsersLeagues(this.as.getUserId).subscribe((leagues) => {
+      console.log("leagues: ", leagues);
       this.leagues = leagues || [];
       this.selectedLeague = this.leagues[0];
       this.firstTime = !this.leagues || this.leagues.length === 0;
-      const uids = this.leagues.map((l) => l.uid);
-      if (uids && uids.length > 0)
-        this.ls.getUsers(uids).subscribe((users) => {
-          users.forEach(
-            (u) => (u.rank = leagues.find((l) => l.uid == u.uid).rank)
-          );
-          this.users = users;
-        });
+      this.getLeagueUsers();
+      // const uids = this.leagues.map((l) => l.uid);
+      // if (uids && uids.length > 0)
+      //   this.ls.getUsers(uids).subscribe((users) => {
+      //     users.forEach(
+      //       (u) => (u.rank = leagues.find((l) => l.uid == u.uid).rank)
+      //     );
+      //     this.users = users;
+      //   });
+      this.loading = false;
     });
   }
+
+  getLeagueUsers() {
+    if (this.selectedLeague)
+      this.ls
+        .getUsersByLeagueId(this.selectedLeague.leagueId)
+        .subscribe((users) => (this.players = users));
+  }
+
   async openModal(isCreate: boolean) {
     const modal = await this.modalController.create({
       component: LeagueModalComponent,
       componentProps: { isCreate },
     });
     return await modal.present();
-  }
-  async joinLeague(l: League) {
-    this.ls.getUsersByLeagueId(l.id).subscribe((users) => {
-      console.log(users);
-      // this.ls.join(this.as.getUserId, l.id, users.length);
-    });
   }
 }

@@ -1,35 +1,36 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-menu-button *ngIf="!editMode"></ion-menu-button>
+      <ion-button *ngIf="editMode" (click)="cancel()">Cancel</ion-button>
     </ion-buttons>
     <ion-title>
-      <ion-select>
+      <ion-select [(ngModel)]="selectedLeague" name="leagueSelector">
         <ion-label>Select a League</ion-label>
-        <ion-select-option *ngFor="let l of leagues" [value]="l.name">{{l.name}}
+        <ion-select-option *ngFor="let l of leagues" [value]="l">
+          {{l.name}}
         </ion-select-option>
       </ion-select>
     </ion-title>
-    <ion-buttons slot="end" (click)="log()">
-      <ion-icon class="notifications" name="notifications" size="default" color="primary"></ion-icon>
+    <ion-buttons slot="end">
+      <ion-icon *ngIf="!editMode" class="ns" name="notifications" size="default" color="primary"></ion-icon>
+      <ion-button *ngIf="editMode" (click)="save()">Save</ion-button>
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-label>Filter Conference</ion-label>
-      <ion-select (ionChange)="filterConf($event)">
+      <ion-select (ionChange)="filterConf($event)" [interfaceOptions]="{header:'Filter By Conference'}">
+        <ion-select-option>All</ion-select-option>
         <ion-select-option *ngFor="let conf of conferences | keyvalue" [value]="conf.key">{{conf.key}}
-        </ion-select-option>
-        <ion-select-option valuea="all">All
         </ion-select-option>
       </ion-select>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-label>Filter Week</ion-label>
-      <ion-select (ionChange)="filterWeek($event)">
+      <ion-select (ionChange)="filterWeek($event)" [interfaceOptions]="{header:'Filter By Week'}">
+        <ion-select-option>All</ion-select-option>
         <ion-select-option *ngFor="let x of [1,2,3,4]" [value]="x">Week {{x}}
-        </ion-select-option>
-        <ion-select-option valuea="all">All
         </ion-select-option>
       </ion-select>
     </ion-buttons>
@@ -65,8 +66,8 @@
         </ion-item-divider>
         <ion-item-sliding>
           <ion-item lines="full">
-            <ion-thumbnail slot="start" [ngClass]="{'selected': event.teams[0].selected}"
-              (click)="selectTeam(event.teams,0,i)">
+            <ion-thumbnail slot="start" [ngClass]="{'selected': picks.get(event.id) === event.teams[0].id }"
+              (click)="selectTeam(event.id,event.teams[0].id)">
               <img [src]="event.teams[0].logo">
               <span class="record l">{{event.teams[0].record}}</span>
             </ion-thumbnail>
@@ -75,8 +76,8 @@
               <h2>{{event.shortName}}</h2>
               <p>{{event.venue}}</p>
             </ion-label>
-            <ion-thumbnail slot="end" [ngClass]="{'selected': event.teams[1].selected}"
-              (click)="selectTeam(event.teams,1,i)">
+            <ion-thumbnail slot="end" [ngClass]="{'selected': picks.get(event.id) === event.teams[1].id}"
+              (click)="selectTeam(event.id,event.teams[1].id)">
               <img [src]="event.teams[1].logo">
               <span class="record r">{{event.teams[1].record}}</span>
             </ion-thumbnail>

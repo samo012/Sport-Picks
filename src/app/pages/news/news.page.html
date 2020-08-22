@@ -1,0 +1,45 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>News</ion-title>
+    <ion-buttons slot="end">
+      <ion-icon class="ns" name="notifications" size="default" color="primary"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card *ngFor="let item of news">
+    <ion-card-header>
+      <ion-card-subtitle>NCAA</ion-card-subtitle>
+      <ion-card-title>{{item.headline}}</ion-card-title>
+    </ion-card-header>
+    <img [src]="item.images[0]?.url" />
+    <ion-card-content>
+      {{item.description}}
+    </ion-card-content>
+  </ion-card>
+
+  <ion-list *ngIf="loading">
+    <ion-card lines="full" *ngFor="let x of [].constructor(5)">
+      <ion-card-header>
+        <ion-card-subtitle>
+          <ion-skeleton-text animated style="width: 25%"></ion-skeleton-text>
+        </ion-card-subtitle>
+        <ion-card-title>
+          <ion-skeleton-text animated style="width: 75%"></ion-skeleton-text>
+        </ion-card-title>
+      </ion-card-header>
+      <div class="fake-img">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </div>
+      <ion-card-content>
+        <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+
+</ion-content>

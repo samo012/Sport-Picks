@@ -130,6 +130,7 @@ export class AuthService {
   }
 
   async registerUser(user: User, socialRegister: boolean) {
+    user.name = user.first + " " + user.last;
     if (socialRegister && this.user && this.user.uid) {
       //social sign up
       delete user.password;

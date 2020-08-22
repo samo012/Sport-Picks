@@ -75,8 +75,12 @@ export class EspnService {
         map((data) => {
           return {
             id: data.team.id,
-            record: data.team.record.items[0].summary,
-            stats: data.team.record.items[0].stats,
+            record: data.team.record.items
+              ? data.team.record.items[0].summary
+              : "NA",
+            stats: data.team.record.items
+              ? data.team.record.items[0].stats
+              : "NA",
             summary: data.team.standingSummary,
           };
         })

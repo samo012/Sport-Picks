@@ -8,6 +8,16 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
+        path: "news",
+        children: [
+          {
+            path: "",
+            loadChildren: () =>
+              import("../news/news.module").then((m) => m.NewsPageModule),
+          },
+        ],
+      },
+      {
         path: "leagues",
         children: [
           {

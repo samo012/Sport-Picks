@@ -20,7 +20,7 @@
           <ion-list-header>My Leagues</ion-list-header>
           <ion-menu-toggle auto-hide="false">
             <ion-item *ngFor="let l of leagues$ | async" lines="none">
-              <ion-note slot="start">{{l.rank}}</ion-note>
+              <ion-note slot="start" style="margin: 0;">{{l.rank}}</ion-note>
               <ion-label>{{ l.name }}</ion-label>
             </ion-item>
           </ion-menu-toggle>

@@ -1,12 +1,12 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { EspnService } from "src/app/services/espn.service";
 import { SportsEvent } from "src/app/models/event";
 import * as moment from "moment";
-import { Team } from "src/app/models/team";
 import { Router, ActivatedRoute } from "@angular/router";
 import { LeagueService } from "src/app/services/league.service";
 import { League } from "src/app/models/league";
 import { AuthService } from "src/app/services/auth.service";
+import { AlertController } from "@ionic/angular";
 
 @Component({
   selector: "app-events",
@@ -15,32 +15,44 @@ import { AuthService } from "src/app/services/auth.service";
 })
 export class EventsPage implements OnInit {
   loading = true;
-  selectedTeams = [];
+  editMode = false;
   // currentDate: string;
   dateEvents = [];
   ogDateEvents = [];
 
   // length = 0;
   // index = 0;
-  leagues: League[];
+  leagues: League[] = [];
+  selectedLeague: League;
+  picks = new Map<string, string>();
 
   constructor(
     private as: AuthService,
     private espn: EspnService,
     private router: Router,
     private route: ActivatedRoute,
-    private ls: LeagueService
+    private ls: LeagueService,
+    private ac: AlertController
   ) {}
 
   ngOnInit() {
     this.getEvents().then(() => this.getRankings());
+    this.getLeagues();
   }
 
-  getLeagues() {
-    this.ls
-      .getUsersLeagues(this.as.getUserId)
-      .subscribe((leagues) => (this.leagues = leagues));
+  getLeagues(l?: League) {
+    this.ls.getUsersLeagues(this.as.getUserId).subscribe((leagues) => {
+      if (leagues) {
+        this.leagues = leagues;
+        this.selectedLeague = l ? l : leagues[0];
+        if (this.selectedLeague.picks)
+          this.picks = new Map(
+            this.selectedLeague.picks.map((i) => [i.eventId, i.teamId])
+          );
+      }
+    });
   }
+
   viewEvent(event: SportsEvent) {
     this.router.navigate(["detail"], {
       state: { event: event },
@@ -66,11 +78,15 @@ export class EventsPage implements OnInit {
     const events: SportsEvent[] = [].concat.apply([], await Promise.all(e));
     events.forEach((ev) => {
       const sliceTime = ev.date.slice(0, 10);
-      if (!this.dateEvents[sliceTime]) this.dateEvents[sliceTime] = [];
-      if (this.dateEvents[sliceTime].findIndex((f) => f.id === ev.id) < 0)
+      if (!this.dateEvents[sliceTime]) {
+        this.dateEvents[sliceTime] = [];
+        this.ogDateEvents[sliceTime] = [];
+      }
+      if (this.dateEvents[sliceTime].findIndex((f) => f.id === ev.id) < 0) {
         this.dateEvents[sliceTime].push(ev);
+        this.ogDateEvents[sliceTime].push(ev);
+      }
     });
-    this.ogDateEvents = this.dateEvents;
     this.loading = false;
   }
   async getRankings() {
@@ -83,30 +99,64 @@ export class EventsPage implements OnInit {
     });
   }
 
-  selectTeam(teams: Team[], index: number, teamIndex: number) {
-    console.log("teamIndex: ", teamIndex);
-    if (index === 0) {
-      teams[0].selected = !teams[0].selected;
-      teams[1].selected = false;
-      // const i = this.selectedTeams.findIndex((team) => team.id === teams[1].id);
-      // if (i >= 0) this.selectedTeams.splice(i, 1);
-    } else {
-      teams[1].selected = !teams[1].selected;
-      teams[0].selected = false;
-      // const i = this.selectedTeams.findIndex((team) => team.id === teams[1].id);
-      // if (i >= 0) this.selectedTeams.splice(i, 1);
+  async presentAlert(header: string, msg: string) {
+    const alert = await this.ac.create({
+      header: header,
+      message: msg,
+      buttons: ["OK"],
+    });
+
+    await alert.present();
+  }
+
+  selectTeam(eventId: string, teamId: string) {
+    if (!this.selectedLeague) {
+      this.presentAlert(
+        "No League",
+        "Either create or join a league to start making your picks"
+      );
+      return;
     }
-    this.selectedTeams[teamIndex] = teams[index].selected ? teams[index] : null;
+    this.editMode = true;
+    this.picks.set(eventId, teamId);
+    // if (index === 0) {
+    //   teams[0].selected = !teams[0].selected;
+    //   teams[1].selected = false;
+    //   // const i = this.selectedTeams.findIndex((team) => team.id === teams[1].id);
+    //   // if (i >= 0) this.selectedTeams.splice(i, 1);
+    // } else {
+    //   teams[1].selected = !teams[1].selected;
+    //   teams[0].selected = false;
+    //   // const i = this.selectedTeams.findIndex((team) => team.id === teams[1].id);
+    //   // if (i >= 0) this.selectedTeams.splice(i, 1);
+    // }
+    // this.selectedLeague.picks[teamIndex] = teams[index].selected
+    //   ? teams[index].id
+    //   : null;
+  }
+  save() {
+    this.editMode = false;
+    this.selectedLeague.picks = Array.from(this.picks, ([eventId, teamId]) => ({
+      eventId,
+      teamId,
+    }));
+    console.log("this.selectedLeague: ", this.selectedLeague);
+    return this.ls.savePicks(this.selectedLeague);
+  }
+  async cancel() {
+    this.editMode = false;
+    this.getLeagues(this.selectedLeague);
   }
 
   filterConf(event) {
     const val = event.target.value;
+    console.log("val: ", val);
     if (val == "All") {
       this.dateEvents = this.ogDateEvents;
       return;
     }
     Object.keys(this.ogDateEvents).forEach((date) => {
-      const inGroup = this.dateEvents[date].filter(
+      const inGroup = this.ogDateEvents[date].filter(
         (a) => a.group == this.conferences[val]
       );
       if (inGroup.length > 0) this.dateEvents[date] = inGroup;
@@ -126,10 +176,6 @@ export class EventsPage implements OnInit {
       if (inWeek) this.dateEvents[date] = this.ogDateEvents[date];
       else delete this.dateEvents[date];
     });
-  }
-
-  log() {
-    console.log("   this.selectedTeams: ", this.selectedTeams);
   }
 
   // logScrolling(event) {

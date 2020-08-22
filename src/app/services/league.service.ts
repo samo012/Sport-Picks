@@ -33,6 +33,10 @@ export class LeagueService {
     l.added = Date.now();
     l.rank = 1;
     l.id = this.afs.createId();
+    l.leagueId =
+      l.name.length > 5
+        ? l.name.replace(/[^A-Z0-9]/gi, "").slice(0, 5) + l.id.slice(0, 5)
+        : l.name.replace(/[^A-Z0-9]/gi, "") + l.id.slice(0, 5);
     await this.leagueCollection.doc(l.id).set(this.sanitize(l));
     return l.id;
   }
@@ -55,16 +59,34 @@ export class LeagueService {
       .collection<User>("users", (ref) => ref.where("uid", "in", uids))
       .valueChanges();
   }
-  getUsersByLeagueId(id: string) {
+  getUsersByLeagueId(leagueId: string) {
     return this.afs
-      .collection<League>("leagues", (ref) => ref.where("id", "==", id))
+      .collection<League>("leagues", (ref) =>
+        ref.where("leagueId", "==", leagueId).orderBy("rank")
+      )
+      .valueChanges();
+  }
+
+  getPicksByEvent(eventId: string, teamId: string) {
+    return this.afs
+      .collection<League>("leagues", (ref) =>
+        ref.where("picks", "array-contains", {
+          eventId: eventId,
+          teamId: teamId,
+        })
+      )
       .valueChanges();
   }
   join(l: League) {
     l.og = false;
-    return this.afs
-      .collection<League>("leagues")
-      .doc(l.id)
-      .set(this.sanitize(l));
+    l.added = Date.now();
+    l.rank = l.count + 1;
+    this.leagueCollection.doc(l.id).update({ count: l.rank });
+    return this.leagueCollection.doc(this.afs.createId()).set(this.sanitize(l));
+  }
+  savePicks(l: League) {
+    return this.leagueCollection.doc(l.id).update({
+      picks: l.picks,
+    });
   }
 }

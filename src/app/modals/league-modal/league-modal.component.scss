@@ -1,3 +1,31 @@
 .active {
   --background: lightblue;
 }
+.error {
+  color: coral;
+}
+.bottom {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  left: 15px;
+}
+// form {
+//   ion-item {
+//     padding: 0.5rem 0;
+//   }
+// }
+#small-list {
+  overflow: auto;
+  ion-item {
+    font-size: 14px;
+    --min-height: 14px;
+  }
+  ion-label {
+    margin: 8px 0;
+  }
+}
+#list-header {
+  text-transform: capitalize;
+  margin-left: 12px;
+}

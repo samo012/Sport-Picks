@@ -16,6 +16,7 @@ export class EventDetailPage implements OnInit {
   second = [];
   segment = "stats";
   gameStart: string;
+  started = false;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -25,11 +26,7 @@ export class EventDetailPage implements OnInit {
     this.route.queryParams.subscribe(() => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.event = this.router.getCurrentNavigation().extras.state.event;
-        const daysfromNow = Math.abs(moment().diff(this.event.date, "days"));
-        this.gameStart =
-          daysfromNow > 10
-            ? daysfromNow + " days"
-            : moment(this.event.date).calendar();
+        this.getDate();
         this.getTeamsInfo();
         this.getPicks();
       } else this.router.navigate(["/tabs/events"]);
@@ -37,6 +34,19 @@ export class EventDetailPage implements OnInit {
   }
   segmentChanged(event) {
     console.log("event: ", event.target.value);
+  }
+  getDate() {
+    let daysfromNow = moment().diff(this.event.date, "days");
+    if (daysfromNow > 0) {
+      this.started = true;
+    } else {
+      this.started = false;
+      daysfromNow = Math.abs(daysfromNow);
+      this.gameStart =
+        daysfromNow > 10
+          ? daysfromNow + " days"
+          : moment(this.event.date).calendar();
+    }
   }
   getTeamsInfo() {
     this.espn.getTeamInfo(this.event.teams[0].id).then((info) => {

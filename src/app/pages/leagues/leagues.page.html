@@ -4,10 +4,10 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      Fantasy Football App
+      Fantasy Pick'ems
     </ion-title>
     <ion-buttons slot="end">
-      <ion-icon class="ns" name="notifications" size="default" color="primary"></ion-icon>
+      <ion-icon class="ns" name="notifications" routerLink="notifications" size="default" color="primary"></ion-icon>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -15,16 +15,21 @@
 <ion-content [fullscreen]="true">
 
   <section class="league" *ngIf="firstTime&&!loading">
-    <h2>Welcome to the <br> Fantasy Football App</h2>
+    <h2>Welcome to the <br> Fantasy Pick'ems App</h2>
     <h6 class="ion-padding-bottom">Select an option below to get started</h6>
-    <ion-button color="primary" (click)="openModal(true)">Create a League</ion-button>
-    <ion-button color="tertiary" (click)="openModal(false)">Join a League</ion-button>
+    <ion-button color="primary" (click)="openModal(1)">Create a League</ion-button>
+    <ion-button color="tertiary" (click)="openModal(2)">Join a League</ion-button>
   </section>
 
   <ng-container *ngIf="!firstTime&&!loading">
-    <ion-select [(ngModel)]="selectedLeague" [interfaceOptions]="{header:'Select a League'}">
-      <ion-select-option *ngFor="let l of leagues" [value]="l">{{l.name}}</ion-select-option>
-    </ion-select>
+    <ion-toolbar>
+      <ion-select [(ngModel)]="selectedLeague" [interfaceOptions]="{header:'Select a League'}">
+        <ion-select-option *ngFor="let l of leagues" [value]="l">{{l.name}}</ion-select-option>
+      </ion-select>
+      <ion-button *ngIf="selectedLeague?.creator==uid" color="primary" slot="end" fill="clear" (click)="openModal(3)">
+        Edit</ion-button>
+    </ion-toolbar>
+
     <ion-list>
       <ion-list-header>
         <ion-label class="ion-text-capitalize">{{selectedLeague.name}}</ion-label>
@@ -32,7 +37,8 @@
       </ion-list-header>
       <ion-item *ngFor="let user of players">
         <ion-note slot="start">{{user.rank}}</ion-note>
-        <ion-label>{{user.username}}</ion-label>
+        <ion-label class="ion-text-capitalize">{{user.username}}</ion-label>
+        <ion-label *ngIf="user.creator==user.uid" color="medium">Admin</ion-label>
         <ion-note slot="end">{{user.points}}</ion-note>
       </ion-item>
     </ion-list>

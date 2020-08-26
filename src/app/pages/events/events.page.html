@@ -13,7 +13,8 @@
       </ion-select>
     </ion-title>
     <ion-buttons slot="end">
-      <ion-icon *ngIf="!editMode" class="ns" name="notifications" size="default" color="primary"></ion-icon>
+      <ion-icon *ngIf="!editMode" routerLink="notifications" class="ns" name="notifications" size="default"
+        color="primary"></ion-icon>
       <ion-button *ngIf="editMode" (click)="save()">Save</ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -69,7 +70,7 @@
             <ion-thumbnail slot="start" [ngClass]="{'selected': picks.get(event.id) === event.teams[0].id }"
               (click)="selectTeam(event.id,event.teams[0].id)">
               <img [src]="event.teams[0].logo">
-              <span class="record l">{{event.teams[0].record}}</span>
+              <span class="record l">{{event.teams[0].record ? event.teams[0].record : '0-0'}}</span>
             </ion-thumbnail>
             <ion-label (click)="viewEvent(event)" style="text-align: center;">
               <!-- <ion-icon name="lock-closed" size="small"></ion-icon> -->
@@ -79,7 +80,7 @@
             <ion-thumbnail slot="end" [ngClass]="{'selected': picks.get(event.id) === event.teams[1].id}"
               (click)="selectTeam(event.id,event.teams[1].id)">
               <img [src]="event.teams[1].logo">
-              <span class="record r">{{event.teams[1].record}}</span>
+              <span class="record r">{{event.teams[1].record ? event.teams[1].record : '0-0'}}</span>
             </ion-thumbnail>
           </ion-item>
           <ion-item-options side="end">

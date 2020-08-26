@@ -15,6 +15,13 @@ const routes: Routes = [
             loadChildren: () =>
               import("../news/news.module").then((m) => m.NewsPageModule),
           },
+          {
+            path: "notifications",
+            loadChildren: () =>
+              import("../notifications/notifications.module").then(
+                (m) => m.NotificationsPageModule
+              ),
+          },
         ],
       },
       {
@@ -25,6 +32,13 @@ const routes: Routes = [
             loadChildren: () =>
               import("../leagues/leagues.module").then(
                 (m) => m.LeaguesPageModule
+              ),
+          },
+          {
+            path: "notifications",
+            loadChildren: () =>
+              import("../notifications/notifications.module").then(
+                (m) => m.NotificationsPageModule
               ),
           },
         ],
@@ -44,6 +58,13 @@ const routes: Routes = [
                 (m) => m.EventDetailPageModule
               ),
           },
+          {
+            path: "notifications",
+            loadChildren: () =>
+              import("../notifications/notifications.module").then(
+                (m) => m.NotificationsPageModule
+              ),
+          },
         ],
       },
       {
@@ -54,6 +75,13 @@ const routes: Routes = [
             loadChildren: () =>
               import("../profile/profile.module").then(
                 (m) => m.ProfilePageModule
+              ),
+          },
+          {
+            path: "notifications",
+            loadChildren: () =>
+              import("../notifications/notifications.module").then(
+                (m) => m.NotificationsPageModule
               ),
           },
         ],

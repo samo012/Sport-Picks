@@ -14,7 +14,14 @@
     </ion-tab-button>
 
     <ion-tab-button tab="profile">
-      <ion-icon name="person-circle"></ion-icon>
+      <ng-container *ngIf="user$ | async as user;">
+        <ion-avatar *ngIf="user.photo; else noPhoto">
+          <img [src]="user.photo">
+        </ion-avatar>
+        <ng-template #noPhoto>
+          <ion-icon name="person-circle"></ion-icon>
+        </ng-template>
+      </ng-container>
     </ion-tab-button>
   </ion-tab-bar>
 

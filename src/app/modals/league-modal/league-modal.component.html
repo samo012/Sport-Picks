@@ -1,43 +1,119 @@
 <ion-header translucent>
   <ion-toolbar>
-    <ion-title>{{isCreate?'Create':'Join'}} a League</ion-title>
+    <ion-title>{{state===1?'Create a':state===2?'Join a':'Edit'}} League</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="dismissModal()">Cancel</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content fullscreen>
-  <ng-container *ngIf="isCreate; else isJoin">
-    <form #formValidator="ngForm" (ngSubmit)="createLeague()">
-      <ion-item>
-        <ion-label position="stacked">League Name</ion-label>
-        <ion-input placeholder="Super Awesome League" [(ngModel)]="model.name" name="league-name" #lName="ngModel"
-          required>
-        </ion-input>
-        <p *ngIf="lName.touched&&lName.invalid">League Name is required</p>
-      </ion-item>
-      <ion-item>
-        <ion-label>Private?</ion-label>
-        <ion-toggle [(ngModel)]="model.isPrivate" name="p-toggle"></ion-toggle>
-      </ion-item>
-      <div class="text-center ion-margin-top">
-        <ion-button [disabled]="formValidator.invalid" type="submit">Create League</ion-button>
-      </div>
-    </form>
-  </ng-container>
-  <ng-template #isJoin>
-    <ion-item>
-      <ion-label position="floating">League Name</ion-label>
-      <ion-input name="league-join" (ionChange)="searchLeagues($event)">
+  <ng-container *ngIf="state===2; else notJoin">
+    <ion-item class="ion-margin-vertical">
+      <ion-label position="stacked">Personal Display Name</ion-label>
+      <ion-input placeholder="Your name within the league" [(ngModel)]="model.username" name="display-name"
+        #dName="ngModel" required>
       </ion-input>
+      <p class="error" *ngIf="dName.touched&&dName.invalid">Display Name is required</p>
     </ion-item>
-    <ion-list>
+    <ion-searchbar placeholder="Search Leagues" (ionChange)="searchLeagues($event)"></ion-searchbar>
+    <ion-list-header *ngIf="filteredLeagues">
+      <ion-label>{{filteredLeagues.length>0 ? 'Search Results':'No Results'}}</ion-label>
+    </ion-list-header>
+    <ion-list class="ion-margin-top">
       <ion-item *ngFor="let fl of filteredLeagues" (click)="selectedLeague=fl"
         [color]="fl.id===selectedLeague?.id?'secondary':''">
         <ion-label> {{fl.name}}</ion-label>
       </ion-item>
     </ion-list>
-    <ion-button class="ion-margin" *ngIf="selectedLeague" type="submit" (click)="join()" expand="block">
+    <ion-button class="bottom" [disabled]="dName.invalid" *ngIf="selectedLeague" type="submit" (click)="join()"
+      expand="block">
       Join League</ion-button>
+  </ng-container>
+  <ng-template #notJoin>
+    <form #formValidator="ngForm" (ngSubmit)="submit()">
+      <ion-item>
+        <ion-label position="stacked">League Name</ion-label>
+        <ion-input placeholder="Super Awesome League" [(ngModel)]="model.name" name="league-name" #lName="ngModel"
+          required>
+        </ion-input>
+        <p class="error" *ngIf="lName.touched&&lName.invalid">League Name is required</p>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Personal Display Name</ion-label>
+        <ion-input placeholder="Your name within this league" [(ngModel)]="model.username" name="display-name"
+          #dName="ngModel" required>
+        </ion-input>
+        <p class="error" *ngIf="dName.touched&&dName.invalid">Display Name is required</p>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Privacy</ion-label>
+        <ion-select [(ngModel)]="model.permissions" name="privacy">
+          <ion-select-option [value]="0">Public</ion-select-option>
+          <ion-select-option [value]="1">Invite Only</ion-select-option>
+          <ion-select-option [value]="2">Admin Invite Only</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">League Type</ion-label>
+        <ion-select [(ngModel)]="model.type" name="leagueType">
+          <ion-select-option value="straight">Win/Lose</ion-select-option>
+          <ion-select-option value="spread">Spread</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <h3 id="list-header" class="ion-text-capitalize">Point System - {{model.type=='spread'?'Spread':'Win/Lose'}}</h3>
+      <ion-list *ngIf="model.type=='spread'">
+        <ion-item>
+          <ion-label>Everything</ion-label>
+          <ion-note slot="end">1</ion-note>
+        </ion-item>
+      </ion-list>
+      <ion-list id="small-list" *ngIf="model.type=='straight'">
+        <ion-item>
+          <ion-label>Both Unranked</ion-label>
+          <ion-note slot="end">1</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>Both Ranked</ion-label>
+          <ion-note slot="end">2</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>Both Top 15</ion-label>
+          <ion-note slot="end">3</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>One Ranked (1-15)</ion-label>
+          <ion-note slot="end">1</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>One Ranked (16-25)</ion-label>
+          <ion-note slot="end">1</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>One Unranked (1-15)</ion-label>
+          <ion-note slot="end">3</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>One Unranked (16-25)</ion-label>
+          <ion-note slot="end">2</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>New Years 6</ion-label>
+          <ion-note slot="end">3</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>Conference Championship</ion-label>
+          <ion-note slot="end">3</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>College Football Playoff</ion-label>
+          <ion-note slot="end">4</ion-note>
+        </ion-item>
+      </ion-list>
+      <div class="bottom" id="create">
+        <ion-button expand="block" [disabled]="formValidator.invalid" type="submit">{{state===1?'Create League':'Save'}}
+        </ion-button>
+      </div>
+    </form>
   </ng-template>
+
 </ion-content>

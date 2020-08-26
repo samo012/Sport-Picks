@@ -5,7 +5,7 @@
     <ng-container *ngIf="!existing&&!forgot">
       <div class="text-center">
         <h6>Welcome to</h6>
-        <h1>Pick Ems</h1>
+        <h1>Fantasy<br>Pick'ems</h1>
       </div>
       <section>
         <h4>Create an account</h4>
@@ -20,7 +20,7 @@
     <!-- Existing User -->
     <ng-container *ngIf="existing&&!forgot">
       <div class="text-center">
-        <h1>Pick Ems</h1>
+        <h1>Fantasy<br>Pick'ems</h1>
       </div>
       <section>
         <h4>Welcome back,</h4>
@@ -41,7 +41,7 @@
           <ion-checkbox [(ngModel)]="model.remember" name="remember"></ion-checkbox>
           <ion-label>Remember Me</ion-label>
         </div>
-        <div class="text-center" *ngIf="loading">
+        <div class="text-center mt-3" *ngIf="loading">
           <ion-spinner color="secondary" name="crescent"></ion-spinner>
         </div>
         <ion-button *ngIf="!loading" color="secondary" type="submit" expand="block">Log in

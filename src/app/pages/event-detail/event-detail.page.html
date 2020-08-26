@@ -45,21 +45,26 @@
       </ion-segment-button>
     </ion-segment>
     <div *ngIf="segment=='stats'">
-      <h5 class="ion-margin ion-padding-top text-center">Game starts in {{gameStart}}</h5>
+      <ng-container *ngIf="started; else notStarted">
+        {{event.competitions|json}}
+      </ng-container>
+      <ng-template #notStarted>
+        <h5 class="ion-margin ion-padding-top text-center">Game starts in {{gameStart}}</h5>
+      </ng-template>
     </div>
     <ion-grid *ngIf="segment=='picks'">
       <ion-row>
         <ion-col>
           <ion-list>
             <ion-item *ngFor="let f of first">
-              <ion-label>{{f.username}}</ion-label>
+              <ion-label class="ion-text-capitalize">{{f.username}}</ion-label>
             </ion-item>
           </ion-list>
         </ion-col>
         <ion-col>
           <ion-list>
             <ion-item *ngFor="let s of second">
-              <ion-label>{{s.username}}</ion-label>
+              <ion-label class="ion-text-capitalize">{{s.username}}</ion-label>
             </ion-item>
           </ion-list>
         </ion-col>

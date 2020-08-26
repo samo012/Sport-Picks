@@ -11,13 +11,15 @@ import { User } from "src/app/models/user";
   styleUrls: ["./league-modal.component.scss"],
 })
 export class LeagueModalComponent implements OnInit {
-  @Input() isCreate: boolean;
+  @Input() state: number;
+  @Input() leagueId: string;
   model = new League();
   leagues: League[] = [];
-  filteredLeagues: League[] = [];
+  filteredLeagues: League[];
   selectedLeague: League;
   currUser: User;
-
+  isPrivate = false;
+  onlyAdmin = true;
   constructor(
     private as: AuthService,
     public modalController: ModalController,
@@ -27,8 +29,18 @@ export class LeagueModalComponent implements OnInit {
   ngOnInit() {
     this.as.getUser().then((user) => {
       this.currUser = user;
-      this.getPublicLeagues();
+      console.log("this.state: ", this.state);
+      if (this.state === 2) this.getPublicLeagues();
+      if (this.state === 3) this.getLeague();
     });
+  }
+  ionViewDidEnter() {
+    if (this.state === 1) this.setListHeight();
+  }
+  getLeague() {
+    this.ls
+      .getLeagueById(this.leagueId)
+      .subscribe((league) => (this.model = league));
   }
   getPublicLeagues() {
     this.ls.leagues.subscribe((leagues) => {
@@ -36,16 +48,26 @@ export class LeagueModalComponent implements OnInit {
         this.leagues = leagues.filter((l) => l.creator !== this.currUser.uid);
     });
   }
-  async createLeague() {
-    this.model.username = this.currUser.name;
-    this.model.uid = this.currUser.uid;
-    await this.ls.create(this.model);
+  async submit() {
+    if (this.state === 1) {
+      this.model.username = this.currUser.name;
+      this.model.uid = this.currUser.uid;
+      await this.ls.create(this.model);
+    } else {
+      await this.ls.update(this.model);
+    }
     this.dismissModal();
   }
   dismissModal() {
     return this.modalController.dismiss();
   }
 
+  setListHeight() {
+    const top = document.getElementById("list-header").offsetTop;
+    const bottom = document.getElementById("create").offsetTop;
+    const list = document.getElementById("small-list");
+    list.style.maxHeight = bottom - top - 50 + "px";
+  }
   searchLeagues(event) {
     this.filteredLeagues =
       this.leagues.filter((l) =>
@@ -55,7 +77,6 @@ export class LeagueModalComponent implements OnInit {
 
   async join() {
     this.selectedLeague.uid = this.currUser.uid;
-    this.selectedLeague.username = this.currUser.name;
     this.ls.join(this.selectedLeague).then(() => this.dismissModal());
   }
 }

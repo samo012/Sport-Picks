@@ -51,6 +51,7 @@ export class LeaguesPage {
   players: League[] = [];
   leagues: League[] = [];
   model = new League();
+  uid = this.as.getUserId;
   constructor(
     private ls: LeagueService,
     private as: AuthService,
@@ -59,7 +60,7 @@ export class LeaguesPage {
     this.getLeagues();
   }
   getLeagues() {
-    this.ls.getUsersLeagues(this.as.getUserId).subscribe((leagues) => {
+    this.ls.getUsersLeagues(this.uid).subscribe((leagues) => {
       console.log("leagues: ", leagues);
       this.leagues = leagues || [];
       this.selectedLeague = this.leagues[0];
@@ -84,10 +85,11 @@ export class LeaguesPage {
         .subscribe((users) => (this.players = users));
   }
 
-  async openModal(isCreate: boolean) {
+  async openModal(state: number) {
+    const leagueId = this.selectedLeague.id;
     const modal = await this.modalController.create({
       component: LeagueModalComponent,
-      componentProps: { isCreate },
+      componentProps: { state, leagueId },
     });
     return await modal.present();
   }

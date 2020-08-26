@@ -15,6 +15,7 @@ export class NewsPage implements OnInit {
   }
   async getNews() {
     this.news = await this.espn.getNews();
+    console.log("this.news : ", this.news);
     this.loading = false;
   }
 }

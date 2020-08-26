@@ -26,6 +26,9 @@ export class LeagueService {
       )
       .valueChanges();
   }
+  getLeagueById(id: string) {
+    return this.afs.collection("leagues").doc<League>(id).valueChanges();
+  }
   async create(l: League) {
     l.creator = l.uid;
     l.og = true;
@@ -80,9 +83,8 @@ export class LeagueService {
   join(l: League) {
     l.og = false;
     l.added = Date.now();
-    l.rank = l.count + 1;
-    this.leagueCollection.doc(l.id).update({ count: l.rank });
-    return this.leagueCollection.doc(this.afs.createId()).set(this.sanitize(l));
+    l.id = this.afs.createId();
+    return this.leagueCollection.doc(l.id).set(this.sanitize(l));
   }
   savePicks(l: League) {
     return this.leagueCollection.doc(l.id).update({

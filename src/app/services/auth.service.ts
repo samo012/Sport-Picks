@@ -45,6 +45,12 @@ export class AuthService {
   getUser() {
     return this.user$.pipe(first()).toPromise();
   }
+  isThirdParty() {
+    return (
+      this.user.providerData[0] &&
+      this.user.providerData[0].providerId != "password"
+    );
+  }
   get getUserId() {
     if (!this.user) this.afAuth.currentUser.then((user) => (this.user = user));
     if (this.user) return this.user.uid;

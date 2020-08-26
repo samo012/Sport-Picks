@@ -46,10 +46,10 @@ export class AppComponent {
       }
     });
   }
-  async openModal(isCreate: boolean) {
+  async openModal(state: number) {
     const modal = await this.modalController.create({
       component: LeagueModalComponent,
-      componentProps: { isCreate },
+      componentProps: { state },
     });
     return await modal.present();
   }

@@ -5,18 +5,20 @@
     </ion-buttons>
     <ion-title>News</ion-title>
     <ion-buttons slot="end">
-      <ion-icon class="ns" name="notifications" size="default" color="primary"></ion-icon>
+      <ion-icon class="ns" name="notifications" routerLink="notifications" size="default" color="primary"></ion-icon>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-card *ngFor="let item of news">
+  <ion-card *ngFor="let item of news" [href]="item.links.mobile?.href">
     <ion-card-header>
-      <ion-card-subtitle>NCAA</ion-card-subtitle>
+      <ion-card-subtitle>NCAA Football</ion-card-subtitle>
       <ion-card-title>{{item.headline}}</ion-card-title>
     </ion-card-header>
-    <img [src]="item.images[0]?.url" />
+    <div class="text-center w-100">
+      <img [src]="item.images[0]?.url" />
+    </div>
     <ion-card-content>
       {{item.description}}
     </ion-card-content>

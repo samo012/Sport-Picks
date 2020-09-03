@@ -15,7 +15,7 @@
           <ion-thumbnail>
             <img [src]="event.teams[0].logo">
           </ion-thumbnail>
-          <h6>{{event.teams[0].name}}</h6>
+          <h6><span *ngIf="event.teams[0].rank">#{{event.teams[0].rank}}</span>{{event.teams[0].name}}</h6>
           <p class="record">{{event.teams[0].record}}</p>
         </ion-col>
         <ion-col class="align-center">
@@ -31,7 +31,7 @@
           <ion-thumbnail>
             <img [src]="event.teams[1].logo">
           </ion-thumbnail>
-          <h6> {{event.teams[1].name}}</h6>
+          <h6><span *ngIf="event.teams[1].rank">#{{event.teams[1].rank}}</span>{{event.teams[1].name}}</h6>
           <p class="record"> {{event.teams[1].record}}</p>
         </ion-col>
       </ion-row>
@@ -56,14 +56,16 @@
       <ion-row>
         <ion-col>
           <ion-list>
-            <ion-item *ngFor="let f of first">
+            <ion-item *ngFor="let f of first" class="users">
+              <ion-note>{{f.rank}}</ion-note>
               <ion-label class="ion-text-capitalize">{{f.username}}</ion-label>
             </ion-item>
           </ion-list>
         </ion-col>
         <ion-col>
           <ion-list>
-            <ion-item *ngFor="let s of second">
+            <ion-item *ngFor="let s of second" class="users">
+              <ion-note>{{s.rank}}</ion-note>
               <ion-label class="ion-text-capitalize">{{s.username}}</ion-label>
             </ion-item>
           </ion-list>

@@ -66,6 +66,20 @@ export class AuthService {
     return this.getUserDetails(res.user.uid);
   }
 
+  async updatePassword(oldPassword: string, newPassword: string) {
+    const cred = firebase.auth.EmailAuthProvider.credential(
+      this.user.email,
+      oldPassword
+    );
+    await this.user.reauthenticateAndRetrieveDataWithCredential(cred);
+    await this.user.updatePassword(newPassword);
+  }
+
+  async deleteUser() {
+    await this.afstore.doc(this.user.uid).delete();
+    return this.user.delete();
+  }
+
   async signInWithGoogle() {
     try {
       if (this.platform.is("cordova")) {

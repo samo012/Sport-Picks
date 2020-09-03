@@ -1,10 +1,11 @@
-import { Component } from "@angular/core";
+import { Component, TemplateRef, ElementRef } from "@angular/core";
 import { LeagueService } from "src/app/services/league.service";
 import { League } from "src/app/models/league";
 import { AuthService } from "src/app/services/auth.service";
-import { ModalController } from "@ionic/angular";
+import { ModalController, PopoverController } from "@ionic/angular";
 import { LeagueModalComponent } from "src/app/modals/league-modal/league-modal.component";
 import { User } from "src/app/models/user";
+import { EllipsisPopover } from "src/app/modals/ellipsis-popover/ellipsis-popover.component";
 
 @Component({
   selector: "app-leagues",
@@ -12,70 +13,46 @@ import { User } from "src/app/models/user";
   styleUrls: ["leagues.page.scss"],
 })
 export class LeaguesPage {
-  // leagues:League[] = [
-  //   {
-  //     name: "First League",
-  //     users: [
-  //       { rank: 1, name: "Andrew Samole" },
-  //       { rank: 2, name: "Pierce Bailey" },
-  //       { rank: 3, name: "Peter Rood" },
-  //       { rank: 4, name: "Jen Butler" },
-  //       { rank: 5, name: "Brooker Bailey" },
-  //       { rank: 6, name: "Linda Bailey" },
-  //       { rank: 7, name: "Adam Samole" },
-  //       { rank: 8, name: "Robert Bailey" },
-  //     ],
-  //   },
-  //   {
-  //     name: "Second League",
-  //     users: [
-  //       { rank: 1, name: "Joe Mama" },
-  //       { rank: 2, name: "Moe Lester" },
-  //       { rank: 3, name: "Ben Dover" },
-  //       { rank: 4, name: "Mike Hawk" },
-  //     ],
-  //   },
-  //   {
-  //     name: "Third League",
-  //     users: [
-  //       { rank: 1, name: "Andrew Samole" },
-  //       { rank: 2, name: "Pierce Bailey" },
-  //       { rank: 3, name: "Peter Rood" },
-  //       { rank: 4, name: "Jen Butler" },
-  //     ],
-  //   },
-  // ];
   selectedLeague: League;
+  subtitle: string;
   firstTime = true;
   loading = true;
   players: League[] = [];
   leagues: League[] = [];
   model = new League();
   uid = this.as.getUserId;
+
   constructor(
     private ls: LeagueService,
     private as: AuthService,
-    public modalController: ModalController
+    public modalController: ModalController,
+    public popoverController: PopoverController
   ) {
     this.getLeagues();
   }
+
   getLeagues() {
     this.ls.getUsersLeagues(this.uid).subscribe((leagues) => {
       console.log("leagues: ", leagues);
       this.leagues = leagues || [];
       this.selectedLeague = this.leagues[0];
       this.firstTime = !this.leagues || this.leagues.length === 0;
+      this.getSubtitle();
       this.getLeagueUsers();
-      // const uids = this.leagues.map((l) => l.uid);
-      // if (uids && uids.length > 0)
-      //   this.ls.getUsers(uids).subscribe((users) => {
-      //     users.forEach(
-      //       (u) => (u.rank = leagues.find((l) => l.uid == u.uid).rank)
-      //     );
-      //     this.users = users;
-      //   });
       this.loading = false;
     });
+  }
+
+  getSubtitle() {
+    const first =
+      this.selectedLeague.type === "spread" ? "Spread - " : "Straight Up - ";
+    const second =
+      this.selectedLeague.permissions === 2
+        ? "Admin Invite Only"
+        : this.selectedLeague.permissions === 1
+        ? "Invite Only"
+        : "Public";
+    this.subtitle = first + second;
   }
 
   getLeagueUsers() {
@@ -84,7 +61,9 @@ export class LeaguesPage {
         .getUsersByLeagueId(this.selectedLeague.leagueId)
         .subscribe((users) => (this.players = users));
   }
-
+  share() {
+    console.log("share: ");
+  }
   async openModal(state: number) {
     const leagueId = this.selectedLeague.id;
     const modal = await this.modalController.create({
@@ -92,5 +71,22 @@ export class LeaguesPage {
       componentProps: { state, leagueId },
     });
     return await modal.present();
+  }
+  async openPopover(ev: Event) {
+    const popover = await this.popoverController.create({
+      component: EllipsisPopover,
+      event: ev,
+      translucent: true,
+      componentProps: {
+        sl: this.selectedLeague,
+        isAdmin: this.selectedLeague.creator === this.uid,
+      },
+    });
+    popover.onWillDismiss().then((props) => {
+      if (props.data == "share") this.share();
+      else if (props.data == "edit") this.openModal(3);
+    });
+
+    return await popover.present();
   }
 }

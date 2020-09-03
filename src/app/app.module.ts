@@ -21,6 +21,7 @@ import { SignInWithApple } from "@ionic-native/sign-in-with-apple/ngx";
 import { AuthGuard } from "./services/auth.guard";
 import { LeagueModalComponent } from "./modals/league-modal/league-modal.component";
 import { FormsModule } from "@angular/forms";
+import { AngularFireFunctionsModule, ORIGIN } from "@angular/fire/functions";
 
 @NgModule({
   declarations: [AppComponent, LeagueModalComponent],
@@ -35,6 +36,7 @@ import { FormsModule } from "@angular/forms";
     AngularFirestoreModule, //  needed for database features
     AngularFireAuthModule, //  needed for auth features
     AngularFireStorageModule, // needed for storage features
+    AngularFireFunctionsModule,
   ],
   providers: [
     AuthGuard,
@@ -44,6 +46,7 @@ import { FormsModule } from "@angular/forms";
     GooglePlus,
     Facebook,
     SignInWithApple,
+    { provide: ORIGIN, useValue: "https://pick-ems.web.app" },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],

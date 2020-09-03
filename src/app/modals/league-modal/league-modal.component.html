@@ -56,44 +56,41 @@
       <ion-item>
         <ion-label position="stacked">League Type</ion-label>
         <ion-select [(ngModel)]="model.type" name="leagueType">
-          <ion-select-option value="straight">Win/Lose</ion-select-option>
-          <ion-select-option value="spread">Spread</ion-select-option>
+          <ion-select-option value="straight">Pick the winner</ion-select-option>
+          <ion-select-option value="spread">Pick the correct spread</ion-select-option>
         </ion-select>
       </ion-item>
-      <h3 id="list-header" class="ion-text-capitalize">Point System - {{model.type=='spread'?'Spread':'Win/Lose'}}</h3>
+      <h3 id="list-header" class="ion-text-capitalize">Point System</h3>
+      <!-- {{model.type=='spread'?'Spread':'Win/Lose'}} -->
       <ion-list *ngIf="model.type=='spread'">
         <ion-item>
-          <ion-label>Everything</ion-label>
-          <ion-note slot="end">1</ion-note>
+          <ion-label>Correct Spread Prediction</ion-label>
+          <ion-note color="primary" slot="end">1</ion-note>
         </ion-item>
       </ion-list>
       <ion-list id="small-list" *ngIf="model.type=='straight'">
         <ion-item>
           <ion-label>Both Unranked</ion-label>
-          <ion-note slot="end">1</ion-note>
+          <ion-note color="primary" slot="end">1</ion-note>
         </ion-item>
         <ion-item>
-          <ion-label>Both Ranked</ion-label>
+          <ion-label>Both Ranked (1-15)</ion-label>
+          <ion-note color="primary" slot="end">3</ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>Both Ranked (1-25)</ion-label>
           <ion-note slot="end">2</ion-note>
         </ion-item>
         <ion-item>
-          <ion-label>Both Top 15</ion-label>
-          <ion-note slot="end">3</ion-note>
-        </ion-item>
-        <ion-item>
-          <ion-label>One Ranked (1-15)</ion-label>
+          <ion-label>Ranked (1-25) to Win vs Unranked</ion-label>
           <ion-note slot="end">1</ion-note>
         </ion-item>
         <ion-item>
-          <ion-label>One Ranked (16-25)</ion-label>
-          <ion-note slot="end">1</ion-note>
-        </ion-item>
-        <ion-item>
-          <ion-label>One Unranked (1-15)</ion-label>
+          <ion-label>Unranked to Win vs Ranked (1-15)</ion-label>
           <ion-note slot="end">3</ion-note>
         </ion-item>
         <ion-item>
-          <ion-label>One Unranked (16-25)</ion-label>
+          <ion-label>Unranked to Win vs Ranked (16-25)</ion-label>
           <ion-note slot="end">2</ion-note>
         </ion-item>
         <ion-item>

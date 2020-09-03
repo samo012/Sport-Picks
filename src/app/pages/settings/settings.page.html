@@ -1,0 +1,67 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{changePass?'Change Password':'Delete Account'}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngIf="changePass">
+    <form #pswdForm="ngForm">
+      <ion-list>
+        <ion-item class="ion-margin-vertical">
+          <ion-label>Old Password</ion-label>
+          <ion-input type="password" name="old" [(ngModel)]="oldPassword"></ion-input>
+        </ion-item>
+        <p *ngIf="err" class="error">Invalid Password</p>
+
+        <ion-item class="ion-margin-vertical">
+          <ion-label>New Password</ion-label>
+          <ion-input autocomplete="new-password" [(ngModel)]="newPassword" name="password" #pswd="ngModel"
+            type="password" required minlength="6">
+          </ion-input>
+        </ion-item>
+        <p class="error" *ngIf="pswd.touched&&pswd.hasError('required')">Password is required</p>
+        <p class="error" *ngIf="pswd.touched&&pswd.hasError('minlength')">At least 6 characters</p>
+
+        <ion-item class="ion-margin-vertical">
+          <ion-label>Confirm Password</ion-label>
+          <ion-input [(ngModel)]="confirm" name="confirm" #pswd2="ngModel" type="password" required></ion-input>
+        </ion-item>
+        <p class="error" *ngIf="pswd2.touched&&pswd2.value!=pswd.value">Passwords do not match</p>
+      </ion-list>
+    </form>
+    <div class="loader" *ngIf="loading">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <ion-button [hidden]="loading" class="bottom" expand="block" (click)="updatePassword(pswdForm)"
+      [disabled]="pswdForm.invalid">
+      Change Password
+    </ion-button>
+  </ng-container>
+
+  <ng-container *ngIf="!changePass">
+    <ng-container *ngIf="leagues?.length>0">
+      <h6 class="ion-padding-horizontal">Before deleting your account, you must select new admins for your leagues
+      </h6>
+      <ion-list-header>
+        <ion-button *ngIf="index>0" (click)="index=index-1">Back</ion-button>
+        <ion-label [class]="index>0?'league-name':''">{{leagues[index]?.name}}</ion-label>
+        <ion-button *ngIf="index<(leagues.length-1)" (click)="index=index+1">Next</ion-button>
+      </ion-list-header>
+      <ion-list>
+        <ion-item *ngFor="let u of leagueUsers.get(leagues[index]?.leagueId)" (click)="selectAdmin(u.id,u.uid)"
+          [color]="newAdmins.get(u.id)==u.uid?'secondary':undefined" detail>
+          <ion-label>{{u.username}}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+    <ion-button class="bottom" color="danger" expand="block" [disabled]="!deleteReady" (click)="deleteAccount()">
+      Delete Account</ion-button>
+
+  </ng-container>
+
+</ion-content>

@@ -23,23 +23,25 @@
 
   <ng-container *ngIf="!firstTime&&!loading">
     <ion-toolbar>
-      <ion-select [(ngModel)]="selectedLeague" [interfaceOptions]="{header:'Select a League'}">
+      <ion-select (ionChange)="getLeagueUsers()" [(ngModel)]="selectedLeague"
+        [interfaceOptions]="{header:'Select a League'}">
         <ion-select-option *ngFor="let l of leagues" [value]="l">{{l.name}}</ion-select-option>
       </ion-select>
-      <ion-button *ngIf="selectedLeague?.creator==uid" color="primary" slot="end" fill="clear" (click)="openModal(3)">
-        Edit</ion-button>
     </ion-toolbar>
 
     <ion-list>
       <ion-list-header>
+        <ion-card-subtitle>{{subtitle}}</ion-card-subtitle>
         <ion-label class="ion-text-capitalize">{{selectedLeague.name}}</ion-label>
-        <ion-button>View All</ion-button>
+        <ion-button fill="clear" (click)="openPopover($event)">
+          <ion-icon name="ellipsis-horizontal" slot="icon-only"></ion-icon>
+        </ion-button>
       </ion-list-header>
       <ion-item *ngFor="let user of players">
-        <ion-note slot="start">{{user.rank}}</ion-note>
+        <ion-note color="dark" slot="start">{{user.rank}}</ion-note>
         <ion-label class="ion-text-capitalize">{{user.username}}</ion-label>
         <ion-label *ngIf="user.creator==user.uid" color="medium">Admin</ion-label>
-        <ion-note slot="end">{{user.points}}</ion-note>
+        <ion-note color="dark" slot="end">{{user.points}}</ion-note>
       </ion-item>
     </ion-list>
   </ng-container>

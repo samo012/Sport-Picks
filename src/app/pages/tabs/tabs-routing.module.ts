@@ -35,6 +35,13 @@ const routes: Routes = [
               ),
           },
           {
+            path: "all-picks",
+            loadChildren: () =>
+              import("../all-picks/all-picks.module").then(
+                (m) => m.AllPicksPageModule
+              ),
+          },
+          {
             path: "notifications",
             loadChildren: () =>
               import("../notifications/notifications.module").then(
@@ -75,6 +82,13 @@ const routes: Routes = [
             loadChildren: () =>
               import("../profile/profile.module").then(
                 (m) => m.ProfilePageModule
+              ),
+          },
+          {
+            path: "settings",
+            loadChildren: () =>
+              import("../settings/settings.module").then(
+                (m) => m.SettingsPageModule
               ),
           },
           {

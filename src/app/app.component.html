@@ -4,6 +4,12 @@
       <ion-content>
         <ion-list id="inbox-list">
           <ion-list-header>{{user?.name}}</ion-list-header>
+          <div id="toggle-container">
+            <ion-icon name="sunny"></ion-icon>
+            <ion-toggle name="dToggle" [(ngModel)]="dark" (ionChange)="toggleDark()">
+            </ion-toggle>
+            <ion-icon name="moon"></ion-icon>
+          </div>
           <ion-note>@{{user?.last}}</ion-note>
           <ion-menu-toggle auto-hide="false">
             <ion-item lines="none" detail="false" (click)="openModal(1)">
@@ -19,12 +25,17 @@
         <ion-list id="labels-list">
           <ion-list-header>My Leagues</ion-list-header>
           <ion-menu-toggle auto-hide="false">
-            <ion-item *ngFor="let l of leagues$ | async" lines="none">
+            <ion-item *ngFor="let l of leagues" lines="none">
               <ion-note slot="start" style="margin: 0;">{{l.rank}}</ion-note>
-              <ion-label>{{ l.name }}</ion-label>
+              <ion-label>{{l.name}}</ion-label>
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
+        <div id="img-container">
+          <a href="http://espn.go.com/">
+            <ion-img src="assets/espn-api-sm.png"></ion-img>
+          </a>
+        </div>
       </ion-content>
       <ion-item id="logout" (click)="logout()">
         <ion-icon slot="start" name="log-out-outline"></ion-icon>

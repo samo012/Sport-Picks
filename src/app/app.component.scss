@@ -123,3 +123,25 @@ ion-note {
 #logout {
   border-top: solid 1px lightgray;
 }
+#img-container {
+  position: fixed;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  ion-img {
+    width: 150px;
+    margin: auto;
+  }
+}
+#toggle-container {
+  position: absolute;
+  top: 37px;
+  right: 2px;
+  ion-icon {
+    font-size: 20px;
+    padding: 0 5px 2px;
+  }
+  ion-toggle {
+    zoom: 0.7;
+  }
+}

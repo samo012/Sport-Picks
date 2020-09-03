@@ -23,33 +23,23 @@ ion-input {
   border-radius: 5px;
   --padding-start: 10px;
 }
-ion-label {
-  color: #fff;
-  padding: 2px 8px;
-}
-h4,
-h6,
-p {
-  color: #fff;
-}
-h1 {
+// ion-label {
+//   padding: 2px 8px;
+// }
+
+.title {
   text-align: center;
   font-size: 12vw;
   font-weight: 900;
   margin-top: 0;
-  color: var(--ion-color-secondary);
 }
-section span {
-  color: #fff !important;
-}
-
 h4 {
   margin-top: 2.5rem;
   font-weight: 800;
   letter-spacing: 1px;
 }
 .error {
-  color: #ffffff96;
+  color: coral;
 }
 .already {
   text-align: center;
@@ -61,19 +51,16 @@ h4 {
   font-size: 0.9rem;
 }
 .forgot {
-  color: #d4d4d4;
   text-align: center;
   margin-top: 2rem;
   font-size: 0.9rem;
 }
 .another {
-  color: #d4d4d4;
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.9rem;
 }
 .or {
-  color: white;
   text-align: center;
   margin-bottom: -5px;
 }

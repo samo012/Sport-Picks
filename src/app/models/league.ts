@@ -1,3 +1,5 @@
+import { Pick } from './pick';
+
 export class League {
   id: string;
   leagueId: string;
@@ -5,17 +7,13 @@ export class League {
   created: number;
   added: number;
   rank = 1;
-  type = "straight";
+  type = 'straight';
   permissions = 0;
   points = 0;
   uid: string;
   username: string;
   creator: string;
   og: boolean;
-  picks: { eventId: string; teamId: string }[];
+  picks: Pick[];
+  edit?: boolean;
 }
-
-//Both Unranked - 1pt
-//One Ranked - ranked-1, unranked-2
-//Both Ranked - 2pt
-//Both top 15 - 3pt

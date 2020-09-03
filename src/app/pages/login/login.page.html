@@ -4,8 +4,8 @@
     <!-- New User -->
     <ng-container *ngIf="!existing&&!forgot">
       <div class="text-center">
-        <h6>Welcome to</h6>
-        <h1>Fantasy<br>Pick'ems</h1>
+        <ion-text color="secondary" class="title">Welcome to</ion-text>
+        <ion-text color="secondary" class="title">Fantasy<br>Pick'ems</ion-text>
       </div>
       <section>
         <h4>Create an account</h4>
@@ -20,7 +20,7 @@
     <!-- Existing User -->
     <ng-container *ngIf="existing&&!forgot">
       <div class="text-center">
-        <h1>Fantasy<br>Pick'ems</h1>
+        <ion-text color="secondary" class="title">Fantasy<br>Pick'ems</ion-text>
       </div>
       <section>
         <h4>Welcome back,</h4>
@@ -31,16 +31,18 @@
         </ion-input>
         <!-- <p class="error" *ngIf="email.touched && email.hasError('email')">Invalid email</p>
         <p class="error" *ngIf="email.touched && email.hasError('required')">Email address is required</p> -->
-        <ion-input placeholder="Password*" type="password" [(ngModel)]="model.password" name="password" required
-          (keyup.enter)="login()">
-          <!-- #pswd="ngModel" -->
-          <!-- minlength="6"  pattern="[A-Za-z0-9]*([a-zA-Z]+[0-9]+|[0-9]+[a-zA-Z]+)" -->
+        <ion-input placeholder="Password*" type="password" [(ngModel)]="model.password" name="password" required>
         </ion-input>
+        <!--  (keyup.enter)="login()" -->
+        <!-- #pswd="ngModel" -->
+        <!-- minlength="6"  pattern="[A-Za-z0-9]*([a-zA-Z]+[0-9]+|[0-9]+[a-zA-Z]+)" -->
+        <!-- </ion-input> -->
         <!-- <p class="error" *ngIf="pswd.touched && pswd.hasError('required')">Password is required</p> -->
-        <div class="mw-500">
-          <ion-checkbox [(ngModel)]="model.remember" name="remember"></ion-checkbox>
+        <ion-item>
+          <ion-checkbox slot="start" [(ngModel)]="model.remember" name="remember"></ion-checkbox>
           <ion-label>Remember Me</ion-label>
-        </div>
+        </ion-item>
+
         <div class="text-center mt-3" *ngIf="loading">
           <ion-spinner color="secondary" name="crescent"></ion-spinner>
         </div>
@@ -83,7 +85,7 @@
 
     <ng-container *ngIf="forgot">
       <div class="text-center">
-        <img src="assets/icon/logo-text.png">
+        <ion-text color="secondary" class="title">Fantasy<br>Pick'ems</ion-text>
       </div>
       <form #loginForm="ngForm" class="ion-padding-vertical" (ngSubmit)="resetPassword(email)">
         <ion-label>Email Address</ion-label>

@@ -16,15 +16,12 @@ import { AlertController } from "@ionic/angular";
 export class EventsPage implements OnInit {
   loading = true;
   editMode = false;
-  // currentDate: string;
   dateEvents = [];
   ogDateEvents = [];
-
-  // length = 0;
-  // index = 0;
   leagues: League[] = [];
   selectedLeague: League;
-  picks = new Map<string, string>();
+  picks = new Map<string, { teamId: string; visible: boolean }>();
+  weeks = new Map<string, string>();
 
   constructor(
     private as: AuthService,
@@ -36,7 +33,7 @@ export class EventsPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.getEvents().then(() => this.getRankings());
+    this.getEvents(false).then(() => this.getRankings());
     this.getLeagues();
   }
 
@@ -47,7 +44,10 @@ export class EventsPage implements OnInit {
         this.selectedLeague = l ? l : leagues[0];
         if (this.selectedLeague.picks)
           this.picks = new Map(
-            this.selectedLeague.picks.map((i) => [i.eventId, i.teamId])
+            this.selectedLeague.picks.map((i) => [
+              i.eventId,
+              { teamId: i.teamId, visible: i.visible },
+            ])
           );
       }
     });
@@ -55,27 +55,25 @@ export class EventsPage implements OnInit {
 
   viewEvent(event: SportsEvent) {
     this.router.navigate(["detail"], {
-      state: { event: event },
+      state: { event: event, selectedLeague: this.selectedLeague },
       relativeTo: this.route,
     });
   }
 
   doRefresh(event) {
-    this.getEvents()
+    this.getEvents(true)
       .catch((err) => console.log("err: ", err))
       .finally(() => event.target.complete())
       .then(() => this.getRankings());
   }
-  async getEvents() {
-    this.loading = true;
-    const e = [
-      this.espn.getEvents("1"),
-      this.espn.getEvents("4"),
-      this.espn.getEvents("5"),
-      this.espn.getEvents("8"),
-      this.espn.getEvents("9"),
-    ];
-    const events: SportsEvent[] = [].concat.apply([], await Promise.all(e));
+
+  async getEvents(fetch: boolean) {
+    let events: SportsEvent[] = [];
+    if (fetch || this.espn.events.value.length === 0) {
+      this.loading = true;
+      events = await this.espn.getEvents();
+    } else events = this.espn.events.value;
+    this.weeks = this.espn.weeks;
     events.forEach((ev) => {
       const sliceTime = ev.date.slice(0, 10);
       if (!this.dateEvents[sliceTime]) {
@@ -88,13 +86,19 @@ export class EventsPage implements OnInit {
       }
     });
     this.loading = false;
+    console.log("this.dateEvents: ", this.dateEvents);
   }
+
   async getRankings() {
-    let ranks = new Map<string, string>(await this.espn.getRankings());
+    let ranks = await this.espn.getRankings();
     Object.keys(this.dateEvents).forEach((date) => {
-      this.dateEvents[date].forEach((event) => {
-        event.teams[0].record = ranks.get(event.teams[0].id);
-        event.teams[1].record = ranks.get(event.teams[1].id);
+      this.dateEvents[date].forEach((event: SportsEvent) => {
+        const first = ranks.get(event.teams[0].id);
+        const second = ranks.get(event.teams[1].id);
+        event.teams[0].record = first ? first.record : null;
+        event.teams[0].rank = first ? first.rank : null;
+        event.teams[1].record = second ? second.record : null;
+        event.teams[1].rank = second ? second.rank : null;
       });
     });
   }
@@ -105,11 +109,18 @@ export class EventsPage implements OnInit {
       message: msg,
       buttons: ["OK"],
     });
-
     await alert.present();
   }
 
-  selectTeam(eventId: string, teamId: string) {
+  makeVisible(eventId: string) {
+    this.editMode = true;
+    let pick = this.picks.get(eventId);
+    if (pick.visible === undefined) pick.visible = false;
+    pick.visible = !pick.visible;
+    this.picks.set(eventId, pick);
+  }
+
+  selectTeam(eventId: string, teamId: string, date: string) {
     if (!this.selectedLeague) {
       this.presentAlert(
         "No League",
@@ -117,32 +128,24 @@ export class EventsPage implements OnInit {
       );
       return;
     }
+    if (moment().isAfter(date)) return;
     this.editMode = true;
-    this.picks.set(eventId, teamId);
-    // if (index === 0) {
-    //   teams[0].selected = !teams[0].selected;
-    //   teams[1].selected = false;
-    //   // const i = this.selectedTeams.findIndex((team) => team.id === teams[1].id);
-    //   // if (i >= 0) this.selectedTeams.splice(i, 1);
-    // } else {
-    //   teams[1].selected = !teams[1].selected;
-    //   teams[0].selected = false;
-    //   // const i = this.selectedTeams.findIndex((team) => team.id === teams[1].id);
-    //   // if (i >= 0) this.selectedTeams.splice(i, 1);
-    // }
-    // this.selectedLeague.picks[teamIndex] = teams[index].selected
-    //   ? teams[index].id
-    //   : null;
+    this.picks.set(eventId, { teamId, visible: false });
   }
+
   save() {
     this.editMode = false;
-    this.selectedLeague.picks = Array.from(this.picks, ([eventId, teamId]) => ({
-      eventId,
-      teamId,
-    }));
-    console.log("this.selectedLeague: ", this.selectedLeague);
+    this.selectedLeague.picks = Array.from(
+      this.picks,
+      ([eventId, { teamId, visible }]) => ({
+        eventId,
+        teamId,
+        visible,
+      })
+    );
     return this.ls.savePicks(this.selectedLeague);
   }
+
   async cancel() {
     this.editMode = false;
     this.getLeagues(this.selectedLeague);
@@ -150,14 +153,13 @@ export class EventsPage implements OnInit {
 
   filterConf(event) {
     const val = event.target.value;
-    console.log("val: ", val);
     if (val == "All") {
       this.dateEvents = this.ogDateEvents;
       return;
     }
     Object.keys(this.ogDateEvents).forEach((date) => {
-      const inGroup = this.ogDateEvents[date].filter(
-        (a) => a.group == this.conferences[val]
+      const inGroup = this.ogDateEvents[date].filter((a: SportsEvent) =>
+        a.teams.some((t) => t.group == this.conferences[val])
       );
       if (inGroup.length > 0) this.dateEvents[date] = inGroup;
       else delete this.dateEvents[date];
@@ -165,14 +167,19 @@ export class EventsPage implements OnInit {
   }
 
   filterWeek(event) {
-    const val = event.target.value;
+    const val = event.target.value + "";
     if (val == "All") {
       this.dateEvents = this.ogDateEvents;
       return;
     }
+    console.log("val: ",val);
+    console.log(",this.espn.weeks: ", this.weeks);
+
     Object.keys(this.ogDateEvents).forEach((date) => {
-      const inWeek =
-        val == moment(date).week() - moment(date).startOf("month").week() + 1;
+      console.log("this.espn.weeks.get(val): ", this.weeks.get(val));
+      console.log("date: ",date);
+      const inWeek = moment(date).isBefore(this.weeks.get(val));
+      console.log("inWeek: ", inWeek);
       if (inWeek) this.dateEvents[date] = this.ogDateEvents[date];
       else delete this.dateEvents[date];
     });
@@ -191,6 +198,7 @@ export class EventsPage implements OnInit {
   //   this.currentDate = this.dates[this.index];
   //   console.log(" this.currentDate : ", this.currentDate );
   // }
+
   conferences = {
     // "80": "FBS",
     ACC: "1",

@@ -4,6 +4,7 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { LeaguesPage } from "./leagues.page";
+import { EllipsisPopover } from "src/app/modals/ellipsis-popover/ellipsis-popover.component";
 
 @NgModule({
   imports: [
@@ -12,6 +13,6 @@ import { LeaguesPage } from "./leagues.page";
     FormsModule,
     RouterModule.forChild([{ path: "", component: LeaguesPage }]),
   ],
-  declarations: [LeaguesPage],
+  declarations: [LeaguesPage, EllipsisPopover],
 })
 export class LeaguesPageModule {}

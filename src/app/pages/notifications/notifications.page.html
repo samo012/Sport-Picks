@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-title>Notifications</ion-title>
     <ion-buttons slot="end">
-      <ion-button>
+      <ion-button (click)="clear()">
         Clear All
       </ion-button>
     </ion-buttons>
@@ -13,5 +13,22 @@
 </ion-header>
 
 <ion-content>
+  <ng-container *ngIf="ns.notifications$ | async as notifications">
+    <h2 class="ion-padding text-center" *ngIf="notifications?.length===0">No Notifications</h2>
+    <ion-list>
+      <ion-item-sliding *ngFor="let n of notifications">
+        <ion-item>
+          <ion-label>
+            {{n.title}}
+          </ion-label>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option (click)="remove(n.id)" color="danger">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </ng-container>
 
 </ion-content>

@@ -31,25 +31,14 @@
       <ion-label>Filter Week</ion-label>
       <ion-select (ionChange)="filterWeek($event)" [interfaceOptions]="{header:'Filter By Week'}">
         <ion-select-option>All</ion-select-option>
-        <ion-select-option *ngFor="let x of [1,2,3,4]" [value]="x">Week {{x}}
+        <ion-select-option *ngFor="let x of [].constructor(weeks.size); index as i" [value]="i">Week {{i}}
         </ion-select-option>
       </ion-select>
     </ion-buttons>
   </ion-toolbar>
-  <!-- <ion-item>
-    <ion-label>Filter Conference</ion-label>
-    <ion-select multiple>
-      <ion-select-option *ngFor="let conf of conferences | keyvalue">{{conf.value}}</ion-select-option>
-    </ion-select>
-  </ion-item> -->
 </ion-header>
-<!-- [scrollEvents]="true" (ionScroll)="logScrolling($event)" -->
+
 <ion-content [fullscreen]="true">
-  <!-- <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large" class="large-title">Events</ion-title>
-    </ion-toolbar>
-  </ion-header> -->
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
@@ -67,44 +56,33 @@
         </ion-item-divider>
         <ion-item-sliding>
           <ion-item lines="full">
-            <ion-thumbnail slot="start" [ngClass]="{'selected': picks.get(event.id) === event.teams[0].id }"
-              (click)="selectTeam(event.id,event.teams[0].id)">
+            <ion-thumbnail slot="start" [ngClass]="{'selected': picks.get(event.id)?.teamId === event.teams[0].id }"
+              (click)="selectTeam(event.id,event.teams[0].id,date.key)">
+              <ion-badge color="light" class="rank l" *ngIf="event.teams[0].rank">#{{event.teams[0].rank}}</ion-badge>
               <img [src]="event.teams[0].logo">
-              <span class="record l">{{event.teams[0].record ? event.teams[0].record : '0-0'}}</span>
+              <ion-badge color="light" class="record l">{{event.teams[0].record ? event.teams[0].record : '0-0'}}
+              </ion-badge>
             </ion-thumbnail>
             <ion-label (click)="viewEvent(event)" style="text-align: center;">
-              <!-- <ion-icon name="lock-closed" size="small"></ion-icon> -->
+              <ion-icon *ngIf="event.date | isPast" name="lock-closed" size="small"></ion-icon>
               <h2>{{event.shortName}}</h2>
               <p>{{event.venue}}</p>
             </ion-label>
-            <ion-thumbnail slot="end" [ngClass]="{'selected': picks.get(event.id) === event.teams[1].id}"
-              (click)="selectTeam(event.id,event.teams[1].id)">
+            <ion-thumbnail slot="end" [ngClass]="{'selected': picks.get(event.id)?.teamId === event.teams[1].id}"
+              (click)="selectTeam(event.id,event.teams[1].id,date.key)">
+              <ion-badge color="light" class="rank r" *ngIf="event.teams[1].rank">#{{event.teams[1].rank}}</ion-badge>
               <img [src]="event.teams[1].logo">
-              <span class="record r">{{event.teams[1].record ? event.teams[1].record : '0-0'}}</span>
+              <ion-badge color="light" class="record r">{{event.teams[1].record ? event.teams[1].record : '0-0'}}
+              </ion-badge>
             </ion-thumbnail>
           </ion-item>
           <ion-item-options side="end">
-            <ion-item-option>
-              <ion-icon slot="icon-only" name="eye"></ion-icon>
+            <ion-item-option (click)="makeVisible(event.id)">
+              <ion-icon slot="icon-only" [name]="picks.get(event.id)?.visible?'eye-off':'eye'"></ion-icon>
             </ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
       </ion-item-group>
-      <!-- <ion-grid>
-        <ion-row *ngFor="let events of date.value">
-          <h5>{{events.shortName}}</h5>
-          <ion-col *ngFor="let team of events.teams; index as i" size="6">
-            <ion-card [ngClass]="{'selected': team.selected}"
-              (click)="team.selected=!team.selected; i%2===0 ? events.teams[i+1].selected=false:events.teams[i-1].selected=false">
-              <ion-thumbnail><img [src]="team.logo"></ion-thumbnail>
-              <ion-label>{{team.abbr}} <span class="rank">- #{{team.rank}}</span></ion-label>
-              <p>{{team.name}}</p>
-              <h1 class="score">{{team.score}}</h1>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid> -->
-
     </ng-container>
   </ion-list>
   <ion-list *ngIf="loading">

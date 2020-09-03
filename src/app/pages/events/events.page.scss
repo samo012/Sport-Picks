@@ -10,7 +10,9 @@ ion-content ion-toolbar {
   font-size: larger;
 }
 .rank {
+  font-size: 10px;
   position: absolute;
+  top: 5px;
 }
 ion-label ion-skeleton-text {
   margin: auto;
@@ -19,9 +21,6 @@ ion-label ion-skeleton-text {
   font-size: 10px;
   position: absolute;
   bottom: 5px;
-  background: #1c1c1c;
-  border-radius: 5px;
-  padding: 2px;
 }
 .l {
   left: 67px;

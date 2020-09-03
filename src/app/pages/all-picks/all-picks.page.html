@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>League Picks</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-select [(ngModel)]="selectedLeague" (ionChange)="getPicks()" [interfaceOptions]="{header:'Select a League'}">
+      <ion-select-option *ngFor="let l of leagues" [value]="l">{{l.name}}</ion-select-option>
+    </ion-select>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content scrollX>
+  <table *ngIf="!loading">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Game</th>
+        <th *ngFor="let u of users">{{u.username}}</th>
+      </tr>
+    </thead>
+    <ng-container *ngFor="let e of events; index as i">
+      <tr *ngIf="events[i]?.date.slice(8,10)==events[i+1]?.date.slice(8,10);else newDay">
+        <td>{{e.date | date:'shortTime'}}</td>
+        <td>{{e.shortName}}</td>
+        <td *ngFor="let u of users">{{picks.get(u.uid)?.get(e.id)}}</td>
+      </tr>
+      <ng-template #newDay>
+        <tr>
+          <td class="newDay" colspan="100">{{e.date | date:'EEEE, MMM d'}}</td>
+        </tr>
+      </ng-template>
+    </ng-container>
+  </table>
+  <ng-container *ngIf="loading">
+    <ion-skeleton-text animated style="height:28px;width: 100%" *ngFor="let x of [].constructor(20)">
+    </ion-skeleton-text>
+  </ng-container>
+</ion-content>

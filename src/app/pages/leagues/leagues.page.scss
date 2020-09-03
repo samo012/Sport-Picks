@@ -1,9 +1,12 @@
 ion-content ion-toolbar {
   --background: translucent;
 }
+#toolbar {
+  display: flex;
+  justify-content: space-around;
+}
 .league {
   display: flex;
-  -webkit-box-pack: space-evenly;
   align-items: center;
   text-align: center;
   flex-direction: column;
@@ -13,8 +16,9 @@ ion-content ion-toolbar {
   width: 50%;
   margin: 16px 0;
 }
-ion-note {
-  color: white;
+ion-card-subtitle {
+  position: absolute;
+  top: 16px;
 }
 ion-select {
   width: 100%;

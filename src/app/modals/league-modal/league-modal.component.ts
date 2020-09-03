@@ -29,7 +29,6 @@ export class LeagueModalComponent implements OnInit {
   ngOnInit() {
     this.as.getUser().then((user) => {
       this.currUser = user;
-      console.log("this.state: ", this.state);
       if (this.state === 2) this.getPublicLeagues();
       if (this.state === 3) this.getLeague();
     });
@@ -43,7 +42,7 @@ export class LeagueModalComponent implements OnInit {
       .subscribe((league) => (this.model = league));
   }
   getPublicLeagues() {
-    this.ls.leagues.subscribe((leagues) => {
+    this.ls.getPublicLeagues().subscribe((leagues) => {
       if (leagues)
         this.leagues = leagues.filter((l) => l.creator !== this.currUser.uid);
     });

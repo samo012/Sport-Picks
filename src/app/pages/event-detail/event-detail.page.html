@@ -19,13 +19,9 @@
           <p class="record">{{event.teams[0].record}}</p>
         </ion-col>
         <ion-col class="align-center">
-          <ng-container *ngIf="event.status!='TBA'">
-            {{event.date | date:'EEE, MMM d'}}
-            <p class="record">{{event.date | date: 'h:mm a'}}</p>
-          </ng-container>
-          <ng-container *ngIf="event.status=='TBA'">{{event.date | date:'EEE, MMM d'}}
-            <p class="record">TBA</p>
-          </ng-container>
+          {{event.date | date:'EEE, MMM d'}}
+          <p class="record" *ngIf="event.status!='TBA'">{{event.date | date: 'h:mm a'}}</p>
+          <p class="record" *ngIf="event.status | notNumber">{{event.status}}</p>
         </ion-col>
         <ion-col class="align-center">
           <ion-thumbnail>
@@ -46,10 +42,53 @@
     </ion-segment>
     <div *ngIf="segment=='stats'">
       <ng-container *ngIf="started; else notStarted">
-        {{event.competitions|json}}
+        <ion-grid class="ion-margin-vertical">
+          <ion-row>
+            <ion-col class="align-center">
+              <h1>{{event.teams[0].score}}</h1>
+            </ion-col>
+            <ion-col class="align-center" *ngIf="event.period!=0">
+              <ng-container *ngIf="event.status=='Final'||event.status=='Final/OT'; else current">
+                <h2>{{event.status}}</h2>
+              </ng-container>
+              <ng-template #current>
+                <h2>Period: {{event.period}}</h2>
+                <h2>{{event.clock}}</h2>
+              </ng-template>
+            </ion-col>
+            <ion-col class="align-center">
+              <h1>{{event.teams[1].score}}</h1>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-card *ngFor="let item of event.headlines" [href]="item.video[0]?.links?.mobile?.href">
+          <ion-card-header>
+            <ion-card-title>{{item.shortLinkText}}</ion-card-title>
+          </ion-card-header>
+          <div class="text-center w-100">
+            <img [src]="item.video[0]?.thumbnail" />
+          </div>
+          <ion-card-content>
+            {{item.description}}
+          </ion-card-content>
+        </ion-card>
+        <ion-list *ngIf="event.leaders">
+          <ion-list-header>
+            <ion-label>Leaders</ion-label>
+          </ion-list-header>
+          <ion-item *ngFor="let item of event.leaders">
+            <ion-label>
+              <h2>{{item.leaders[0]?.athlete.displayName}}</h2>
+              <p>{{item.displayName}}</p>
+            </ion-label>
+            <ion-note>
+              {{item.leaders[0]?.value}} YDS
+            </ion-note>
+          </ion-item>
+        </ion-list>
       </ng-container>
       <ng-template #notStarted>
-        <h5 class="ion-margin ion-padding-top text-center">Game starts in {{gameStart}}</h5>
+        <h5 class="ion-margin ion-padding-top text-center">{{gameStart}}</h5>
       </ng-template>
     </div>
     <ion-grid *ngIf="segment=='picks'">

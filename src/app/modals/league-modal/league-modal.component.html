@@ -46,6 +46,18 @@
         <p class="error" *ngIf="dName.touched&&dName.invalid">Display Name is required</p>
       </ion-item>
       <ion-item>
+        <ion-label position="stacked">Sport</ion-label>
+        <ion-select placeholder="College Football" [(ngModel)]="model.sport" name="sport" required #sprt="ngModel">
+          <ion-select-option value="NFL">NFL</ion-select-option>
+          <ion-select-option value="NBA">NBA</ion-select-option>
+          <ion-select-option value="NHL">NHL</ion-select-option>
+          <ion-select-option value="MLB">MLB</ion-select-option>
+          <ion-select-option value="NCAAF">NCAAF</ion-select-option>
+          <ion-select-option value="NCAAB">NCAAB</ion-select-option>
+        </ion-select>
+        <p class="error" *ngIf="sprt.touched&&sprt.invalid">Sport is required</p>
+      </ion-item>
+      <ion-item>
         <ion-label position="stacked">Privacy</ion-label>
         <ion-select [(ngModel)]="model.permissions" name="privacy">
           <ion-select-option [value]="0">Public</ion-select-option>
@@ -79,31 +91,31 @@
         </ion-item>
         <ion-item>
           <ion-label>Both Ranked (1-25)</ion-label>
-          <ion-note slot="end">2</ion-note>
+          <ion-note color="primary" slot="end">2</ion-note>
         </ion-item>
         <ion-item>
           <ion-label>Ranked (1-25) to Win vs Unranked</ion-label>
-          <ion-note slot="end">1</ion-note>
+          <ion-note color="primary" slot="end">1</ion-note>
         </ion-item>
         <ion-item>
           <ion-label>Unranked to Win vs Ranked (1-15)</ion-label>
-          <ion-note slot="end">3</ion-note>
+          <ion-note color="primary" slot="end">3</ion-note>
         </ion-item>
         <ion-item>
           <ion-label>Unranked to Win vs Ranked (16-25)</ion-label>
-          <ion-note slot="end">2</ion-note>
+          <ion-note color="primary" slot="end">2</ion-note>
         </ion-item>
         <ion-item>
           <ion-label>New Years 6</ion-label>
-          <ion-note slot="end">3</ion-note>
+          <ion-note color="primary" slot="end">3</ion-note>
         </ion-item>
         <ion-item>
           <ion-label>Conference Championship</ion-label>
-          <ion-note slot="end">3</ion-note>
+          <ion-note color="primary" slot="end">3</ion-note>
         </ion-item>
         <ion-item>
           <ion-label>College Football Playoff</ion-label>
-          <ion-note slot="end">4</ion-note>
+          <ion-note color="primary" slot="end">4</ion-note>
         </ion-item>
       </ion-list>
       <div class="bottom" id="create">

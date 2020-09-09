@@ -1,5 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { EspnService } from "src/app/services/espn.service";
+import { IonContent } from "@ionic/angular";
 
 @Component({
   selector: "app-news",
@@ -7,15 +8,19 @@ import { EspnService } from "src/app/services/espn.service";
   styleUrls: ["./news.page.scss"],
 })
 export class NewsPage implements OnInit {
+  @ViewChild("content") content: IonContent;
   loading = true;
-  constructor(private espn: EspnService) {}
   news = [];
+  sport = "NFL";
+
+  constructor(private espn: EspnService) {}
+
   ngOnInit() {
     this.getNews();
   }
   async getNews() {
-    this.news = await this.espn.getNews();
-    console.log("this.news : ", this.news);
+    this.news = await this.espn.getNews(this.sport);
+    this.content.scrollToTop();
     this.loading = false;
   }
 }

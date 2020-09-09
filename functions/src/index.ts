@@ -7,6 +7,32 @@ import fetch from "node-fetch";
 admin.initializeApp();
 const db = admin.firestore();
 
+export const deleteLeague = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called while authenticated."
+    );
+  }
+  try {
+    const batch = db.batch();
+    const snapshot = await db
+      .collection("leagues")
+      .where("leagueId", "==", data.leagueId)
+      .get();
+    if (snapshot && snapshot.docs) {
+      snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      return { res: "success" };
+    }
+    return { res: "no change" };
+  } catch (err) {
+    throw new functions.https.HttpsError("internal", err);
+  }
+});
+
 export const clearNotifications = functions.https.onCall(
   async (data, context) => {
     if (!context.auth) {
@@ -26,9 +52,10 @@ export const clearNotifications = functions.https.onCall(
         snapshot.docs.forEach((doc) => {
           batch.delete(doc.ref);
         });
-        return batch.commit();
+        await batch.commit();
+        return { res: "success" };
       }
-      return;
+      return { res: "no change" };
     } catch (err) {
       throw new functions.https.HttpsError("internal", err);
     }
@@ -54,19 +81,21 @@ export const updateGames = functions
   .onRun(async (context) => {
     try {
       const games = await getGames();
+      functions.logger.log("games:", games);
       if (games.length > 0) {
         // Filter by conferences
-        const conferences = [1, 4, 8];
-        let eventIDs: string[];
-        const filtered = games.filter((g) =>
-          g.competitions[0].competitors.some(
-            (c: { team: { conferenceId: number } }) =>
-              conferences.includes(c.team.conferenceId)
-          )
-        );
-        if (filtered.length > 0) {
-          eventIDs = filtered.map((g) => g.id);
-        } else return;
+        // const conferences = [1, 4, 8];
+        // let eventIDs: string[];
+        // const filtered = games.filter((g) =>
+        //   g.competitions[0].competitors.some(
+        //     (c: { team: { conferenceId: number } }) =>
+        //       conferences.includes(c.team.conferenceId)
+        //   )
+        // );
+        // if (filtered.length > 0) {
+        //   eventIDs = filtered.map((g) => g.id);
+        // } else return;
+        const eventIDs = games.map((g) => g.id);
 
         const collection = await db
           .collection("leagues")
@@ -84,23 +113,31 @@ export const updateGames = functions
                 )
                 .forEach(
                   (p: { eventId: string; win: boolean; teamId: string }) => {
-                    const game = filtered.find((e) => e.id == p.eventId);
+                    const game = games.find((e) => e.id == p.eventId);
                     const teams = game.competitions[0].competitors;
+                    functions.logger.log("game:", game);
+                    functions.logger.log("teams:", teams);
                     if (teams[0].winner === false || teams[0].winner === true) {
                       if (teams[0].winner) {
-                        p.win = p.teamId === teams[0].id;
-                        if (p.win)
-                          l.points += pointSystem(
-                            teams[0].curatedRank.current,
-                            teams[1].curatedRank.current
-                          );
+                        p.win = p.teamId == teams[0].id;
+                        if (p.win) {
+                          if (l.type == "spread") l.points += 1;
+                          else
+                            l.points += pointSystem(
+                              teams[0].curatedRank.current,
+                              teams[1].curatedRank.current
+                            );
+                        }
                       } else {
-                        p.win = p.teamId === teams[1].id;
-                        if (p.win)
-                          l.points += pointSystem(
-                            teams[1].curatedRank.current,
-                            teams[0].curatedRank.current
-                          );
+                        p.win = p.teamId == teams[1].id;
+                        if (p.win) {
+                          if (l.type == "spread") l.points += 1;
+                          else
+                            l.points += pointSystem(
+                              teams[1].curatedRank.current,
+                              teams[0].curatedRank.current
+                            );
+                        }
                       }
                     }
                   }

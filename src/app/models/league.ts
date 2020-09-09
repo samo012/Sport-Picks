@@ -1,4 +1,4 @@
-import { Pick } from './pick';
+import { Pick } from "./pick";
 
 export class League {
   id: string;
@@ -7,13 +7,14 @@ export class League {
   created: number;
   added: number;
   rank = 1;
-  type = 'straight';
+  type = "straight";
   permissions = 0;
   points = 0;
+  sport: string;
   uid: string;
   username: string;
   creator: string;
   og: boolean;
-  picks: Pick[];
+  picks: Pick[] = [];
   edit?: boolean;
 }

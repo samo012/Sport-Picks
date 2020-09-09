@@ -1,8 +1,9 @@
 <ion-list>
     <ion-item detail (click)="dismissPopover()" routerLink="/home/tabs/leagues/all-picks">All Picks</ion-item>
-    <ion-item detail *ngIf="isAdmin" (click)="dismissPopover('edit')">Edit</ion-item>
     <ion-item detail *ngIf="sl.permissions<2||isAdmin" (click)="dismissPopover('share')">
         Invite
     </ion-item>
+    <ion-item detail *ngIf="isAdmin" (click)="dismissPopover('edit')">Edit</ion-item>
+    <ion-item detail *ngIf="isAdmin" (click)="dismissPopover('delete')">Delete</ion-item>
     <ion-item lines="none" (click)="dismissPopover()">Close</ion-item>
 </ion-list>

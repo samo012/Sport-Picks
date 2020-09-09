@@ -47,7 +47,7 @@ export class AppComponent {
       if (user) {
         this.ls.getUsersLeagues(user.uid).subscribe((leagues) => {
           this.leagues = leagues;
-          if (leagues) this.updatePicks(leagues);
+          // if (leagues) this.updatePicks(leagues);
         });
         this.router.navigate(["home/tabs/leagues"]);
       }
@@ -55,7 +55,7 @@ export class AppComponent {
   }
 
   updatePicks(leagues: League[]) {
-    this.espn.getEvents();
+    // this.espn.getEvents();
     // .then((events) => {
     // leagues.forEach((l) => {
     //   if (l.picks) {

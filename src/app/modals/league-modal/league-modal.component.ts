@@ -49,16 +49,14 @@ export class LeagueModalComponent implements OnInit {
   }
   async submit() {
     if (this.state === 1) {
-      this.model.username = this.currUser.name;
       this.model.uid = this.currUser.uid;
       await this.ls.create(this.model);
-    } else {
-      await this.ls.update(this.model);
-    }
+    } else await this.ls.update(this.model);
+
     this.dismissModal();
   }
   dismissModal() {
-    return this.modalController.dismiss();
+    return this.modalController.dismiss(this.selectedLeague);
   }
 
   setListHeight() {
@@ -76,6 +74,7 @@ export class LeagueModalComponent implements OnInit {
 
   async join() {
     this.selectedLeague.uid = this.currUser.uid;
-    this.ls.join(this.selectedLeague).then(() => this.dismissModal());
+    await this.ls.join(this.selectedLeague);
+    this.dismissModal();
   }
 }

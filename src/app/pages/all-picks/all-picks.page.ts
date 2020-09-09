@@ -48,7 +48,7 @@ export class AllPicksPage implements OnInit {
             this.users.push({ uid: u.uid, username: u.username });
             if (u.picks) {
               u.picks.forEach((p) => {
-                if (p.visible) {
+                if (p.visible || p.win === false || p.win === true) {
                   const map =
                     this.picks.get(u.uid) || new Map<string, string>();
                   this.picks.set(

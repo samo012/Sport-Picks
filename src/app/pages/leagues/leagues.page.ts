@@ -37,38 +37,48 @@ export class LeaguesPage {
       this.leagues = leagues || [];
       this.selectedLeague = this.leagues[0];
       this.firstTime = !this.leagues || this.leagues.length === 0;
-      this.getSubtitle();
       this.getLeagueUsers();
       this.loading = false;
     });
   }
 
   getSubtitle() {
-    const first =
-      this.selectedLeague.type === "spread" ? "Spread - " : "Straight Up - ";
     const second =
+      this.selectedLeague.type === "spread"
+        ? "- Spread - "
+        : "- Straight Up - ";
+    const third =
       this.selectedLeague.permissions === 2
         ? "Admin Invite Only"
         : this.selectedLeague.permissions === 1
         ? "Invite Only"
         : "Public";
-    this.subtitle = first + second;
+    this.subtitle = this.selectedLeague.sport + second + third;
   }
 
   getLeagueUsers() {
-    if (this.selectedLeague)
+    if (this.selectedLeague) {
+      this.getSubtitle();
       this.ls
         .getUsersByLeagueId(this.selectedLeague.leagueId)
         .subscribe((users) => (this.players = users));
+    }
   }
   share() {
     console.log("share: ");
+  }
+  delete() {
+    this.ls.deleteLeague(this.selectedLeague.leagueId);
   }
   async openModal(state: number) {
     const leagueId = this.selectedLeague.id;
     const modal = await this.modalController.create({
       component: LeagueModalComponent,
       componentProps: { state, leagueId },
+    });
+    modal.onDidDismiss().then((props) => {
+      console.log("props: ",props);
+      this.selectedLeague = props.data;
     });
     return await modal.present();
   }
@@ -85,8 +95,8 @@ export class LeaguesPage {
     popover.onWillDismiss().then((props) => {
       if (props.data == "share") this.share();
       else if (props.data == "edit") this.openModal(3);
+      else if (props.data == "delete") this.delete();
     });
-
     return await popover.present();
   }
 }

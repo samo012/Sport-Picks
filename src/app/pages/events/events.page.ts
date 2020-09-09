@@ -6,14 +6,14 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { LeagueService } from "src/app/services/league.service";
 import { League } from "src/app/models/league";
 import { AuthService } from "src/app/services/auth.service";
-import { AlertController } from "@ionic/angular";
+import { AlertController, IonItemSliding } from "@ionic/angular";
 
 @Component({
   selector: "app-events",
   templateUrl: "events.page.html",
   styleUrls: ["events.page.scss"],
 })
-export class EventsPage implements OnInit {
+export class EventsPage {
   loading = true;
   editMode = false;
   dateEvents = [];
@@ -21,7 +21,7 @@ export class EventsPage implements OnInit {
   leagues: League[] = [];
   selectedLeague: League;
   picks = new Map<string, { teamId: string; visible: boolean }>();
-  weeks = new Map<string, string>();
+  weeks = new Map<string, { start: string; end: string }>();
 
   constructor(
     private as: AuthService,
@@ -32,25 +32,31 @@ export class EventsPage implements OnInit {
     private ac: AlertController
   ) {}
 
-  ngOnInit() {
-    this.getEvents(false).then(() => this.getRankings());
+  ionViewWillEnter() {
     this.getLeagues();
   }
+  ionViewWillLeave() {
+    // this.selectedLeague = undefined;
+  }
 
-  getLeagues(l?: League) {
-    this.ls.getUsersLeagues(this.as.getUserId).subscribe((leagues) => {
-      if (leagues) {
-        this.leagues = leagues;
-        this.selectedLeague = l ? l : leagues[0];
-        if (this.selectedLeague.picks)
-          this.picks = new Map(
-            this.selectedLeague.picks.map((i) => [
-              i.eventId,
-              { teamId: i.teamId, visible: i.visible },
-            ])
-          );
+  async getLeagues() {
+    const leagues = await this.ls.getUsersLeaguesOnce(this.as.getUserId);
+    if (leagues && leagues.length > 0) {
+      if (localStorage.getItem("firstTime")) {
+        this.presentAlert(
+          "Welcome to Fantasy Pick'ems",
+          "Click on a team's logo to make your pick. Slide the item to make your pick visible to your league members. Your pick will lock in at game start and remain visible."
+        );
+        localStorage.removeItem("firstTime");
       }
-    });
+      this.leagues = leagues;
+      if (!this.selectedLeague) this.selectedLeague = leagues[0];
+      this.getEvents(false);
+    } else
+      this.presentAlert(
+        "No League",
+        "Either create or join a league to start making your picks"
+      );
   }
 
   viewEvent(event: SportsEvent) {
@@ -63,44 +69,41 @@ export class EventsPage implements OnInit {
   doRefresh(event) {
     this.getEvents(true)
       .catch((err) => console.log("err: ", err))
-      .finally(() => event.target.complete())
-      .then(() => this.getRankings());
+      .finally(() => event.target.complete());
   }
 
   async getEvents(fetch: boolean) {
+    this.picks = this.selectedLeague.picks
+      ? new Map(
+          this.selectedLeague.picks.map((i) => [
+            i.eventId,
+            { teamId: i.teamId, visible: i.visible || false },
+          ])
+        )
+      : new Map();
     let events: SportsEvent[] = [];
+    this.dateEvents = [];
+    this.ogDateEvents = [];
     if (fetch || this.espn.events.value.length === 0) {
+      console.log("this.espn.events.value: ",this.espn.events.value);
+      console.log("fetch: ",fetch);
       this.loading = true;
-      events = await this.espn.getEvents();
+      events = await this.espn.getEvents(this.selectedLeague.sport);
     } else events = this.espn.events.value;
     this.weeks = this.espn.weeks;
-    events.forEach((ev) => {
-      const sliceTime = ev.date.slice(0, 10);
-      if (!this.dateEvents[sliceTime]) {
-        this.dateEvents[sliceTime] = [];
-        this.ogDateEvents[sliceTime] = [];
-      }
-      if (this.dateEvents[sliceTime].findIndex((f) => f.id === ev.id) < 0) {
-        this.dateEvents[sliceTime].push(ev);
-        this.ogDateEvents[sliceTime].push(ev);
-      }
-    });
-    this.loading = false;
-    console.log("this.dateEvents: ", this.dateEvents);
-  }
-
-  async getRankings() {
-    let ranks = await this.espn.getRankings();
-    Object.keys(this.dateEvents).forEach((date) => {
-      this.dateEvents[date].forEach((event: SportsEvent) => {
-        const first = ranks.get(event.teams[0].id);
-        const second = ranks.get(event.teams[1].id);
-        event.teams[0].record = first ? first.record : null;
-        event.teams[0].rank = first ? first.rank : null;
-        event.teams[1].record = second ? second.record : null;
-        event.teams[1].rank = second ? second.rank : null;
+    if (events)
+      events.forEach((ev) => {
+        const sliceTime = ev.date.slice(0, 10);
+        if (!this.dateEvents[sliceTime]) {
+          this.dateEvents[sliceTime] = [];
+          this.ogDateEvents[sliceTime] = [];
+        }
+        if (this.dateEvents[sliceTime].findIndex((f) => f.id === ev.id) < 0) {
+          this.dateEvents[sliceTime].push(ev);
+          this.ogDateEvents[sliceTime].push(ev);
+        }
       });
-    });
+    this.loading = false;
   }
 
   async presentAlert(header: string, msg: string) {
@@ -112,7 +115,8 @@ export class EventsPage implements OnInit {
     await alert.present();
   }
 
-  makeVisible(eventId: string) {
+  makeVisible(eventId: string, slider: IonItemSliding) {
+    slider.close();
     this.editMode = true;
     let pick = this.picks.get(eventId);
     if (pick.visible === undefined) pick.visible = false;
@@ -148,7 +152,7 @@ export class EventsPage implements OnInit {
 
   async cancel() {
     this.editMode = false;
-    this.getLeagues(this.selectedLeague);
+    this.getLeagues();
   }
 
   filterConf(event) {
@@ -172,18 +176,27 @@ export class EventsPage implements OnInit {
       this.dateEvents = this.ogDateEvents;
       return;
     }
-    console.log("val: ",val);
-    console.log(",this.espn.weeks: ", this.weeks);
-
     Object.keys(this.ogDateEvents).forEach((date) => {
-      console.log("this.espn.weeks.get(val): ", this.weeks.get(val));
-      console.log("date: ",date);
-      const inWeek = moment(date).isBefore(this.weeks.get(val));
-      console.log("inWeek: ", inWeek);
+      const range = this.weeks.get(val);
+      const inWeek = moment(date).isBetween(range.start, range.end);
       if (inWeek) this.dateEvents[date] = this.ogDateEvents[date];
       else delete this.dateEvents[date];
     });
   }
+
+  // async getRankings() {
+  //   const ranks = await this.espn.getRankings();
+  //   Object.keys(this.dateEvents).forEach((date) => {
+  //     this.dateEvents[date].forEach((event: SportsEvent) => {
+  //       const first = ranks.get(event.teams[0].id);
+  //       const second = ranks.get(event.teams[1].id);
+  //       event.teams[0].record = first ? first.record : null;
+  //       event.teams[0].rank = first ? first.rank : null;
+  //       event.teams[1].record = second ? second.record : null;
+  //       event.teams[1].rank = second ? second.rank : null;
+  //     });
+  //   });
+  // }
 
   // logScrolling(event) {
   //   if (!this.dates[this.index]) return;

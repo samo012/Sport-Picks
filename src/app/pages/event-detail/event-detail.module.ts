@@ -6,6 +6,7 @@ import { IonicModule } from "@ionic/angular";
 
 import { EventDetailPage } from "./event-detail.page";
 import { RouterModule } from "@angular/router";
+import { NotNumberPipe } from "src/app/pipes/not-number.pipe";
 
 @NgModule({
   imports: [
@@ -14,6 +15,6 @@ import { RouterModule } from "@angular/router";
     IonicModule,
     RouterModule.forChild([{ path: "", component: EventDetailPage }]),
   ],
-  declarations: [EventDetailPage],
+  declarations: [EventDetailPage, NotNumberPipe],
 })
 export class EventDetailPageModule {}

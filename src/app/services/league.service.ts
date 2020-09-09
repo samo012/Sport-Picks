@@ -8,6 +8,7 @@ import { Observable } from "rxjs";
 import { User } from "../models/user";
 import { NotificationService } from "./notification.service";
 import { Notification } from "../models/notification";
+import { AngularFireFunctions } from "@angular/fire/functions";
 
 @Injectable({
   providedIn: "root",
@@ -15,7 +16,8 @@ import { Notification } from "../models/notification";
 export class LeagueService {
   constructor(
     private readonly afs: AngularFirestore,
-    private ns: NotificationService
+    private ns: NotificationService,
+    private functions: AngularFireFunctions
   ) {}
 
   getPublicLeagues() {
@@ -38,7 +40,7 @@ export class LeagueService {
     return this.afs.collection("leagues").doc<League>(id).valueChanges();
   }
 
-  async create(l: League) {
+  create(l: League) {
     l.creator = l.uid;
     l.og = true;
     l.created = Date.now();
@@ -49,11 +51,10 @@ export class LeagueService {
       l.name.length > 5
         ? l.name.replace(/[^A-Z0-9]/gi, "").slice(0, 5) + l.id.slice(0, 5)
         : l.name.replace(/[^A-Z0-9]/gi, "") + l.id.slice(0, 5);
-    await this.afs
+    return this.afs
       .collection("leagues")
       .doc<League>(l.id)
       .set(this.sanitize(l));
-    return l.id;
   }
 
   update(l: League) {
@@ -76,6 +77,11 @@ export class LeagueService {
   delete(id: string) {
     return this.afs.collection("leagues").doc<League>(id).delete();
   }
+  deleteLeague(leagueId: string) {
+    return this.functions
+      .httpsCallable("deleteLeague")({ leagueId })
+      .toPromise();
+  }
   sanitize(l: League) {
     return Object.assign({}, l);
   }
@@ -83,6 +89,13 @@ export class LeagueService {
     return this.afs
       .collection<League>("leagues", (ref) => ref.where("uid", "==", uid))
       .valueChanges();
+  }
+  async getUsersLeaguesOnce(uid: string) {
+    const data = await this.afs
+      .collection<League>("leagues", (ref) => ref.where("uid", "==", uid))
+      .get()
+      .toPromise();
+    return data.docs.map((d) => d.data() as League);
   }
   getOwnersLeagues(uid: string) {
     return this.afs

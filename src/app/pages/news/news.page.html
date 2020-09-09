@@ -8,12 +8,23 @@
       <ion-icon class="ns" name="notifications" routerLink="notifications" size="default" color="primary"></ion-icon>
     </ion-buttons>
   </ion-toolbar>
+  <ion-item>
+    <ion-label>Sport</ion-label>
+    <ion-select [(ngModel)]="sport" name="sprt" (ionChange)="getNews()">
+      <ion-select-option value="NFL">NFL</ion-select-option>
+      <ion-select-option value="NBA">NBA</ion-select-option>
+      <ion-select-option value="NHL">NHL</ion-select-option>
+      <ion-select-option value="MLB">MLB</ion-select-option>
+      <ion-select-option value="NCAAF">NCAAF</ion-select-option>
+      <ion-select-option value="NCAAB">NCAAB</ion-select-option>
+    </ion-select>
+  </ion-item>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" #content>
   <ion-card *ngFor="let item of news" [href]="item.links.mobile?.href">
     <ion-card-header>
-      <ion-card-subtitle>NCAA Football</ion-card-subtitle>
+      <ion-card-subtitle>{{sport}}</ion-card-subtitle>
       <ion-card-title>{{item.headline}}</ion-card-title>
     </ion-card-header>
     <div class="text-center w-100">

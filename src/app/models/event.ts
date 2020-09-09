@@ -7,6 +7,12 @@ export class SportsEvent {
   date: string;
   venue: string;
   visible: boolean;
+  headlines: {
+    description: string;
+    shortLinkText: string;
+    video: any[];
+  }[];
+  leaders: { displayName: string; leaders: any[] }[];
   status: string;
   clock: string;
   period: number;

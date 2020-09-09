@@ -30,6 +30,7 @@ export class EventDetailPage implements OnInit {
       const state = this.router.getCurrentNavigation().extras.state;
       if (state) {
         this.event = state.event;
+        console.log(" this.event: ", this.event);
         this.firstId = this.event.teams[0].id;
         this.league = state.selectedLeague;
         this.getDate();
@@ -38,35 +39,42 @@ export class EventDetailPage implements OnInit {
       } else this.router.navigate(["/tabs/events"]);
     });
   }
-  segmentChanged(event) {
-    console.log("event: ", event.target.value);
-  }
+
   getDate() {
-    let daysfromNow = moment().diff(this.event.date, "days");
-    if (daysfromNow > 0) {
+    if (this.event.status == "Postponed") {
+      this.started = false;
+      this.gameStart = "Game Postponed";
+    } else if (
+      this.event.status == "Final" ||
+      moment().isAfter(this.event.date)
+    ) {
       this.started = true;
     } else {
       this.started = false;
-      daysfromNow = Math.abs(daysfromNow);
+      const daysfromNow = Math.abs(moment().diff(this.event.date, "days"));
       this.gameStart =
         daysfromNow > 10
-          ? daysfromNow + " days"
-          : moment(this.event.date).calendar();
+          ? "Game starts in" + daysfromNow + " days"
+          : "Game starts " + moment(this.event.date).calendar();
     }
   }
   getTeamsInfo() {
-    this.espn.getTeamInfo(this.event.teams[0].id).then((info) => {
-      this.event.teams[0].record = info.record;
-      this.event.teams[0].standingSummary = info.summary;
-      this.event.teams[0].stats = info.stats;
-      this.event.teams[0].rank = info.rank;
-    });
-    this.espn.getTeamInfo(this.event.teams[1].id).then((info) => {
-      this.event.teams[1].record = info.record;
-      this.event.teams[1].standingSummary = info.summary;
-      this.event.teams[1].stats = info.stats;
-      this.event.teams[1].rank = info.rank;
-    });
+    this.espn
+      .getTeamInfo(this.league.sport, this.event.teams[0].id)
+      .then((info) => {
+        this.event.teams[0].record = info.record;
+        this.event.teams[0].standingSummary = info.summary;
+        // this.event.teams[0].stats = info.stats;
+        this.event.teams[0].rank = info.rank;
+      });
+    this.espn
+      .getTeamInfo(this.league.sport, this.event.teams[1].id)
+      .then((info) => {
+        this.event.teams[1].record = info.record;
+        this.event.teams[1].standingSummary = info.summary;
+        // this.event.teams[1].stats = info.stats;
+        this.event.teams[1].rank = info.rank;
+      });
     console.log("this.event.teams: ", this.event.teams);
   }
   getPicks() {
@@ -77,7 +85,7 @@ export class EventDetailPage implements OnInit {
         users.forEach((user) => {
           if (user.picks) {
             const found = user.picks.find((p) => p.eventId == this.event.id);
-            if (found && found.visible) {
+            if ((found && found.visible) || (found && this.started)) {
               if (found.teamId == this.firstId) this.first.push(user);
               else this.second.push(user);
             }

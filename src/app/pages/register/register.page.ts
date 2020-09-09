@@ -25,6 +25,7 @@ export class RegisterPage implements OnInit {
     try {
       console.log(this.model);
       await this.as.registerUser(this.model, this.socialRegister);
+      localStorage.setItem("firstTime", "true");
       this.router.navigate(["home/tabs/leagues"]);
     } catch (e) {
       this.presentAlert(e);

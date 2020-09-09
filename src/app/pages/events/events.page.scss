@@ -1,6 +1,11 @@
 ion-content ion-toolbar {
   --background: translucent;
 }
+.winner {
+  background-color: lightgreen !important;
+  border-radius: 5px;
+  padding: 0.3rem;
+}
 .selected {
   background-color: #5598df;
   border-radius: 5px;
@@ -23,7 +28,7 @@ ion-label ion-skeleton-text {
   bottom: 5px;
 }
 .l {
-  left: 67px;
+  left: 51px;
 }
 .r {
   right: 12px;

@@ -20,6 +20,8 @@ export class LeagueModalComponent implements OnInit {
   currUser: User;
   isPrivate = false;
   onlyAdmin = true;
+  username: string;
+
   constructor(
     private as: AuthService,
     public modalController: ModalController,
@@ -73,6 +75,7 @@ export class LeagueModalComponent implements OnInit {
   }
 
   async join() {
+    this.selectedLeague.username = this.username;
     this.selectedLeague.uid = this.currUser.uid;
     await this.ls.join(this.selectedLeague);
     this.dismissModal();

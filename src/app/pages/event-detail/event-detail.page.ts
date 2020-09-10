@@ -82,7 +82,14 @@ export class EventDetailPage implements OnInit {
       this.first = [];
       this.second = [];
       if (users) {
-        users.forEach((user) => {
+        var rank = 1;
+        for (let index = 0; index < users.length; index++) {
+          const user = users[index];
+          if (index === 0) user.rank = 1;
+          else if (user.points !== users[index - 1].points) {
+            rank = rank + 1;
+            user.rank = rank;
+          } else user.rank = rank;
           if (user.picks) {
             const found = user.picks.find((p) => p.eventId == this.event.id);
             if ((found && found.visible) || (found && this.started)) {
@@ -90,7 +97,7 @@ export class EventDetailPage implements OnInit {
               else this.second.push(user);
             }
           }
-        });
+        }
       }
       console.log("this.first: ", this.first);
       console.log("this.second: ", this.second);

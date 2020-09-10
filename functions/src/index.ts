@@ -7,6 +7,36 @@ import fetch from "node-fetch";
 admin.initializeApp();
 const db = admin.firestore();
 
+export const editLeague = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called while authenticated."
+    );
+  }
+  try {
+    const batch = db.batch();
+    const snapshot = await db
+      .collection("leagues")
+      .where("leagueId", "==", data.leagueId)
+      .get();
+    if (snapshot && snapshot.docs) {
+      snapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, {
+          name: data.name,
+          permissions: data.permissions,
+          type: data.type,
+        });
+      });
+      await batch.commit();
+      return { res: "success" };
+    }
+    return { res: "no change" };
+  } catch (err) {
+    throw new functions.https.HttpsError("internal", err);
+  }
+});
+
 export const deleteLeague = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(
@@ -121,7 +151,11 @@ export const updateGames = functions
                       if (teams[0].winner) {
                         p.win = p.teamId == teams[0].id;
                         if (p.win) {
-                          if (l.type == "spread") l.points += 1;
+                          if (
+                            l.type === "spread" ||
+                            (l.sport !== "NCAAF" && l.sport !== undefined)
+                          )
+                            l.points += 1;
                           else
                             l.points += pointSystem(
                               teams[0].curatedRank.current,
@@ -131,7 +165,11 @@ export const updateGames = functions
                       } else {
                         p.win = p.teamId == teams[1].id;
                         if (p.win) {
-                          if (l.type == "spread") l.points += 1;
+                          if (
+                            l.type == "spread" ||
+                            (l.sport !== "NCAAF" && l.sport !== undefined)
+                          )
+                            l.points += 1;
                           else
                             l.points += pointSystem(
                               teams[1].curatedRank.current,

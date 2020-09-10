@@ -1,4 +1,4 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
@@ -25,7 +25,9 @@
       <tr *ngIf="events[i]?.date.slice(8,10)==events[i+1]?.date.slice(8,10);else newDay">
         <td>{{e.date | date:'shortTime'}}</td>
         <td>{{e.shortName}}</td>
-        <td *ngFor="let u of users">{{picks.get(u.uid)?.get(e.id)}}</td>
+        <td *ngFor="let u of users">
+          <ng-container *ngIf="picks.get(u.uid)?.get(e.id) as pick">{{pick.teamName}}{{pick.winner}}</ng-container>
+        </td>
       </tr>
       <ng-template #newDay>
         <tr>
@@ -38,4 +40,4 @@
     <ion-skeleton-text animated style="height:28px;width: 100%" *ngFor="let x of [].constructor(20)">
     </ion-skeleton-text>
   </ng-container>
-</ion-content>
+</ion-content> -->

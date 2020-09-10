@@ -1,6 +1,9 @@
 import { NgModule } from "@angular/core";
-import { BrowserModule } from "@angular/platform-browser";
-import { CommonModule } from "@angular/common";
+import {
+  BrowserModule,
+  HAMMER_GESTURE_CONFIG,
+  HammerGestureConfig,
+} from "@angular/platform-browser";
 import { RouteReuseStrategy } from "@angular/router";
 
 import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
@@ -22,6 +25,12 @@ import { AuthGuard } from "./services/auth.guard";
 import { LeagueModalComponent } from "./modals/league-modal/league-modal.component";
 import { FormsModule } from "@angular/forms";
 import { AngularFireFunctionsModule, ORIGIN } from "@angular/fire/functions";
+
+export class CustomHammerConfig extends HammerGestureConfig {
+  overrides = {
+    swipe: { direction: Hammer.DIRECTION_ALL },
+  };
+}
 
 @NgModule({
   declarations: [AppComponent, LeagueModalComponent],
@@ -48,7 +57,9 @@ import { AngularFireFunctionsModule, ORIGIN } from "@angular/fire/functions";
     SignInWithApple,
     { provide: ORIGIN, useValue: "https://pick-ems.web.app" },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: HAMMER_GESTURE_CONFIG, useClass: CustomHammerConfig },
   ],
   bootstrap: [AppComponent],
+  exports: [],
 })
 export class AppModule {}

@@ -45,7 +45,6 @@ export class LeagueService {
     l.og = true;
     l.created = Date.now();
     l.added = Date.now();
-    l.rank = 1;
     l.id = this.afs.createId();
     l.leagueId =
       l.name.length > 5
@@ -58,10 +57,7 @@ export class LeagueService {
   }
 
   update(l: League) {
-    return this.afs
-      .collection("leagues")
-      .doc<League>(l.id)
-      .update(this.sanitize(l));
+    return this.functions.httpsCallable("editLeague")({ l }).toPromise();
   }
 
   async updateAdmin(oldID: string, newID: string, uid: string) {
@@ -112,7 +108,7 @@ export class LeagueService {
   getUsersByLeagueId(leagueId: string) {
     return this.afs
       .collection<League>("leagues", (ref) =>
-        ref.where("leagueId", "==", leagueId).orderBy("rank")
+        ref.where("leagueId", "==", leagueId).orderBy("points", "desc")
       )
       .valueChanges();
   }

@@ -25,25 +25,26 @@ export class EspnService {
 
   constructor(private httpClient: HttpClient) {}
 
-  weeks = new Map<string, { start: string; end: string }>();
-
-  async getEvents(sport: string): Promise<SportsEvent[]> {
+  async getEvents(
+    sport: string,
+    startDate?: string,
+    endDate?: string
+  ): Promise<SportsEvent[]> {
     let params = {
-      dates: "2020" + moment().format("MM"),
       limit: "900",
     };
+    if (startDate && endDate)
+      params["dates"] =
+        moment(startDate).format("YYYYMMDD") +
+        "-" +
+        moment(endDate).format("YYYYMMDD");
+    else params["dates"] = "2020" + moment().format("MM");
     if (!sport || sport === "NCAAF") params["groups"] = "80";
     // const conferences = ["1", "4", "8"];
     const url = this.base + this.sports[sport] + "scoreboard";
     const events = await this.httpClient
       .get<any>(url, { params: params })
       .pipe(
-        tap((data) => {
-          if (data.leagues[0].calendar[0].entries)
-            data.leagues[0].calendar[0].entries.forEach((e) =>
-              this.weeks.set(e.value, { start: e.startDate, end: e.endDate })
-            );
-        }),
         map((data) =>
           (data.events as SportsEvent[]).map((ev) => {
             return {

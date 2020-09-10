@@ -45,15 +45,15 @@ export class LeaguesPage {
   getSubtitle() {
     const second =
       this.selectedLeague.type === "spread"
-        ? "- Spread - "
-        : "- Straight Up - ";
+        ? " - Spread - "
+        : " - Straight Up - ";
     const third =
       this.selectedLeague.permissions === 2
         ? "Admin Invite Only"
         : this.selectedLeague.permissions === 1
         ? "Invite Only"
         : "Public";
-    this.subtitle = this.selectedLeague.sport + second + third;
+    this.subtitle = this.selectedLeague.sport || "NCAAF" + second + third;
   }
 
   getLeagueUsers() {
@@ -61,7 +61,20 @@ export class LeaguesPage {
       this.getSubtitle();
       this.ls
         .getUsersByLeagueId(this.selectedLeague.leagueId)
-        .subscribe((users) => (this.players = users));
+        .subscribe((users) => {
+          var rank = 1;
+          if (users) {
+            for (let index = 0; index < users.length; index++) {
+              const user = users[index];
+              if (index === 0) user.rank = 1;
+              else if (user.points !== users[index - 1].points) {
+                rank = rank + 1;
+                user.rank = rank;
+              } else user.rank = rank;
+            }
+            this.players = users;
+          } else this.players = [];
+        });
     }
   }
   share() {
@@ -71,13 +84,13 @@ export class LeaguesPage {
     this.ls.deleteLeague(this.selectedLeague.leagueId);
   }
   async openModal(state: number) {
-    const leagueId = this.selectedLeague.id;
+    const leagueId = this.selectedLeague ? this.selectedLeague.id : null;
     const modal = await this.modalController.create({
       component: LeagueModalComponent,
       componentProps: { state, leagueId },
     });
     modal.onDidDismiss().then((props) => {
-      console.log("props: ",props);
+      console.log("props: ", props);
       this.selectedLeague = props.data;
     });
     return await modal.present();

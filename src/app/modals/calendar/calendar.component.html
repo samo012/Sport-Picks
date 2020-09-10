@@ -1,0 +1,81 @@
+<div class="text-center">
+  <h5>Select a{{startDate?'n end':' start'}} date</h5>
+  <ion-grid>
+    <ion-row>
+      <ion-col class="tr">
+        <ion-button fill="clear" (click)="back()">
+          <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-slides style="max-width: 140px;" [options]="slideOpts" #dates>
+          <ion-slide *ngFor="let i of [].constructor(50)">
+            <h1>{{calDisplay}}</h1>
+          </ion-slide>
+        </ion-slides>
+      </ion-col>
+      <ion-col class="tl">
+        <ion-button fill="clear" (click)="next()">
+          <ion-icon slot="icon-only" name="arrow-forward"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid class="ion-padding">
+    <ion-row class="ion-nowrap">
+      <ion-col *ngFor="let d of dow">
+        <ion-text color="medium">{{d}}</ion-text>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-nowrap">
+      <ion-col *ngFor="let day of firstRow">
+        <ion-item class="ion-no-margin ion-no-padding" (click)="selectDate(day)"
+          [color]="day==startDate?'primary':day|cal">
+          <ion-label class="ion-no-margin ion-no-padding">{{day | date: 'd'}}
+            <!-- <p class="dot" *ngIf="isBooking(day)"></p> -->
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-nowrap">
+      <ion-col *ngFor="let day of secondRow">
+        <ion-item class="ion-no-margin ion-no-padding" (click)="selectDate(day)"
+          [color]="day==startDate?'primary':day|cal">
+          <ion-label class="ion-no-margin ion-no-padding">{{day | date: 'd'}}
+            <!-- <p class="dot" *ngIf="isBooking(day)"></p> -->
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-nowrap">
+      <ion-col *ngFor="let day of thirdRow">
+        <ion-item class="ion-no-margin ion-no-padding" (click)="selectDate(day)"
+          [color]="day==startDate?'primary':day|cal">
+          <ion-label class="ion-no-margin ion-no-padding">{{day | date: 'd'}}
+            <!-- <p class="dot" *ngIf="isBooking(day)"></p> -->
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-nowrap">
+      <ion-col *ngFor="let day of fourthRow">
+        <ion-item class="ion-no-margin ion-no-padding" (click)="selectDate(day)"
+          [color]="day==startDate?'primary':day|cal">
+          <ion-label class="ion-no-margin ion-no-padding">{{day | date: 'd'}}
+            <!-- <p class="dot" *ngIf="isBooking(day)"></p> -->
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-nowrap">
+      <ion-col *ngFor="let day of fifthRow">
+        <ion-item class="ion-no-margin ion-no-padding" (click)="selectDate(day)"
+          [color]="day==startDate?'primary':day|cal">
+          <ion-label class="ion-no-margin ion-no-padding">{{day | date: 'd'}}
+            <!-- <p class="dot" *ngIf="isBooking(day)"></p> -->
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>

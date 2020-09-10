@@ -1,5 +1,5 @@
 <ion-list>
-    <ion-item detail (click)="dismissPopover()" routerLink="/home/tabs/leagues/all-picks">All Picks</ion-item>
+    <!-- <ion-item detail (click)="dismissPopover()" routerLink="/home/tabs/leagues/all-picks">All Picks</ion-item> -->
     <ion-item detail *ngIf="sl.permissions<2||isAdmin" (click)="dismissPopover('share')">
         Invite
     </ion-item>

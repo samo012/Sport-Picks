@@ -6,7 +6,14 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { LeagueService } from "src/app/services/league.service";
 import { League } from "src/app/models/league";
 import { AuthService } from "src/app/services/auth.service";
-import { AlertController, IonItemSliding } from "@ionic/angular";
+import {
+  AlertController,
+  IonItemSliding,
+  PopoverController,
+} from "@ionic/angular";
+import { CalendarComponent } from "src/app/modals/calendar/calendar.component";
+import { PopEnterAnimation } from "src/app/modals/calendar/pop-enter-animation";
+import { PopLeaveAnimation } from "src/app/modals/calendar/pop-leave-animation";
 
 @Component({
   selector: "app-events",
@@ -21,15 +28,16 @@ export class EventsPage {
   leagues: League[] = [];
   selectedLeague: League;
   picks = new Map<string, { teamId: string; visible: boolean }>();
-  weeks = new Map<string, { start: string; end: string }>();
-
+  startDate: string;
+  endDate: string;
   constructor(
     private as: AuthService,
     private espn: EspnService,
     private router: Router,
     private route: ActivatedRoute,
     private ls: LeagueService,
-    private ac: AlertController
+    private ac: AlertController,
+    public popoverController: PopoverController
   ) {}
 
   ionViewWillEnter() {
@@ -72,7 +80,20 @@ export class EventsPage {
       .finally(() => event.target.complete());
   }
 
-  async getEvents(fetch: boolean) {
+  async openCalendar() {
+    const popover = await this.popoverController.create({
+      component: CalendarComponent,
+      enterAnimation: PopEnterAnimation,
+      leaveAnimation: PopLeaveAnimation,
+    });
+    popover.onDidDismiss().then((data) => {
+      if (data.data && data.data.endDate)
+        this.getEvents(true, data.data.startDate, data.data.endDate);
+    });
+    return await popover.present();
+  }
+
+  async getEvents(fetch: boolean, startDate?: string, endDate?: string) {
     this.picks = this.selectedLeague.picks
       ? new Map(
           this.selectedLeague.picks.map((i) => [
@@ -85,12 +106,16 @@ export class EventsPage {
     this.dateEvents = [];
     this.ogDateEvents = [];
     if (fetch || this.espn.events.value.length === 0) {
-      console.log("this.espn.events.value: ",this.espn.events.value);
-      console.log("fetch: ",fetch);
       this.loading = true;
-      events = await this.espn.getEvents(this.selectedLeague.sport);
+      this.startDate = startDate;
+      this.endDate = endDate;
+      events = await this.espn.getEvents(
+        this.selectedLeague.sport,
+        startDate,
+        endDate
+      );
     } else events = this.espn.events.value;
-    this.weeks = this.espn.weeks;
+
     if (events)
       events.forEach((ev) => {
         const sliceTime = ev.date.slice(0, 10);
@@ -132,9 +157,10 @@ export class EventsPage {
       );
       return;
     }
-    if (moment().isAfter(date)) return;
-    this.editMode = true;
-    this.picks.set(eventId, { teamId, visible: false });
+    if (moment().isBefore(date)) {
+      this.editMode = true;
+      this.picks.set(eventId, { teamId, visible: false });
+    }
   }
 
   save() {
@@ -169,19 +195,24 @@ export class EventsPage {
       else delete this.dateEvents[date];
     });
   }
+  clearDate() {
+    this.startDate = null;
+    this.endDate = null;
+    this.getEvents(true);
+  }
 
   filterWeek(event) {
     const val = event.target.value + "";
-    if (val == "All") {
-      this.dateEvents = this.ogDateEvents;
-      return;
-    }
-    Object.keys(this.ogDateEvents).forEach((date) => {
-      const range = this.weeks.get(val);
-      const inWeek = moment(date).isBetween(range.start, range.end);
-      if (inWeek) this.dateEvents[date] = this.ogDateEvents[date];
-      else delete this.dateEvents[date];
-    });
+    // if (val == "All") {
+    //   this.dateEvents = this.ogDateEvents;
+    //   return;
+    // }
+    // Object.keys(this.ogDateEvents).forEach((date) => {
+    //   const range = this.weeks.get(val);
+    //   const inWeek = moment(date).isBetween(range.start, range.end);
+    //   if (inWeek) this.dateEvents[date] = this.ogDateEvents[date];
+    //   else delete this.dateEvents[date];
+    // });
   }
 
   // async getRankings() {

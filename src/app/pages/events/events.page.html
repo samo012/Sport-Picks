@@ -5,7 +5,8 @@
       <ion-button *ngIf="editMode" (click)="cancel()">Cancel</ion-button>
     </ion-buttons>
     <ion-title>
-      <ion-select [(ngModel)]="selectedLeague" name="leagueSelector" (ionChange)=getEvents(true)>
+      <ion-select [(ngModel)]="selectedLeague" name="leagueSelector" [interfaceOptions]="{header:'Select a League'}"
+        (ionChange)=getEvents(true)>
         <ion-label>Select a League</ion-label>
         <ion-select-option *ngFor="let l of leagues" [value]="l">
           {{l.name}}
@@ -20,20 +21,20 @@
   </ion-toolbar>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-label>Filter Conference</ion-label>
+      <ion-label>Conference</ion-label>
       <ion-select (ionChange)="filterConf($event)" [interfaceOptions]="{header:'Filter By Conference'}">
         <ion-select-option>All</ion-select-option>
         <ion-select-option *ngFor="let conf of conferences | keyvalue" [value]="conf.key">{{conf.key}}
         </ion-select-option>
       </ion-select>
     </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-label>Filter Week</ion-label>
-      <ion-select (ionChange)="filterWeek($event)" [interfaceOptions]="{header:'Filter By Week'}">
-        <ion-select-option>All</ion-select-option>
-        <ion-select-option *ngFor="let x of [].constructor(weeks.size); index as i" [value]="i+1">Week {{i+1}}
-        </ion-select-option>
-      </ion-select>
+    <ion-buttons class="float-right">
+      <ion-button *ngIf="!startDate" color="dark" (click)="openCalendar()">Date Range</ion-button>
+      <ion-chip *ngIf="startDate" (click)="clearDate()">
+        <ion-icon name="calendar" color="primary"></ion-icon>
+        <ion-label>{{startDate}} - {{endDate}}</ion-label>
+        <ion-icon name="close"></ion-icon>
+      </ion-chip>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -58,7 +59,7 @@
           <ion-item lines="full">
             <ion-thumbnail slot="start"
               [ngClass]="{'selected': picks.get(event.id)?.teamId === event.teams[0].id , 'winner': event.teams[0].winner}"
-              (click)="selectTeam(event.id,event.teams[0].id,date.key)">
+              (click)="selectTeam(event.id,event.teams[0].id,event.date)">
               <ion-badge color="light" class="rank l" *ngIf="event.teams[0].rank<99">#{{event.teams[0].rank}}
               </ion-badge>
               <img [src]="event.teams[0].logo">
@@ -76,7 +77,7 @@
             </ion-label>
             <ion-thumbnail slot="end"
               [ngClass]="{'selected': picks.get(event.id)?.teamId === event.teams[1].id, 'winner': event.teams[1].winner}"
-              (click)="selectTeam(event.id,event.teams[1].id,date.key)">
+              (click)="selectTeam(event.id,event.teams[1].id,event.date)">
               <ion-badge color="light" class="rank r" *ngIf="event.teams[1].rank<99">#{{event.teams[1].rank}}
               </ion-badge>
               <img [src]="event.teams[1].logo">

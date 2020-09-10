@@ -6,7 +6,7 @@ export class League {
   name: string;
   created: number;
   added: number;
-  rank = 1;
+  rank: number;
   type = "straight";
   permissions = 0;
   points = 0;

@@ -8,12 +8,20 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/pick-ems/us-central1/editLeague",
+        "function": "editLeague"
+      },
+      {
+        "source": "/pick-ems/us-central1/deleteLeague",
+        "function": "deleteLeague"
       },
       {
         "source": "/pick-ems/us-central1/clearNotifications",
         "function": "clearNotifications"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
       }
     ]
   },

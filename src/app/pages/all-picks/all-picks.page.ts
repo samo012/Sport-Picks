@@ -16,8 +16,11 @@ export class AllPicksPage implements OnInit {
   leagues: League[];
   loading = true;
   events: SportsEvent[] = [];
-  eventNames = new Map<string, string>();
-  picks: Map<string, Map<string, string>> = new Map();
+  eventNames = new Map<string, { teamName: string; winner: boolean }>();
+  picks: Map<
+    string,
+    Map<string, { teamName: string; winner: boolean }>
+  > = new Map();
   users: { uid: string; username: string }[] = [];
 
   constructor(
@@ -48,14 +51,15 @@ export class AllPicksPage implements OnInit {
             this.users.push({ uid: u.uid, username: u.username });
             if (u.picks) {
               u.picks.forEach((p) => {
-                if (p.visible || p.win === false || p.win === true) {
+                // if (p.visible || p.win === false || p.win === true) {
                   const map =
-                    this.picks.get(u.uid) || new Map<string, string>();
+                    this.picks.get(u.uid) ||
+                    new Map<string, { teamName: string; winner: boolean }>();
                   this.picks.set(
                     u.uid,
                     map.set(p.eventId, this.eventNames.get(p.teamId))
                   );
-                }
+                // }
               });
             }
           });
@@ -67,7 +71,10 @@ export class AllPicksPage implements OnInit {
   getEvents() {
     this.events = this.espn.events.value;
     this.events.forEach((e) =>
-      this.eventNames.set(e.teams[0].id, e.teams[0].abbr)
+      this.eventNames.set(e.teams[0].id, {
+        teamName: e.teams[0].abbr,
+        winner: e.teams[0].winner,
+      })
     );
   }
   ngOnInit() {}

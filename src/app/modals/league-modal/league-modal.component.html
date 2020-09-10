@@ -10,8 +10,8 @@
   <ng-container *ngIf="state===2; else notJoin">
     <ion-item class="ion-margin-vertical">
       <ion-label position="stacked">Personal Display Name</ion-label>
-      <ion-input placeholder="Your name within the league" [(ngModel)]="model.username" name="display-name"
-        #dName="ngModel" required>
+      <ion-input placeholder="Your name within the league" [(ngModel)]="username" name="display-name" #dName="ngModel"
+        required>
       </ion-input>
       <p class="error" *ngIf="dName.touched&&dName.invalid">Display Name is required</p>
     </ion-item>
@@ -80,7 +80,13 @@
           <ion-note color="primary" slot="end">1</ion-note>
         </ion-item>
       </ion-list>
-      <ion-list id="small-list" *ngIf="model.type=='straight'">
+      <ion-list *ngIf="model.type=='straight' && model.sport!='NCAAF'">
+        <ion-item>
+          <ion-label>Correct Winner</ion-label>
+          <ion-note color="primary" slot="end">1</ion-note>
+        </ion-item>
+      </ion-list>
+      <ion-list id="small-list" *ngIf="model.type=='straight' && model.sport=='NCAAF'">
         <ion-item>
           <ion-label>Both Unranked</ion-label>
           <ion-note color="primary" slot="end">1</ion-note>

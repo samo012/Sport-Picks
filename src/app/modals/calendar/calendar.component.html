@@ -30,7 +30,7 @@
     <ion-row class="ion-nowrap">
       <ion-col *ngFor="let day of firstRow">
         <ion-item class="ion-no-margin ion-no-padding" (click)="selectDate(day)"
-          [color]="day==startDate?'primary':day|cal">
+          [color]="day==startDate||day==endDate?'primary':day|cal">
           <ion-label class="ion-no-margin ion-no-padding">{{day | date: 'd'}}
             <!-- <p class="dot" *ngIf="isBooking(day)"></p> -->
           </ion-label>
@@ -40,7 +40,7 @@
     <ion-row class="ion-nowrap">
       <ion-col *ngFor="let day of secondRow">
         <ion-item class="ion-no-margin ion-no-padding" (click)="selectDate(day)"
-          [color]="day==startDate?'primary':day|cal">
+          [color]="day==startDate||day==endDate?'primary':day|cal">
           <ion-label class="ion-no-margin ion-no-padding">{{day | date: 'd'}}
             <!-- <p class="dot" *ngIf="isBooking(day)"></p> -->
           </ion-label>
@@ -50,7 +50,7 @@
     <ion-row class="ion-nowrap">
       <ion-col *ngFor="let day of thirdRow">
         <ion-item class="ion-no-margin ion-no-padding" (click)="selectDate(day)"
-          [color]="day==startDate?'primary':day|cal">
+          [color]="day==startDate||day==endDate?'primary':day|cal">
           <ion-label class="ion-no-margin ion-no-padding">{{day | date: 'd'}}
             <!-- <p class="dot" *ngIf="isBooking(day)"></p> -->
           </ion-label>
@@ -60,7 +60,7 @@
     <ion-row class="ion-nowrap">
       <ion-col *ngFor="let day of fourthRow">
         <ion-item class="ion-no-margin ion-no-padding" (click)="selectDate(day)"
-          [color]="day==startDate?'primary':day|cal">
+          [color]="day==startDate||day==endDate?'primary':day|cal">
           <ion-label class="ion-no-margin ion-no-padding">{{day | date: 'd'}}
             <!-- <p class="dot" *ngIf="isBooking(day)"></p> -->
           </ion-label>
@@ -70,7 +70,7 @@
     <ion-row class="ion-nowrap">
       <ion-col *ngFor="let day of fifthRow">
         <ion-item class="ion-no-margin ion-no-padding" (click)="selectDate(day)"
-          [color]="day==startDate?'primary':day|cal">
+          [color]="day==startDate||day==endDate?'primary':day|cal">
           <ion-label class="ion-no-margin ion-no-padding">{{day | date: 'd'}}
             <!-- <p class="dot" *ngIf="isBooking(day)"></p> -->
           </ion-label>

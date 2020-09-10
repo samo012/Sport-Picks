@@ -93,6 +93,15 @@ export class LeagueService {
       .toPromise();
     return data.docs.map((d) => d.data() as League);
   }
+  async getLeagueOnce(leagueId: string) {
+    const data = await this.afs
+      .collection<League>("leagues", (ref) =>
+        ref.where("leagueId", "==", leagueId)
+      )
+      .get()
+      .toPromise();
+    if (data && data.docs[0]) return data.docs[0].data() as League;
+  }
   getOwnersLeagues(uid: string) {
     return this.afs
       .collection<League>("leagues", (ref) =>

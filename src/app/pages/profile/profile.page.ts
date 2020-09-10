@@ -4,6 +4,7 @@ import { User } from "src/app/models/user";
 import { LeagueService } from "src/app/services/league.service";
 import { League } from "src/app/models/league";
 import { IonInput, IonItemSliding } from "@ionic/angular";
+import { ImagePicker } from "@ionic-native/image-picker/ngx";
 
 @Component({
   selector: "app-profile",
@@ -17,7 +18,11 @@ export class ProfilePage {
   isThird = this.as.isThirdParty();
   oldUsername: string;
 
-  constructor(public as: AuthService, private ls: LeagueService) {
+  constructor(
+    public as: AuthService,
+    private ls: LeagueService,
+    private imagePicker: ImagePicker
+  ) {
     this.getUser();
     this.getLeagues();
   }
@@ -48,5 +53,18 @@ export class ProfilePage {
   }
   leave(l: League) {
     return this.ls.delete(l.id);
+  }
+  async openPictures() {
+    const options = {
+      maximumImagesCount: 1,
+      width: 800, //max
+      height: 800, //max
+      disable_popover: true,
+    };
+    const res = await this.imagePicker
+      .getPictures(options)
+      .catch((err) => console.log("err: ", err));
+    this.user.photo = await this.as.uploadImg(res, this.user.uid);
+    this.as.updateUser(this.user);
   }
 }

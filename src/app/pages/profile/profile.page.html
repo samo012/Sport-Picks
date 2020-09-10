@@ -21,7 +21,7 @@
         <!-- <ion-buttons slot="start">
         <ion-back-button></ion-back-button>
       </ion-buttons> -->
-        <ion-buttons slot="end">
+        <ion-buttons slot="end" (click)="openPictures()">
           <ion-avatar id="icon" *ngIf="user.photo; else noPhoto"><img [src]="user.photo"></ion-avatar>
           <ng-template #noPhoto>
             <ion-icon id="icon" slot="icon-only" name="person-circle-outline"></ion-icon>

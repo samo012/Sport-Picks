@@ -58,10 +58,12 @@ export class CalendarComponent implements OnInit {
     this.hm.destroy();
     document.removeEventListener("click", this.eventCallback);
     if (save)
-      return this.popoverController.dismiss({
-        startDate: moment(this.startDate).format("l"),
-        endDate: moment(this.endDate).format("l"),
-      });
+      setTimeout(() => {
+        this.popoverController.dismiss({
+          startDate: moment(this.startDate).format("l"),
+          endDate: moment(this.endDate).format("l"),
+        });
+      }, 800);
     else this.popoverController.dismiss();
   }
   eventCallback(event) {

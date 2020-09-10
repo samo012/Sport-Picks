@@ -6,6 +6,7 @@ import { ModalController, PopoverController } from "@ionic/angular";
 import { LeagueModalComponent } from "src/app/modals/league-modal/league-modal.component";
 import { User } from "src/app/models/user";
 import { EllipsisPopover } from "src/app/modals/ellipsis-popover/ellipsis-popover.component";
+import { SocialSharing } from "@ionic-native/social-sharing/ngx";
 
 @Component({
   selector: "app-leagues",
@@ -20,19 +21,21 @@ export class LeaguesPage {
   players: League[] = [];
   leagues: League[] = [];
   model = new League();
-  uid = this.as.getUserId;
+  user: User;
 
   constructor(
     private ls: LeagueService,
     private as: AuthService,
+    private socialSharing: SocialSharing,
     public modalController: ModalController,
     public popoverController: PopoverController
   ) {
+    this.as.getUser().then((user) => (this.user = user));
     this.getLeagues();
   }
 
   getLeagues() {
-    this.ls.getUsersLeagues(this.uid).subscribe((leagues) => {
+    this.ls.getUsersLeagues(this.user.uid).subscribe((leagues) => {
       console.log("leagues: ", leagues);
       this.leagues = leagues || [];
       this.selectedLeague = this.leagues[0];
@@ -78,7 +81,14 @@ export class LeaguesPage {
     }
   }
   share() {
-    console.log("share: ");
+    const msg =
+      this.user.name +
+      " would like you to join their league, " +
+      this.selectedLeague.name;
+    const subject = "Join My Pick'ems League";
+    const link =
+      "https://pick-ems.web.app/join/" + this.selectedLeague.leagueId;
+    return this.socialSharing.share(msg, subject, null, link);
   }
   delete() {
     this.ls.deleteLeague(this.selectedLeague.leagueId);
@@ -102,7 +112,7 @@ export class LeaguesPage {
       translucent: true,
       componentProps: {
         sl: this.selectedLeague,
-        isAdmin: this.selectedLeague.creator === this.uid,
+        isAdmin: this.selectedLeague.creator === this.user.uid,
       },
     });
     popover.onWillDismiss().then((props) => {

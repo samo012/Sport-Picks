@@ -14,6 +14,7 @@ import {
   ASAuthorizationAppleIDRequest,
   AppleSignInErrorResponse,
 } from "@ionic-native/sign-in-with-apple/ngx";
+import { AngularFireStorage } from "@angular/fire/storage";
 
 @Injectable({
   providedIn: "root",
@@ -21,10 +22,10 @@ import {
 export class AuthService {
   user: firebase.User;
   user$: Observable<User>;
-
   constructor(
     public afAuth: AngularFireAuth,
     public afstore: AngularFirestore,
+    private storage: AngularFireStorage,
     private router: Router,
     private gplus: GooglePlus,
     private facebook: Facebook,
@@ -71,13 +72,21 @@ export class AuthService {
       this.user.email,
       oldPassword
     );
-    await this.user.reauthenticateAndRetrieveDataWithCredential(cred);
+    await this.user.reauthenticateWithCredential(cred);
     await this.user.updatePassword(newPassword);
   }
 
   async deleteUser() {
     await this.afstore.doc(this.user.uid).delete();
     return this.user.delete();
+  }
+
+  async uploadImg(file, path: string): Promise<string> {
+    if (!file || !path) return;
+    if (Array.isArray(file)) file = file[0];
+    var imagesRef = this.storage.ref(path);
+    await imagesRef.putString(file);
+    return imagesRef.getDownloadURL().toPromise();
   }
 
   async signInWithGoogle() {

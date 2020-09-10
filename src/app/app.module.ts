@@ -8,6 +8,8 @@ import { RouteReuseStrategy } from "@angular/router";
 
 import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
+import { Deeplinks } from "@ionic-native/deeplinks/ngx";
+
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 
 import { AppRoutingModule } from "./app-routing.module";
@@ -48,6 +50,7 @@ export class CustomHammerConfig extends HammerGestureConfig {
     AngularFireFunctionsModule,
   ],
   providers: [
+    Deeplinks,
     AuthGuard,
     StatusBar,
     SplashScreen,

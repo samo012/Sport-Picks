@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, NgZone } from "@angular/core";
 import { Platform, ModalController } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
@@ -10,6 +10,7 @@ import { LeagueModalComponent } from "./modals/league-modal/league-modal.compone
 import { LeagueService } from "./services/league.service";
 import { League } from "./models/league";
 import { EspnService } from "./services/espn.service";
+import { Deeplinks } from "@ionic-native/deeplinks/ngx";
 // import * as moment from "moment";
 
 @Component({
@@ -28,6 +29,8 @@ export class AppComponent {
     private ls: LeagueService,
     private espn: EspnService,
     private router: Router,
+    private dl: Deeplinks,
+    private zone: NgZone,
     public modalController: ModalController
   ) {
     this.initializeApp();
@@ -39,6 +42,28 @@ export class AppComponent {
       this.getLeagues();
       this.setUpDarkMode();
     });
+  }
+
+  deepLinks() {
+    this.dl
+      .route({
+        "/join/:leagueId": "leagues",
+      })
+      .subscribe((match) => {
+        console.log("match: ", match);
+        this.as.getUser().then((user) => {
+          if (user)
+            this.ls.getLeagueOnce(match.$args.leagueId).then((l) => {
+              l.uid = user.uid;
+              l.username = user.name;
+              this.ls.join(l).then(() => {
+                this.zone.run(() => {
+                  this.router.navigateByUrl("/home/tabs/leagues");
+                });
+              });
+            });
+        });
+      });
   }
 
   getLeagues() {

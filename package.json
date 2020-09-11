@@ -81,7 +81,10 @@
         "DEEPLINK_HOST": "pick-ems.web.app"
       },
       "cordova-plugin-x-socialsharing": {},
-      "cordova-plugin-googleplus": {},
+      "cordova-plugin-googleplus": {
+        "REVERSED_CLIENT_ID": "com.googleusercontent.apps.115291834996-07gf5sk0jmvk9mmhttdnll726dgj7fk0",
+        "WEB_APPLICATION_CLIENT_ID": "115291834996-07gf5sk0jmvk9mmhttdnll726dgj7fk0.apps.googleusercontent.com"
+      },
       "cordova-plugin-facebook4": {
         "APP_ID": "281842369495417",
         "APP_NAME": "Pickems"

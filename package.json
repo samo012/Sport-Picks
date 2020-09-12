@@ -33,12 +33,20 @@
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^5.0.0",
     "@types/hammerjs": "^2.0.36",
+    "cordova-ios": "^6.1.1",
+    "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-facebook4": "^6.4.0",
     "cordova-plugin-googleplus": "^8.5.0",
-    "cordova-plugin-sign-in-with-apple": "^0.1.1",
+    "cordova-plugin-ionic-keyboard": "^2.2.0",
+    "cordova-plugin-ionic-webview": "^4.2.1",
+    "cordova-plugin-sign-in-with-apple": "^0.1.2",
+    "cordova-plugin-splashscreen": "^5.0.2",
+    "cordova-plugin-statusbar": "^2.4.2",
     "cordova-plugin-telerik-imagepicker": "^2.3.5",
+    "cordova-plugin-whitelist": "^1.3.3",
     "cordova-plugin-x-socialsharing": "^6.0.2",
     "core-js": "^2.5.4",
+    "es6-promise-plugin": "^4.2.2",
     "firebase": "^7.14.2",
     "hammerjs": "^2.0.8",
     "ionic-plugin-deeplinks": "^1.0.20",
@@ -80,16 +88,32 @@
         "DEEPLINK_SCHEME": "https",
         "DEEPLINK_HOST": "pick-ems.web.app"
       },
-      "cordova-plugin-x-socialsharing": {},
+      "cordova-plugin-x-socialsharing": {
+        "PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION": "This app requires photo library access to function properly.",
+        "PHOTO_LIBRARY_USAGE_DESCRIPTION": "This app requires photo library access to function properly."
+      },
       "cordova-plugin-googleplus": {
         "REVERSED_CLIENT_ID": "com.googleusercontent.apps.115291834996-07gf5sk0jmvk9mmhttdnll726dgj7fk0",
         "WEB_APPLICATION_CLIENT_ID": "115291834996-07gf5sk0jmvk9mmhttdnll726dgj7fk0.apps.googleusercontent.com"
       },
       "cordova-plugin-facebook4": {
         "APP_ID": "281842369495417",
-        "APP_NAME": "Pickems"
+        "APP_NAME": "Pickems",
+        "FACEBOOK_HYBRID_APP_EVENTS": "false",
+        "FACEBOOK_ANDROID_SDK_VERSION": "5.13.0"
       },
-      "cordova-plugin-telerik-imagepicker": {}
-    }
+      "cordova-plugin-telerik-imagepicker": {
+        "PHOTO_LIBRARY_USAGE_DESCRIPTION": " "
+      },
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-device": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-keyboard": {}
+    },
+    "platforms": [
+      "ios"
+    ]
   }
 }

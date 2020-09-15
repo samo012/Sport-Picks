@@ -4,6 +4,7 @@ import { League } from "src/app/models/league";
 import { LeagueService } from "src/app/services/league.service";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "src/app/models/user";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-league-modal",
@@ -58,14 +59,16 @@ export class LeagueModalComponent implements OnInit {
     this.dismissModal();
   }
   dismissModal() {
-    return this.modalController.dismiss(this.selectedLeague);
+    this.modalController.dismiss(this.model);
   }
 
   setListHeight() {
-    const top = document.getElementById("list-header").offsetTop;
-    const bottom = document.getElementById("create").offsetTop;
-    const list = document.getElementById("small-list");
-    list.style.maxHeight = bottom - top - 50 + "px";
+    setTimeout(() => {
+      const top = document.getElementById("list-header").offsetTop;
+      const bottom = document.getElementById("create").offsetTop;
+      const list = document.getElementById("small-list");
+      if (list) list.style.maxHeight = bottom - top - 50 + "px";
+    }, 500);
   }
   searchLeagues(event) {
     this.filteredLeagues =

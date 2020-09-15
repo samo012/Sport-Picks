@@ -32,7 +32,7 @@
       <ion-button *ngIf="!startDate" color="dark" (click)="openCalendar()">Date Range</ion-button>
       <ion-chip *ngIf="startDate" (click)="clearDate()">
         <ion-icon name="calendar" color="primary"></ion-icon>
-        <ion-label>{{startDate}} - {{endDate}}</ion-label>
+        <ion-label id="dates">{{startDate}} - {{endDate}}</ion-label>
         <ion-icon name="close"></ion-icon>
       </ion-chip>
     </ion-buttons>
@@ -66,7 +66,7 @@
               <ion-badge color="light" class="record l">{{event.teams[0].record ? event.teams[0].record : '0-0'}}
               </ion-badge>
             </ion-thumbnail>
-            <ion-label (click)="viewEvent(event)" style="text-align: center;">
+            <ion-label class="text-center" (click)="viewEvent(event)">
               <ion-icon *ngIf="event.date | isPast; else notPast" name="lock-closed" size="small"></ion-icon>
               <ng-template #notPast>
                 <ion-icon *ngIf="picks.get(event.id)" slot="icon-only"

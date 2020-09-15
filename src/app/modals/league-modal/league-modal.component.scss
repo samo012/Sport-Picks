@@ -1,3 +1,6 @@
+ion-item {
+  --background: transparent;
+}
 .active {
   --background: lightblue;
 }
@@ -28,4 +31,5 @@
 #list-header {
   text-transform: capitalize;
   margin-left: 12px;
+  margin-top: 32px;
 }

@@ -81,11 +81,11 @@ export class AuthService {
     return this.user.delete();
   }
 
-  async uploadImg(file, path: string): Promise<string> {
+  async uploadImg(file: any, path: string): Promise<string> {
     if (!file || !path) return;
     if (Array.isArray(file)) file = file[0];
     var imagesRef = this.storage.ref(path);
-    await imagesRef.putString(file);
+    await imagesRef.putString(file, "data_url");
     return imagesRef.getDownloadURL().toPromise();
   }
 

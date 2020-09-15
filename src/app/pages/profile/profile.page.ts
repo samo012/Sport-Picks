@@ -56,14 +56,19 @@ export class ProfilePage {
   }
   async openPictures() {
     const options = {
+      outputType: 1,
       maximumImagesCount: 1,
+      quality: 25,
       width: 800, //max
       height: 800, //max
       disable_popover: true,
     };
+    const success = await this.imagePicker.hasReadPermission();
+    if (!success) await this.imagePicker.requestReadPermission();
     const res = await this.imagePicker
       .getPictures(options)
       .catch((err) => console.log("err: ", err));
+    console.log("res: ", res);
     this.user.photo = await this.as.uploadImg(res, this.user.uid);
     this.as.updateUser(this.user);
   }

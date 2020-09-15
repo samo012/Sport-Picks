@@ -4,61 +4,58 @@
     <!-- New User -->
     <ng-container *ngIf="!existing&&!forgot">
       <div class="text-center">
-        <ion-text color="secondary" class="title">Welcome to</ion-text>
-        <ion-text color="secondary" class="title">Fantasy<br>Pick'ems</ion-text>
+        <ion-img src="assets/icon/logo.svg" class="logo"></ion-img>
+        <ion-text class="title">FANTASY PICK'EMS</ion-text>
       </div>
-      <section>
+      <div class="ion-padding">
         <h4>Create an account</h4>
-      </section>
-      <section>
-        <ion-button color="primary" expand="block" class="business" routerLink="register">Register
+        <ion-button expand="block" routerLink="register">Register
         </ion-button>
-      </section>
+      </div>
       <p class="already" (click)="existing=true">Already have an account?</p>
     </ng-container>
 
     <!-- Existing User -->
     <ng-container *ngIf="existing&&!forgot">
       <div class="text-center">
-        <ion-text color="secondary" class="title">Fantasy<br>Pick'ems</ion-text>
+        <ion-img src="assets/icon/logo.svg" class="logo"></ion-img>
+        <ion-text class="title">FANTASY PICK'EMS</ion-text>
       </div>
-      <section>
-        <h4>Welcome back,</h4>
-        <p>Please log in to your account</p>
-      </section>
-      <form #loginForm="ngForm" class="ion-padding" (ngSubmit)="login()">
-        <ion-input type="email" placeholder="Email*" [(ngModel)]="model.email" name="email" required>
-        </ion-input>
-        <!-- <p class="error" *ngIf="email.touched && email.hasError('email')">Invalid email</p>
+      <form #loginForm="ngForm" (ngSubmit)="login()">
+        <div class="ion-padding ion-margin-top">
+          <ion-input type="email" placeholder="Email*" [(ngModel)]="model.email" name="email" required>
+          </ion-input>
+          <!-- <p class="error" *ngIf="email.touched && email.hasError('email')">Invalid email</p>
         <p class="error" *ngIf="email.touched && email.hasError('required')">Email address is required</p> -->
-        <ion-input placeholder="Password*" type="password" [(ngModel)]="model.password" name="password" required>
-        </ion-input>
-        <!--  (keyup.enter)="login()" -->
+          <ion-input placeholder="Password*" type="password" [(ngModel)]="model.password" name="password" required
+            (keyup.enter)="login()">
+          </ion-input>
+        </div>
+        <!--   -->
         <!-- #pswd="ngModel" -->
         <!-- minlength="6"  pattern="[A-Za-z0-9]*([a-zA-Z]+[0-9]+|[0-9]+[a-zA-Z]+)" -->
         <!-- </ion-input> -->
         <!-- <p class="error" *ngIf="pswd.touched && pswd.hasError('required')">Password is required</p> -->
-        <ion-item>
+        <ion-item class="clear" lines="none">
           <ion-checkbox slot="start" [(ngModel)]="model.remember" name="remember"></ion-checkbox>
           <ion-label>Remember Me</ion-label>
         </ion-item>
-
-        <div class="text-center mt-3" *ngIf="loading">
-          <ion-spinner color="secondary" name="crescent"></ion-spinner>
+        <div class="ion-padding text-center">
+          <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+          <ion-button *ngIf="!loading" type="submit" expand="block">Log in
+          </ion-button>
         </div>
-        <ion-button *ngIf="!loading" color="secondary" type="submit" expand="block">Log in
-        </ion-button>
       </form>
       <ng-container *ngIf="!loading">
-        <ion-grid style="padding: 1rem 0 0;">
-          <ion-row class="ion-align-items-center">
+        <ion-grid class="ion-padding-top">
+          <ion-row class="ion-align-items-center ion-padding-horizontal">
             <ion-col class="white-line"></ion-col>
             <ion-col class="or">Or</ion-col>
             <ion-col class="white-line"></ion-col>
           </ion-row>
           <ion-row>
             <ion-col class="ion-no-padding">
-              <ion-button expand="block" class="s-buttons google" color="light" (click)="signInWithGoogle()">
+              <ion-button expand="block" class="s-buttons google" (click)="signInWithGoogle()">
                 <img src="assets/google.svg">
                 <!-- <span>Sign in with Google</span> -->
               </ion-button>
@@ -70,7 +67,7 @@
               </ion-button>
             </ion-col>
             <ion-col class="ion-no-padding apple-col">
-              <ion-button expand="block" class="s-buttons apple" color="light" (click)="singInWithApple()">
+              <ion-button expand="block" class="s-buttons apple" (click)="singInWithApple()">
                 <ion-icon name="logo-apple"></ion-icon>
                 <!-- <span>Sign in with Apple</span> -->
               </ion-button>
@@ -85,7 +82,8 @@
 
     <ng-container *ngIf="forgot">
       <div class="text-center">
-        <ion-text color="secondary" class="title">Fantasy<br>Pick'ems</ion-text>
+        <ion-img src="assets/icon/logo.svg" class="logo"></ion-img>
+        <ion-text class="title">FANTASY PICK'EMS</ion-text>
       </div>
       <form #loginForm="ngForm" class="ion-padding-vertical" (ngSubmit)="resetPassword(email)">
         <ion-label>Email Address</ion-label>
@@ -94,7 +92,7 @@
         </ion-input>
         <p class="error" *ngIf="email.touched && email.hasError('email')">Invalid email</p>
         <p class="error" *ngIf="email.touched && email.hasError('required')">Email address is required</p>
-        <ion-button color="secondary" type="submit" expand="block">Send Email</ion-button>
+        <ion-button type="submit" expand="block">Send Email</ion-button>
       </form>
     </ng-container>
   </div>

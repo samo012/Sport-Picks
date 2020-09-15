@@ -14,14 +14,14 @@
 
 <ion-content [fullscreen]="true">
 
-  <section class="league" *ngIf="firstTime&&!loading">
-    <h2>Welcome to the <br> Fantasy Pick'ems App</h2>
-    <h6 class="ion-padding-bottom">Select an option below to get started</h6>
+  <section class="league" *ngIf="noLeagues&&!loading">
+    <h2>Fantasy Pick'ems</h2>
+    <h6 class="ion-padding-bottom">Create or join a league to get started</h6>
     <ion-button color="primary" (click)="openModal(1)">Create a League</ion-button>
     <ion-button color="tertiary" (click)="openModal(2)">Join a League</ion-button>
   </section>
 
-  <ng-container *ngIf="!firstTime&&!loading">
+  <ng-container *ngIf="!noLeagues&&!loading">
     <ion-toolbar>
       <ion-select (ionChange)="getLeagueUsers()" [(ngModel)]="selectedLeague"
         [interfaceOptions]="{header:'Select a League'}">
@@ -47,23 +47,18 @@
   </ng-container>
   <ion-list *ngIf="loading">
     <ion-list-header>
+      <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+    </ion-list-header>
+    <ion-list-header>
       <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
     </ion-list-header>
-    <ion-item lines="full" *ngFor="let x of [].constructor(12)">
-      <ion-thumbnail slot="start">
-        <ion-skeleton-text></ion-skeleton-text>
-      </ion-thumbnail>
-      <ion-label style="text-align: center;">
-        <h2>
-          <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
-        </h2>
-        <p>
-          <ion-skeleton-text animated style="width: 70%; margin-top: 7px;"></ion-skeleton-text>
-        </p>
+    <ion-item lines="full" *ngFor="let x of [].constructor(6)">
+      <ion-note slot="start">
+        <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+      </ion-note>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
       </ion-label>
-      <ion-thumbnail slot="end">
-        <ion-skeleton-text></ion-skeleton-text>
-      </ion-thumbnail>
     </ion-item>
   </ion-list>
 </ion-content>

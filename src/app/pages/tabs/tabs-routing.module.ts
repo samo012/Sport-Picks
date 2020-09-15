@@ -35,6 +35,13 @@ const routes: Routes = [
               ),
           },
           {
+            path: ":id",
+            loadChildren: () =>
+              import("../leagues/leagues.module").then(
+                (m) => m.LeaguesPageModule
+              ),
+          },
+          {
             path: "all-picks",
             loadChildren: () =>
               import("../all-picks/all-picks.module").then(

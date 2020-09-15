@@ -11,7 +11,7 @@ import { User } from "src/app/models/user";
   styleUrls: ["./login.page.scss"],
 })
 export class LoginPage {
-  existing = localStorage.getItem("email") !== null;
+  existing: boolean;
   user: User;
   model = new Login();
   loading = false;
@@ -28,7 +28,7 @@ export class LoginPage {
     if (email) {
       this.model.email = email;
       this.existing = true;
-    }
+    } else this.existing = false;
   }
   async singInWithApple() {
     try {

@@ -50,21 +50,16 @@ export class EventsPage {
   async getLeagues() {
     const leagues = await this.ls.getUsersLeaguesOnce(this.as.getUserId);
     if (leagues && leagues.length > 0) {
-      if (localStorage.getItem("firstTime")) {
-        this.presentAlert(
-          "Welcome to Fantasy Pick'ems",
-          "Click on a team's logo to make your pick. Slide the item to make your pick visible to your league members. Your pick will lock in at game start and remain visible."
-        );
-        localStorage.removeItem("firstTime");
-      }
       this.leagues = leagues;
       if (!this.selectedLeague) this.selectedLeague = leagues[0];
       this.getEvents(false);
-    } else
+    } else {
+      this.loading = false;
       this.presentAlert(
         "No League",
         "Either create or join a league to start making your picks"
       );
+    }
   }
 
   viewEvent(event: SportsEvent) {
@@ -135,7 +130,14 @@ export class EventsPage {
     const alert = await this.ac.create({
       header: header,
       message: msg,
-      buttons: ["OK"],
+      buttons: [
+        {
+          text: "Ok",
+          handler: () => {
+            this.router.navigateByUrl("/home/tabs/leagues");
+          },
+        },
+      ],
     });
     await alert.present();
   }

@@ -2,7 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { User } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { Router } from "@angular/router";
-import { AlertController } from "@ionic/angular";
+import { AlertController, ModalController } from "@ionic/angular";
+import { TutorialComponent } from 'src/app/modals/tutorial/tutorial.component';
 
 @Component({
   selector: "app-register",
@@ -12,25 +13,36 @@ import { AlertController } from "@ionic/angular";
 export class RegisterPage implements OnInit {
   model = new User();
   socialRegister = true;
+  loading = false;
   confirm: string;
-
   constructor(
     private as: AuthService,
     private router: Router,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public modalController: ModalController
   ) {}
 
   ngOnInit() {}
+
   async submit() {
+    this.loading = true;
     try {
       console.log(this.model);
       await this.as.registerUser(this.model, this.socialRegister);
-      localStorage.setItem("firstTime", "true");
-      this.router.navigate(["home/tabs/leagues"]);
+      this.presentTutorial();
     } catch (e) {
       this.presentAlert(e);
     }
+    this.loading = false;
   }
+
+  async presentTutorial() {
+    const modal = await this.modalController.create({
+      component: TutorialComponent,
+    });
+    return await modal.present();
+  }
+
   async signUpWithGoogle() {
     const user = await this.as.signInWithGoogle();
     this.model.first = user.displayName.split(" ")[0];

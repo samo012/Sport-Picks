@@ -3,7 +3,7 @@
   margin: auto;
   display: flex;
   flex-direction: column;
-  height: 95%;
+  height: 85%;
   justify-content: center;
 }
 h3 {
@@ -19,10 +19,18 @@ ion-grid {
 .mb-6 {
   margin-bottom: 6rem;
 }
-.text-center {
-  text-align: center;
-  width: 100%;
-  margin-top: 1rem;
+ion-spinner{
+  zoom: 2;
+}
+.bottom {
+  position: absolute;
+  right: 2rem;
+  bottom: 2rem;
+  left: 2rem;
+  ion-button {
+    max-width: 25rem;
+    margin: auto;
+  }
 }
 .social-button {
   position: absolute;
@@ -34,9 +42,25 @@ ion-grid {
     margin-right: 0.3rem;
   }
 }
+.s-buttons {
+  --background: #ffffff;
+}
+.fb {
+  ion-icon {
+    color: #3b5998;
+  }
+}
+.apple {
+  ion-icon {
+    color: #000000;
+  }
+}
+.apple-col.md {
+  display: none;
+}
 form {
   p {
-    color: var(--ion-color-secondary);
+    color: var(--ion-color-primary);
     width: 100%;
     text-align: right;
   }

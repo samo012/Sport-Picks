@@ -13,13 +13,13 @@
     <ion-grid [hidden]="!socialRegister">
       <ion-row>
         <ion-col>
-          <ion-button expand="block" class="s-buttons google" color="light" (click)="signUpWithGoogle()">
+          <ion-button expand="block" class="s-buttons google" (click)="signUpWithGoogle()">
             <img src="assets/google.svg">
             <!-- Google -->
           </ion-button>
         </ion-col>
         <ion-col>
-          <ion-button expand="block" class="s-buttons apple" color="light" (click)="singUpWithApple()">
+          <ion-button expand="block" class="s-buttons apple" (click)="singUpWithApple()">
             <ion-icon name="logo-apple"></ion-icon>
             <!-- Apple -->
           </ion-button>
@@ -33,7 +33,7 @@
           </ion-button>
         </ion-col>
         <ion-col>
-          <ion-button expand="block" class="s-buttons fb" (click)="socialRegister=false">
+          <ion-button expand="block" class="s-buttons d-blue" (click)="socialRegister=false">
             <ion-icon name="mail"></ion-icon>
             <!-- Email -->
           </ion-button>
@@ -41,31 +41,31 @@
       </ion-row>
     </ion-grid>
     <div class="social-button">
-      <ion-button color="light" [hidden]="socialRegister" (click)="socialRegister=true">
+      <ion-button fill="clear" [hidden]="socialRegister" (click)="socialRegister=true">
         <ion-icon name="arrow-back-outline"></ion-icon> Social Login
       </ion-button>
     </div>
-    <form #formValidator="ngForm" (ngSubmit)="submit()" [hidden]="socialRegister">
-      <ion-item>
+    <form #formValidator="ngForm" (ngSubmit)="submit()" [hidden]="socialRegister || loading">
+      <ion-item class="clear">
         <ion-label position="floating">First Name</ion-label>
         <ion-input autocomplete="given-name" [(ngModel)]="model.first" name="first" #fName="ngModel" required>
         </ion-input>
         <p *ngIf="fName.touched&&fName.invalid">First Name is required</p>
       </ion-item>
-      <ion-item>
+      <ion-item class="clear">
         <ion-label position="floating">Last Name</ion-label>
         <ion-input autocomplete="family-name" [(ngModel)]="model.last" name="last" #lName="ngModel" required>
         </ion-input>
         <p *ngIf="lName.touched&&lName.invalid">Last Name is required</p>
       </ion-item>
-      <ion-item>
+      <ion-item class="clear">
         <ion-label position="floating">Email</ion-label>
         <ion-input autocomplete="email" [(ngModel)]="model.email" name="email" #mail="ngModel" required email>
         </ion-input>
         <p *ngIf="mail.touched&&mail.hasError('required')">Email is required</p>
         <p *ngIf="mail.touched&&mail.hasError('email')">Invalid Email</p>
       </ion-item>
-      <ion-item>
+      <ion-item class="clear">
         <ion-label position="floating">Password</ion-label>
         <ion-input autocomplete="new-password" [(ngModel)]="model.password" name="password" #pswd="ngModel"
           type="password" required minlength="6">
@@ -73,14 +73,18 @@
         <p *ngIf="pswd.touched&&pswd.hasError('required')">Password is required</p>
         <p *ngIf="pswd.touched&&pswd.hasError('minlength')">At least 6 characters</p>
       </ion-item>
-      <ion-item [hidden]="pswd.invalid">
+      <ion-item class="clear" [hidden]="pswd.invalid">
         <ion-label position="floating">Confirm Password</ion-label>
-        <ion-input [(ngModel)]="confirm" name="confirm" #pswd2="ngModel" type="password" required></ion-input>
+        <ion-input [(ngModel)]="confirm" name="confirm" #pswd2="ngModel" type="password" required
+          (keyup.enter)="submit()"></ion-input>
         <p *ngIf="pswd2.touched&&pswd2.value!=pswd.value">Passwords do not match</p>
       </ion-item>
-      <div class="text-center">
-        <ion-button [disabled]="formValidator.invalid" type="submit" buttonType="submit">Create Account</ion-button>
-      </div>
     </form>
+    <div class="text-center" *ngIf="loading">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  </div>
+  <div class="bottom" [hidden]="socialRegister || loading">
+    <ion-button [disabled]="formValidator.invalid" type="submit" expand="block">Create Account</ion-button>
   </div>
 </ion-content>

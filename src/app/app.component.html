@@ -3,31 +3,32 @@
     <ion-menu contentId="main-content" type="overlay" *ngIf="user$|async as user">
       <ion-content>
         <ion-list id="inbox-list">
-          <ion-list-header>{{user?.name}}</ion-list-header>
-          <div id="toggle-container">
+          <ion-list-header class="ion-margin-bottom">{{user?.name}}</ion-list-header>
+          <!-- <div id="toggle-container">
             <ion-icon name="sunny"></ion-icon>
             <ion-toggle name="dToggle" [(ngModel)]="dark" (ionChange)="toggleDark()">
             </ion-toggle>
             <ion-icon name="moon"></ion-icon>
-          </div>
-          <ion-note>@{{user?.last}}</ion-note>
+          </div> -->
+          <!-- <ion-note>@{{user?.last}}</ion-note> -->
           <ion-menu-toggle auto-hide="false">
             <ion-item lines="none" detail="false" (click)="openModal(1)">
-              <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+              <ion-icon slot="start" name="add-circle-outline" color="primary"></ion-icon>
               <ion-label>Create a League</ion-label>
             </ion-item>
             <ion-item lines="none" detail="false" (click)="openModal(2)">
-              <ion-icon slot="start" name="person-add-outline"></ion-icon>
+              <ion-icon slot="start" name="person-add-outline" color="primary"></ion-icon>
               <ion-label>Join a League</ion-label>
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
-        <ion-list id="labels-list">
+        <ion-list id="labels-list" *ngIf="leagues?.length>0">
           <ion-list-header>My Leagues</ion-list-header>
           <ion-menu-toggle auto-hide="false">
-            <ion-item *ngFor="let l of leagues" lines="none">
-              <ion-note slot="start" style="margin: 0;">{{l.points}}</ion-note>
-              <ion-label>{{l.name}}</ion-label>
+            <ion-item *ngFor="let l of leagues" lines="none" [routerLink]="['/home/tabs/leagues',l.leagueId]"
+              routerDirection="none">
+              <ion-note slot="start" style="margin: 0;" color="primary">{{l.points}}</ion-note>
+              <ion-label class="league-name">{{l.name}}</ion-label>
             </ion-item>
           </ion-menu-toggle>
         </ion-list>

@@ -1,9 +1,9 @@
 <ion-header translucent>
   <ion-toolbar>
-    <ion-title>{{state===1?'Create a':state===2?'Join a':'Edit'}} League</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="dismissModal()">Cancel</ion-button>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">Back</ion-button>
     </ion-buttons>
+    <ion-title>{{state===1?'Create a':state===2?'Join a':'Edit'}} League</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content fullscreen>
@@ -47,7 +47,8 @@
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Sport</ion-label>
-        <ion-select placeholder="College Football" [(ngModel)]="model.sport" name="sport" required #sprt="ngModel">
+        <ion-select placeholder="College Football" [(ngModel)]="model.sport" name="sport" required #sprt="ngModel"
+          (ionChange)="setListHeight()">
           <ion-select-option value="NFL">NFL</ion-select-option>
           <ion-select-option value="NBA">NBA</ion-select-option>
           <ion-select-option value="NHL">NHL</ion-select-option>

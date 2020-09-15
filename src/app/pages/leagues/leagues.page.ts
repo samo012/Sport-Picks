@@ -1,4 +1,4 @@
-import { Component, TemplateRef, ElementRef } from "@angular/core";
+import { Component } from "@angular/core";
 import { LeagueService } from "src/app/services/league.service";
 import { League } from "src/app/models/league";
 import { AuthService } from "src/app/services/auth.service";
@@ -7,16 +7,17 @@ import { LeagueModalComponent } from "src/app/modals/league-modal/league-modal.c
 import { User } from "src/app/models/user";
 import { EllipsisPopover } from "src/app/modals/ellipsis-popover/ellipsis-popover.component";
 import { SocialSharing } from "@ionic-native/social-sharing/ngx";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: "app-leagues",
   templateUrl: "leagues.page.html",
-  styleUrls: ["leagues.page.scss"]
+  styleUrls: ["leagues.page.scss"],
 })
 export class LeaguesPage {
   selectedLeague: League;
   subtitle: string;
-  firstTime = true;
+  noLeagues: boolean;
   loading = true;
   players: League[] = [];
   leagues: League[] = [];
@@ -28,21 +29,24 @@ export class LeaguesPage {
     private as: AuthService,
     private socialSharing: SocialSharing,
     public modalController: ModalController,
-    public popoverController: PopoverController
+    public popoverController: PopoverController,
+    private route: ActivatedRoute
   ) {
-    this.as.getUser().then(user => {
+    this.as.getUser().then((user) => {
       this.user = user;
       this.getLeagues();
     });
   }
 
   getLeagues() {
-    this.ls.getUsersLeagues(this.user.uid).subscribe(leagues => {
+    this.ls.getUsersLeagues(this.user.uid).subscribe((leagues) => {
       this.leagues = leagues || [];
-      this.selectedLeague = this.leagues[0];
-      this.firstTime = !this.leagues || this.leagues.length === 0;
+      const id = this.route.snapshot.params.id;
+      this.selectedLeague = id
+        ? this.leagues.find((l) => l.leagueId == id)
+        : this.leagues[0];
+      this.noLeagues = !this.leagues || this.leagues.length === 0;
       this.getLeagueUsers();
-      this.loading = false;
     });
   }
 
@@ -65,7 +69,7 @@ export class LeaguesPage {
       this.getSubtitle();
       this.ls
         .getUsersByLeagueId(this.selectedLeague.leagueId)
-        .subscribe(users => {
+        .subscribe((users) => {
           var rank = 1;
           if (users) {
             for (let index = 0; index < users.length; index++) {
@@ -78,6 +82,7 @@ export class LeaguesPage {
             }
             this.players = users;
           } else this.players = [];
+          this.loading = false;
         });
     }
   }
@@ -98,11 +103,7 @@ export class LeaguesPage {
     const leagueId = this.selectedLeague ? this.selectedLeague.id : null;
     const modal = await this.modalController.create({
       component: LeagueModalComponent,
-      componentProps: { state, leagueId }
-    });
-    modal.onDidDismiss().then(props => {
-      console.log("props: ", props);
-      this.selectedLeague = props.data;
+      componentProps: { state, leagueId },
     });
     return await modal.present();
   }
@@ -113,10 +114,10 @@ export class LeaguesPage {
       translucent: true,
       componentProps: {
         sl: this.selectedLeague,
-        isAdmin: this.selectedLeague.creator === this.user.uid
-      }
+        isAdmin: this.selectedLeague.creator === this.user.uid,
+      },
     });
-    popover.onWillDismiss().then(props => {
+    popover.onWillDismiss().then((props) => {
       if (props.data == "share") this.share();
       else if (props.data == "edit") this.openModal(3);
       else if (props.data == "delete") this.delete();

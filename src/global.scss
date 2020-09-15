@@ -25,6 +25,10 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
+ion-content {
+  --background: #2f2c3d;
+}
+
 ion-title.large-title {
   color: rgb(85, 152, 223);
   font-size: 30px;
@@ -35,4 +39,17 @@ ion-title.large-title {
 }
 .ns {
   font-size: 23px;
+}
+.clear {
+  --background: transparent;
+}
+.d-blue {
+  --color: #2f2c3d;
+}
+.swiper-pagination-bullet-active {
+  opacity: 1;
+  background: #00c9db !important
+}
+.swiper-pagination-bullet {
+  background: lightgray
 }

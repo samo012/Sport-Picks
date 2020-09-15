@@ -6,6 +6,7 @@ import { IonicModule } from "@ionic/angular";
 
 import { RegisterPage } from "./register.page";
 import { RouterModule } from "@angular/router";
+import { TutorialComponent } from "src/app/modals/tutorial/tutorial.component";
 
 @NgModule({
   imports: [
@@ -14,6 +15,6 @@ import { RouterModule } from "@angular/router";
     IonicModule,
     RouterModule.forChild([{ path: "", component: RegisterPage }]),
   ],
-  declarations: [RegisterPage],
+  declarations: [RegisterPage, TutorialComponent],
 })
 export class RegisterPageModule {}

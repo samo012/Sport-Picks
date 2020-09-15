@@ -9,9 +9,10 @@ import { Observable } from "rxjs";
 import { LeagueModalComponent } from "./modals/league-modal/league-modal.component";
 import { LeagueService } from "./services/league.service";
 import { League } from "./models/league";
-import { EspnService } from "./services/espn.service";
 import { Deeplinks } from "@ionic-native/deeplinks/ngx";
+// import { EspnService } from "./services/espn.service";
 // import * as moment from "moment";
+// import { AngularFirestore } from "@angular/fire/firestore";
 
 @Component({
   selector: "app-root",
@@ -27,11 +28,12 @@ export class AppComponent {
     private statusBar: StatusBar,
     private as: AuthService,
     private ls: LeagueService,
-    private espn: EspnService,
     private router: Router,
     private dl: Deeplinks,
     private zone: NgZone,
-    public modalController: ModalController
+    public modalController: ModalController,
+    // private espn: EspnService,
+    // private afs: AngularFirestore
   ) {
     this.initializeApp();
   }
@@ -79,54 +81,6 @@ export class AppComponent {
     });
   }
 
-  updatePicks(leagues: League[]) {
-    // this.espn.getEvents();
-    // .then((events) => {
-    // leagues.forEach((l) => {
-    //   if (l.picks) {
-    //     l.picks
-    //       .filter((p) => p.win === undefined)
-    //       .forEach((p) => {
-    //         const game = events.find((e) => e.id == p.eventId);
-    //         if (game.teams[0].winner !== undefined) {
-    //           if (game.teams[0].winner) {
-    //             p.win = p.teamId === game.teams[0].id;
-    //             if (p.win)
-    //               l.points += this.pointSystem(
-    //                 game.teams[0].rank,
-    //                 game.teams[1].rank
-    //               );
-    //           } else {
-    //             p.win = p.teamId === game.teams[1].id;
-    //             if (p.win)
-    //               l.points += this.pointSystem(
-    //                 game.teams[1].rank,
-    //                 game.teams[0].rank
-    //               );
-    //           }
-    //         }
-    //       });
-    //     this.ls.gameUpdate(l);
-    //   }
-    // });
-    // });
-  }
-
-  // createNotification(){
-  //   const diff = moment().diff(game.date,"days");
-  //   if(diff==-1||diff===0)
-  //   this.ns.create()
-  // }
-
-  pointSystem(firstRank: number, secondRank: number) {
-    // first is winner
-    if (firstRank <= 15 && secondRank <= 15) return 3;
-    else if (firstRank <= 25 && secondRank <= 25) return 2;
-    else if (firstRank > 25 && secondRank > 25) return 1;
-    else if (firstRank <= 25 && secondRank > 25) return 1;
-    else if (firstRank > 25 && secondRank <= 15) return 3;
-    else if (firstRank > 25 && secondRank <= 25) return 2;
-  }
 
   dark = false;
   setUpDarkMode() {
@@ -153,13 +107,100 @@ export class AppComponent {
   logout() {
     return this.as.signOut();
   }
-
-  public labels = [
-    "Pierce's Pickems",
-    "Other League",
-    "League #420",
-    "Work",
-    "Travel",
-    "Reminders",
-  ];
 }
+
+  // sports = {
+  //   NFL: "football/nfl/",
+  //   NBA: "basketball/nba/",
+  //   NHL: "hockey/nhl/",
+  //   MLB: "baseball/mlb/",
+  //   NCAAF: "football/college-football/",
+  //   NCAAB: "basketball/mens-college-basketball/",
+  //   undefined: "football/college-football/",
+  // } as {
+  //   [key: string]: string;
+  // };
+// 
+  // async getGames(sport: string) {
+  //   const today = moment().format("YYYYMMDD");
+  //   const url =
+  //     "https://site.api.espn.com/apis/site/v2/sports/" +
+  //     this.sports[sport] +
+  //     "/scoreboard?group=80&limit=900&dates=" +
+  //     today;
+  //   const settings = { method: "Get" };
+  //   const res = await fetch(url, settings);
+  //   const obj = await res.json();
+  //   return obj.events as any[];
+  // }
+  //
+  // async updatePicks() {
+  //   const sport = "NFL";
+  //   const collection = await this.afs
+  //     .collection("leagues", (ref) => ref.where("sport", "==", sport))
+  //     .get()
+  //     .toPromise();
+  //   if (collection && collection.docs && collection.docs.length > 0) {
+  //     const games = await this.getGames(sport);
+  //     console.log("games: ", games);
+  //     if (games.length > 0) {
+  //       const eventIDs = games.map((g) => g.id);
+  //       console.log("eventIDs: ", eventIDs);
+  //       collection.docs.forEach((doc) => {
+  //         const l = doc.data();
+  //         console.log("l: ", l);
+  //         if (l.picks.length > 0) {
+  //           const picks = l.picks.filter(
+  //             (p: { eventId: string; win: boolean; teamId: string }) =>
+  //               eventIDs.includes(p.eventId) && p.win === undefined
+  //           );
+  //           console.log("picks: ", picks);
+  //           picks.forEach(
+  //             (p: { eventId: string; win: boolean; teamId: string }) => {
+  //               const game = games.find((e) => e.id == p.eventId);
+  //               const teams = game.competitions[0].competitors;
+  //               teams[0].winner = false;
+  //               if (teams[0].winner !== undefined) {
+  //                 if (teams[0].winner) {
+  //                   p.win = p.teamId == teams[0].id;
+  //                   if (p.win) {
+  //                     if (l.type === "spread" || l.sport !== "NCAAF")
+  //                       l.points += 1;
+  //                     else
+  //                       l.points += this.pointSystem(
+  //                         teams[0].curatedRank.current,
+  //                         teams[1].curatedRank.current
+  //                       );
+  //                   }
+  //                 } else {
+  //                   p.win = p.teamId == teams[1].id;
+  //                   if (p.win) {
+  //                     if (l.type == "spread" || l.sport !== "NCAAF")
+  //                       l.points += 1;
+  //                     else
+  //                       l.points += this.pointSystem(
+  //                         teams[1].curatedRank.current,
+  //                         teams[0].curatedRank.current
+  //                       );
+  //                   }
+  //                 }
+  //               }
+  //             }
+  //           );
+  //           console.log(" output", l);
+  //         }
+  //       });
+  //     }
+  //   }
+  // }
+  //
+  // pointSystem(firstRank: number, secondRank: number) {
+  //   // first is winner
+  //   if (firstRank <= 15 && secondRank <= 15) return 3;
+  //   else if (firstRank <= 25 && secondRank <= 25) return 2;
+  //   else if (firstRank > 25 && secondRank > 25) return 1;
+  //   else if (firstRank <= 25 && secondRank > 25) return 1;
+  //   else if (firstRank > 25 && secondRank <= 15) return 3;
+  //   else if (firstRank > 25 && secondRank <= 25) return 2;
+  //   else return 0;
+  // }

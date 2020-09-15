@@ -1,0 +1,107 @@
+<ion-content fullscreen scrollY="false">
+  <ion-slides [pager]="true" [options]="slideOpts" #slides (ionSlideDidChange)="changin(slides,slider)">
+    <ion-slide>
+      <div class="container first">
+        <h3><span id="first">Welcome</span><span id="second"> to</span></h3>
+        <h1 id="third">Fantasy Pick'ems</h1>
+        <ion-img id="fourth" src="assets/icon/logo.svg"></ion-img>
+        <p id="fifth">Swipe to see how to<br>make your Pick'ems</p>
+      </div>
+    </ion-slide>
+    <ion-slide>
+      <div class="container">
+        <h5>Make your picks</h5>
+        <p class="mb-3">Click on a team's logo to make your pick</p>
+        <ion-item lines="full">
+          <ion-thumbnail slot="start">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Alabama_Athletics_logo.svg/150px-Alabama_Athletics_logo.svg.png">
+          </ion-thumbnail>
+          <ion-label class="text-center">
+            <h2>ACT @ CLEM</h2>
+            <p>Memorial Stadium</p>
+          </ion-label>
+          <ion-thumbnail slot="end" id="selectedTeam">
+            <img src="https://a.espncdn.com/i/teamlogos/ncaa/500/228.png">
+          </ion-thumbnail>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-thumbnail slot="start" id="selectedTeam2">
+            <img src="https://a.espncdn.com/i/teamlogos/ncaa/500/57.png">
+          </ion-thumbnail>
+          <ion-label class="text-center">
+            <h2>FLA vs UGA</h2>
+            <p>TIAA Bank Field</p>
+          </ion-label>
+          <ion-thumbnail slot="end">
+            <img src="https://a.espncdn.com/i/teamlogos/ncaa/500/61.png">
+          </ion-thumbnail>
+        </ion-item>
+      </div>
+    </ion-slide>
+    <ion-slide>
+      <div class="container">
+        <h5>Show your picks</h5>
+        <p>Slide the event to hide or show your pick to your league members</p>
+        <ion-item-sliding #slider>
+          <ion-item lines="full">
+            <ion-thumbnail slot="start">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Alabama_Athletics_logo.svg/150px-Alabama_Athletics_logo.svg.png">
+            </ion-thumbnail>
+            <ion-label class="text-center">
+              <!-- <ion-icon name="lock-closed" size="small"></ion-icon> -->
+              <ion-icon slot="icon-only" [name]="isVisible?'eye':'eye-off'"></ion-icon>
+              <h2>ACT @ CLEM</h2>
+              <p>Memorial Stadium</p>
+            </ion-label>
+            <ion-thumbnail slot="end">
+              <img src="https://a.espncdn.com/i/teamlogos/ncaa/500/228.png">
+            </ion-thumbnail>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option>
+              <ion-icon slot="icon-only" [name]="isVisible?'eye':'eye-off'"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+        <p>* The &nbsp;<ion-icon slot="icon-only" name="eye"></ion-icon>&nbsp;
+          icon indicates your pick is visible to your league members</p>
+      </div>
+    </ion-slide>
+    <ion-slide>
+      <div class="container">
+        <h5>View Games</h5>
+        <p>Click on the center of the item to view game stats and your league's picks</p>
+        <ion-item-sliding>
+          <ion-item lines="full">
+            <ion-thumbnail slot="start">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Alabama_Athletics_logo.svg/150px-Alabama_Athletics_logo.svg.png">
+            </ion-thumbnail>
+            <ion-label class="text-center">
+              <ion-icon name="lock-closed" size="small"></ion-icon>
+              <h2>ACT @ CLEM</h2>
+              <p>Memorial Stadium</p>
+            </ion-label>
+            <ion-thumbnail slot="end">
+              <img src="https://a.espncdn.com/i/teamlogos/ncaa/500/228.png">
+            </ion-thumbnail>
+          </ion-item>
+        </ion-item-sliding>
+        <p>* The &nbsp;<ion-icon name="lock-closed" size="small" class="mx-2"></ion-icon>&nbsp;
+          icon indicates game start and your pick cannot be changed</p>
+      </div>
+    </ion-slide>
+    <ion-slide>
+      <div class="flex-container">
+        <h6 class="ion-padding-bottom">Create or join a league to get started</h6>
+        <ion-button color="primary" (click)="openModal(1)">Create a League</ion-button>
+        <ion-button color="tertiary" (click)="openModal(2)">Join a League</ion-button>
+      </div>
+    </ion-slide>
+  </ion-slides>
+</ion-content>
+<!--       <button class="next" (click)="slider.slideNext()">Next</button>
+ -->

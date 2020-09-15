@@ -153,6 +153,8 @@ export class LeagueService {
     l.og = false;
     l.added = Date.now();
     l.id = this.afs.createId();
+    l.picks = [];
+    l.points = 0;
     const title = l.username + " has joined your league, " + l.name;
     this.ns.create(new Notification(title, l.creator));
     return this.afs

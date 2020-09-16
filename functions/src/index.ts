@@ -101,7 +101,6 @@ async function getGames(sport: string) {
     MLB: "baseball/mlb/",
     NCAAF: "football/college-football/",
     NCAAB: "basketball/mens-college-basketball/",
-    undefined: "football/college-football/",
   } as {
     [key: string]: string;
   };
@@ -134,9 +133,10 @@ export const updatePrimary = functions
   .runWith({ memory: "2GB" })
   .pubsub.schedule("0 * * * *")
   .timeZone("America/New_York")
-  .onRun(async (context) => {
+  .onRun(async () => {
     try {
       const primary = ["NFL", "NCAAF", "NBA"];
+      const batch = db.batch();
       primary.forEach(async (sport) => {
         const collection = await db
           .collection("leagues")
@@ -146,7 +146,6 @@ export const updatePrimary = functions
           const games = await getGames(sport);
           if (games.length > 0) {
             const eventIDs = games.map((g) => g.id);
-            const batch = db.batch();
             collection.docs.forEach((doc) => {
               const l = doc.data();
               if (l.picks.length > 0) {
@@ -159,29 +158,27 @@ export const updatePrimary = functions
                     (p: { eventId: string; win: boolean; teamId: string }) => {
                       const game = games.find((e) => e.id == p.eventId);
                       const teams = game.competitions[0].competitors;
-                      functions.logger.log("teams:", teams);
+                      functions.logger.log("first winner:", teams[0].winner);
                       if (teams[0].winner !== undefined) {
                         if (teams[0].winner) {
                           p.win = p.teamId == teams[0].id;
                           if (p.win) {
-                            if (l.type === "spread" || l.sport !== "NCAAF")
-                              l.points += 1;
-                            else
+                            if (l.sport === "NCAAF" && l.type === "straight")
                               l.points += pointSystem(
                                 teams[0].curatedRank.current,
                                 teams[1].curatedRank.current
                               );
+                            else l.points += 1;
                           }
                         } else {
                           p.win = p.teamId == teams[1].id;
                           if (p.win) {
-                            if (l.type == "spread" || l.sport !== "NCAAF")
-                              l.points += 1;
-                            else
+                            if (l.sport === "NCAAF" && l.type === "straight")
                               l.points += pointSystem(
                                 teams[1].curatedRank.current,
                                 teams[0].curatedRank.current
                               );
+                            else l.points += 1;
                           }
                         }
                       }
@@ -190,12 +187,10 @@ export const updatePrimary = functions
                 batch.update(doc.ref, l);
               }
             });
-            return batch.commit();
           }
         }
-        return;
       });
-      return;
+      return batch.commit();
     } catch (err) {
       throw new functions.https.HttpsError("internal", err);
     }
@@ -207,6 +202,7 @@ export const updateSecondary = functions
   .timeZone("America/New_York")
   .onRun(async (context) => {
     try {
+      const batch = db.batch();
       const secondary = ["NHL", "MLB", "NCAAB"];
       secondary.forEach(async (sport) => {
         const collection = await db
@@ -217,7 +213,6 @@ export const updateSecondary = functions
           const games = await getGames(sport);
           if (games.length > 0) {
             const eventIDs = games.map((g) => g.id);
-            const batch = db.batch();
             collection.docs.forEach((doc) => {
               const l = doc.data();
               if (l.picks.length > 0) {
@@ -230,7 +225,7 @@ export const updateSecondary = functions
                     (p: { eventId: string; win: boolean; teamId: string }) => {
                       const game = games.find((e) => e.id == p.eventId);
                       const teams = game.competitions[0].competitors;
-                      functions.logger.log("sec-teams:", teams);
+                      functions.logger.log("sec winner", teams[1].winner);
                       if (teams[0].winner !== undefined) {
                         if (teams[0].winner) {
                           p.win = p.teamId == teams[0].id;
@@ -245,12 +240,10 @@ export const updateSecondary = functions
                 batch.update(doc.ref, l);
               }
             });
-            return batch.commit();
           }
         }
-        return;
       });
-      return;
+      return batch.commit();
     } catch (err) {
       throw new functions.https.HttpsError("internal", err);
     }

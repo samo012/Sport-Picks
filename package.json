@@ -24,6 +24,7 @@
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/deeplinks": "^5.28.0",
     "@ionic-native/facebook": "^5.28.0",
+    "@ionic-native/fcm": "^5.28.0",
     "@ionic-native/firebase": "^5.24.0",
     "@ionic-native/google-plus": "^5.28.0",
     "@ionic-native/image-picker": "^5.28.0",
@@ -36,6 +37,7 @@
     "cordova-ios": "^6.1.1",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-facebook4": "^6.4.0",
+    "cordova-plugin-fcm-with-dependecy-updated": "^7.3.1",
     "cordova-plugin-googleplus": "^8.5.0",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-ionic-webview": "^4.2.1",
@@ -110,7 +112,8 @@
       "cordova-plugin-device": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
-      "cordova-plugin-ionic-keyboard": {}
+      "cordova-plugin-ionic-keyboard": {},
+      "cordova-plugin-fcm-with-dependecy-updated": {}
     },
     "platforms": [
       "ios"

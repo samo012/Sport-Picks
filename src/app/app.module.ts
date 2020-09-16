@@ -9,6 +9,7 @@ import { RouteReuseStrategy } from "@angular/router";
 import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { Deeplinks } from "@ionic-native/deeplinks/ngx";
+import { FCM } from '@ionic-native/fcm/ngx';
 
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 
@@ -50,10 +51,11 @@ export class CustomHammerConfig extends HammerGestureConfig {
     AngularFireFunctionsModule,
   ],
   providers: [
-    Deeplinks,
-    AuthGuard,
     StatusBar,
     SplashScreen,
+    Deeplinks,
+    FCM,
+    AuthGuard,
     HttpClient,
     GooglePlus,
     Facebook,

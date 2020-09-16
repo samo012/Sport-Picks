@@ -84,6 +84,7 @@ export class AuthService {
   async uploadImg(file: any, path: string): Promise<string> {
     if (!file || !path) return;
     if (Array.isArray(file)) file = file[0];
+    if (!file.startsWith("data")) file = "data:image/jpeg;base64," + file;
     var imagesRef = this.storage.ref(path);
     await imagesRef.putString(file, "data_url");
     return imagesRef.getDownloadURL().toPromise();

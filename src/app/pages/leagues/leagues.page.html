@@ -22,7 +22,7 @@
   </section>
 
   <ng-container *ngIf="!noLeagues&&!loading">
-    <ion-toolbar>
+    <ion-toolbar color="dark">
       <ion-select (ionChange)="getLeagueUsers()" [(ngModel)]="selectedLeague"
         [interfaceOptions]="{header:'Select a League'}">
         <ion-select-option *ngFor="let l of leagues" [value]="l">{{l.name}}</ion-select-option>

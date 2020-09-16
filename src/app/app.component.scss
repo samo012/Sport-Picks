@@ -32,6 +32,9 @@ ion-menu.md ion-list#inbox-list ion-list-header {
 
   min-height: 20px;
 }
+ion-menu.ios ion-list#inbox-list {
+ margin-top: 2rem;
+}
 
 ion-menu.md ion-list#labels-list ion-list-header {
   font-size: 16px;

@@ -16,7 +16,7 @@
   <ng-container *ngIf="user">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large"> {{user.name}}
+        <ion-title size="large" color="light"> {{user.name}}
         </ion-title>
         <!-- <ion-buttons slot="start">
         <ion-back-button></ion-back-button>
@@ -24,7 +24,7 @@
         <ion-buttons slot="end" (click)="openPictures()">
           <ion-avatar id="icon" *ngIf="user.photo; else noPhoto"><img [src]="user.photo"></ion-avatar>
           <ng-template #noPhoto>
-            <ion-icon id="icon" slot="icon-only" name="person-circle-outline"></ion-icon>
+            <ion-icon color="light" id="icon" slot="icon-only" name="person-circle-outline"></ion-icon>
           </ng-template>
           <span id="edit">edit</span>
         </ion-buttons>

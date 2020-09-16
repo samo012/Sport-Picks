@@ -61,7 +61,8 @@
             </ion-col>
           </ion-row>
         </ion-grid>
-        <ion-card *ngFor="let item of event.headlines" [href]="item.video[0]?.links?.mobile?.href">
+        <ng-container *ngFor="let item of event.headlines">
+        <ion-card *ngIf="item.video[0]" [href]="item.video[0]?.links?.mobile?.href">
           <ion-card-header>
             <ion-card-title>{{item.shortLinkText}}</ion-card-title>
           </ion-card-header>
@@ -72,6 +73,7 @@
             {{item.description}}
           </ion-card-content>
         </ion-card>
+        </ng-container>
         <ion-list *ngIf="event.leaders">
           <ion-list-header>
             <ion-label>Leaders</ion-label>

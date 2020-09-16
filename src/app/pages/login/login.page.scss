@@ -1,3 +1,6 @@
+*{
+  color: white
+}
 .logo {
   width: 100px;
   margin: auto auto 1.5rem;
@@ -13,9 +16,10 @@
   padding: 0 16px;
 }
 ion-content.ios {
-  --padding-top: 65px !important;
+  --padding-top: 100px !important;
 }
 ion-button {
+  color:#2f2c3d;
   margin: 2rem auto 0;
   --padding-top: 1.5rem;
   --padding-bottom: 1.5rem;
@@ -62,6 +66,7 @@ h4 {
   opacity: 0.7;
 }
 .or {
+  color:white;
   text-align: center;
   margin-bottom: -5px;
 }

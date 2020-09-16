@@ -3,7 +3,7 @@
     <ion-menu contentId="main-content" type="overlay" *ngIf="user$|async as user">
       <ion-content>
         <ion-list id="inbox-list">
-          <ion-list-header class="ion-margin-bottom">{{user?.name}}</ion-list-header>
+          <ion-list-header class="ion-margin-bottom">{{user.name}}</ion-list-header>
           <!-- <div id="toggle-container">
             <ion-icon name="sunny"></ion-icon>
             <ion-toggle name="dToggle" [(ngModel)]="dark" (ionChange)="toggleDark()">

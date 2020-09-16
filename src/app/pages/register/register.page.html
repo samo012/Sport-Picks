@@ -46,26 +46,26 @@
       </ion-button>
     </div>
     <form #formValidator="ngForm" (ngSubmit)="submit()" [hidden]="socialRegister || loading">
-      <ion-item class="clear">
+      <ion-item color="dark">
         <ion-label position="floating">First Name</ion-label>
         <ion-input autocomplete="given-name" [(ngModel)]="model.first" name="first" #fName="ngModel" required>
         </ion-input>
         <p *ngIf="fName.touched&&fName.invalid">First Name is required</p>
       </ion-item>
-      <ion-item class="clear">
+      <ion-item color="dark">
         <ion-label position="floating">Last Name</ion-label>
         <ion-input autocomplete="family-name" [(ngModel)]="model.last" name="last" #lName="ngModel" required>
         </ion-input>
         <p *ngIf="lName.touched&&lName.invalid">Last Name is required</p>
       </ion-item>
-      <ion-item class="clear">
+      <ion-item color="dark">
         <ion-label position="floating">Email</ion-label>
         <ion-input autocomplete="email" [(ngModel)]="model.email" name="email" #mail="ngModel" required email>
         </ion-input>
         <p *ngIf="mail.touched&&mail.hasError('required')">Email is required</p>
         <p *ngIf="mail.touched&&mail.hasError('email')">Invalid Email</p>
       </ion-item>
-      <ion-item class="clear">
+      <ion-item color="dark">
         <ion-label position="floating">Password</ion-label>
         <ion-input autocomplete="new-password" [(ngModel)]="model.password" name="password" #pswd="ngModel"
           type="password" required minlength="6">
@@ -73,7 +73,7 @@
         <p *ngIf="pswd.touched&&pswd.hasError('required')">Password is required</p>
         <p *ngIf="pswd.touched&&pswd.hasError('minlength')">At least 6 characters</p>
       </ion-item>
-      <ion-item class="clear" [hidden]="pswd.invalid">
+      <ion-item color="dark" [hidden]="pswd.invalid">
         <ion-label position="floating">Confirm Password</ion-label>
         <ion-input [(ngModel)]="confirm" name="confirm" #pswd2="ngModel" type="password" required
           (keyup.enter)="submit()"></ion-input>

@@ -53,6 +53,7 @@ export class LeagueModalComponent implements OnInit {
   async submit() {
     if (this.state === 1) {
       this.model.uid = this.currUser.uid;
+      this.model.token = this.currUser.token || "";
       await this.ls.create(this.model);
     } else await this.ls.update(this.model);
 
@@ -80,7 +81,7 @@ export class LeagueModalComponent implements OnInit {
   async join() {
     this.selectedLeague.username = this.username;
     this.selectedLeague.uid = this.currUser.uid;
-    await this.ls.join(this.selectedLeague);
+    await this.ls.join(this.selectedLeague, this.currUser.token);
     this.dismissModal();
   }
 }

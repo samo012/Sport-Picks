@@ -145,18 +145,20 @@ export const updatePrimary = functions
         if (collection && collection.docs && collection.docs.length > 0) {
           const games = await getGames(sport);
           if (games.length > 0) {
-            const eventIDs = games.map((g) => g.id);
             collection.docs.forEach((doc) => {
               const l = doc.data();
+              const pickedGames: string[] = [];
               if (l.picks.length > 0) {
-                l.picks
-                  .filter(
-                    (p: { eventId: string; win: boolean; teamId: string }) =>
-                      eventIDs.includes(p.eventId) && p.win === undefined
-                  )
-                  .forEach(
-                    (p: { eventId: string; win: boolean; teamId: string }) => {
-                      const game = games.find((e) => e.id == p.eventId);
+                l.picks.forEach(
+                  (p: {
+                    eventId: string;
+                    win: boolean;
+                    teamId: string;
+                    notified: boolean;
+                  }) => {
+                    pickedGames.push(p.eventId);
+                    const game = games.find((e) => e.id == p.eventId);
+                    if (game && p.win === undefined) {
                       const teams = game.competitions[0].competitors;
                       functions.logger.log("first winner:", teams[0].winner);
                       if (teams[0].winner !== undefined) {
@@ -183,8 +185,24 @@ export const updatePrimary = functions
                         }
                       }
                     }
-                  );
+                  }
+                );
                 batch.update(doc.ref, l);
+              }
+              // Make Notifications for unpicked games today
+              if (games.some((g) => !pickedGames.includes(g.id))) {
+                batch.create(db.collection("notifications").doc(), {
+                  title: "Unpicked games today",
+                  body:
+                    "Make your picks for the league, " +
+                    l.name +
+                    ", before the games lock",
+                  recipient: l.uid,
+                  created: Date.now(),
+                  day: new Date().toLocaleDateString(),
+                  leagueId: l.leagueId,
+                  token: l.token || "",
+                });
               }
             });
           }
@@ -259,3 +277,37 @@ function pointSystem(firstRank: number, secondRank: number) {
   else if (firstRank > 25 && secondRank <= 25) return 2;
   else return 0;
 }
+
+// Send Notification to Device
+export const deviceNotification = functions.firestore
+  .document("notifications")
+  .onCreate(async (change) => {
+    const notification = change.data();
+    const nSnap = await db
+      .collection("notifications")
+      .where("recipient", "==", notification.recipient)
+      .where("leagueId", "==", notification.leagueId)
+      .where("day", "==", new Date().toLocaleDateString())
+      .get();
+    if (!nSnap.docs || (nSnap.docs && nSnap.docs.length < 2)) {
+      if (notification.token) {
+        const payload = {
+          notification: {
+            title: notification.title,
+            body: notification.body || "",
+            icon:
+              "https://firebasestorage.googleapis.com/v0/b/pick-ems.appspot.com/o/fcm_icon.png?alt=media&token=cb501b5c-0ba7-4a36-9861-428d32e73c95",
+          },
+          data: {
+            leagueId: notification.leagueId,
+          },
+        };
+        try {
+          return admin.messaging().sendToDevice(notification.token, payload);
+        } catch (err) {
+          throw new functions.https.HttpsError("unknown", err);
+        }
+      }
+    }
+    return;
+  });

@@ -10,6 +10,7 @@ import { LeagueModalComponent } from "./modals/league-modal/league-modal.compone
 import { LeagueService } from "./services/league.service";
 import { League } from "./models/league";
 import { Deeplinks } from "@ionic-native/deeplinks/ngx";
+import { FCM } from "@ionic-native/fcm/ngx";
 // import { EspnService } from "./services/espn.service";
 // import * as moment from "moment";
 // import { AngularFirestore } from "@angular/fire/firestore";
@@ -17,7 +18,7 @@ import { Deeplinks } from "@ionic-native/deeplinks/ngx";
 @Component({
   selector: "app-root",
   templateUrl: "app.component.html",
-  styleUrls: ["app.component.scss"]
+  styleUrls: ["app.component.scss"],
 })
 export class AppComponent {
   user$: Observable<User>;
@@ -30,63 +31,91 @@ export class AppComponent {
     private ls: LeagueService,
     private router: Router,
     private dl: Deeplinks,
+    private fcm: FCM,
     private zone: NgZone,
     public modalController: ModalController // private espn: EspnService, // private afs: AngularFirestore
   ) {
     this.initializeApp();
   }
   initializeApp() {
-    this.platform.ready().then(() => {
+    this.platform.ready().then((platform) => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      this.deepLinks();
+      this.deepLinks(platform);
       this.goHome();
       this.getLeagues();
       this.setUpDarkMode();
+      this.setUpFCM(platform);
     });
   }
 
   goHome() {
-    this.as.getUser().then(user => {
+    this.as.getUser().then((user) => {
       if (user) this.router.navigate(["home/tabs/leagues"]);
     });
   }
 
-  deepLinks() {
-    this.dl
-      .route({
-        "/join/:leagueId": "leagues"
-      })
-      .subscribe(
-        match => {
-          console.log("match: ", match);
-          this.as.getUser().then(user => {
-            if (user)
-              this.ls.getLeaguesOnce(match.$args.leagueId).then(leagues => {
-                if (leagues && leagues.findIndex(f => f.uid == user.uid) < 0) {
-                  leagues[0].uid = user.uid;
-                  leagues[0].username = user.name;
-                  this.ls.join(leagues[0]).then(() => {
-                    this.zone.run(() => {
-                      this.router.navigateByUrl("/home/tabs/leagues");
+  deepLinks(platform: string) {
+    console.log("platform: ", platform);
+    if (platform === "cordova")
+      this.dl
+        .route({
+          "/join/:leagueId": "leagues",
+        })
+        .subscribe(
+          (match) => {
+            console.log("match: ", match);
+            this.as.getUser().then((user) => {
+              if (user)
+                this.ls.getLeaguesOnce(match.$args.leagueId).then((leagues) => {
+                  if (
+                    leagues &&
+                    leagues.findIndex((f) => f.uid == user.uid) < 0
+                  ) {
+                    leagues[0].uid = user.uid;
+                    leagues[0].username = user.name;
+                    this.ls.join(leagues[0], user.token).then(() => {
+                      this.zone.run(() => {
+                        this.router.navigateByUrl(
+                          "/home/tabs/leagues/" + match.$args.leagueId
+                        );
+                      });
                     });
-                  });
-                }
-              });
-          });
-        },
-        err => console.log("err: ", err)
-      );
+                  }
+                });
+            });
+          },
+          (err) => console.log("err: ", err)
+        );
   }
 
   getLeagues() {
     this.user$ = this.as.user$;
-    this.as.user$.subscribe(user => {
-      if (user)
-        this.ls.getUsersLeagues(user.uid).subscribe(leagues => {
+    this.as.user$.subscribe((user) => {
+      if (user) {
+        this.ls.getUsersLeagues(user.uid).subscribe((leagues) => {
           this.leagues = leagues;
         });
+        const token = localStorage.getItem("token");
+        if (!user.token && token) this.as.updateFCMToken(token);
+      }
     });
+  }
+
+  setUpFCM(platform: string) {
+    if (platform === "cordova") {
+      this.fcm.getToken().then((token) => {
+        this.as.updateFCMToken(token);
+      });
+      this.fcm.onNotification().subscribe((data) => {
+        console.log(data);
+        if (data.wasTapped) {
+          console.log("Received in background");
+          this.router.navigateByUrl("/home/tabs/events");
+          // /events/"  + data.leagueId
+        }
+      });
+    }
   }
 
   dark = false;
@@ -94,7 +123,7 @@ export class AppComponent {
     const prefersColor = window.matchMedia("(prefers-color-scheme: dark)");
     this.dark = prefersColor.matches;
     this.toggleDark();
-    prefersColor.addEventListener("change", mediaQuery => {
+    prefersColor.addEventListener("change", (mediaQuery) => {
       this.dark = mediaQuery.matches;
       this.toggleDark();
     });
@@ -106,7 +135,7 @@ export class AppComponent {
   async openModal(state: number) {
     const modal = await this.modalController.create({
       component: LeagueModalComponent,
-      componentProps: { state }
+      componentProps: { state },
     });
     return await modal.present();
   }

@@ -8,4 +8,5 @@ export class User {
   first?: string;
   last?: string;
   rank?: number;
+  token?: string;
 }

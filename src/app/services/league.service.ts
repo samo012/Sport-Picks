@@ -100,7 +100,8 @@ export class LeagueService {
       )
       .get()
       .toPromise();
-    if (data.docs && data.docs.length>0) return data.docs.map(d=>d.data() as League)
+    if (data.docs && data.docs.length > 0)
+      return data.docs.map((d) => d.data() as League);
   }
   getOwnersLeagues(uid: string) {
     return this.afs
@@ -149,14 +150,17 @@ export class LeagueService {
     l.points;
     return this.savePicks(l);
   }
-  join(l: League) {
+  join(l: League, userToken: string) {
     l.og = false;
     l.added = Date.now();
     l.id = this.afs.createId();
     l.picks = [];
     l.points = 0;
     const title = l.username + " has joined your league, " + l.name;
-    this.ns.create(new Notification(title, l.creator));
+    this.ns.create(
+      new Notification(title, l.creator, l.token || "", l.leagueId)
+    );
+    l.token = userToken || "";
     return this.afs
       .collection("leagues")
       .doc<League>(l.id)

@@ -53,9 +53,7 @@ export class AuthService {
     );
   }
   get getUserId() {
-    if (!this.user) this.afAuth.currentUser.then((user) => (this.user = user));
     if (this.user) return this.user.uid;
-    // else localStorage.getItem("uid")
   }
 
   async signInRegular(user) {
@@ -210,17 +208,14 @@ export class AuthService {
       .doc(this.user.uid)
       .update(Object.assign({}, user));
   }
-  updateYelpId(yelpId: string) {
-    return this.afstore
-      .collection("users")
-      .doc(this.getUserId)
-      .update({ yelpId: yelpId });
-  }
+
   updateFCMToken(token: string) {
-    return this.afstore
-      .collection("users")
-      .doc(this.getUserId)
-      .update({ token: token });
+    if (this.getUserId)
+      this.afstore
+        .collection("users")
+        .doc(this.getUserId)
+        .update({ token: token });
+    else localStorage.setItem("token", token);
   }
 
   async webSignIn(isGoogle: boolean) {

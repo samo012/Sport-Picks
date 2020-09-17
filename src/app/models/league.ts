@@ -17,4 +17,5 @@ export class League {
   og: boolean;
   picks: Pick[] = [];
   edit?: boolean;
+  token?: string;
 }

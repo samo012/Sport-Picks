@@ -40,7 +40,6 @@
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-facebook4": "^6.4.0",
     "cordova-plugin-fcm-with-dependecy-updated": "^7.3.1",
-    "cordova-plugin-googleplus": "^8.5.0",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-ionic-webview": "^4.2.1",
     "cordova-plugin-sign-in-with-apple": "^0.1.2",
@@ -96,10 +95,6 @@
         "PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION": "This app requires photo library access to function properly.",
         "PHOTO_LIBRARY_USAGE_DESCRIPTION": "This app requires photo library access to function properly."
       },
-      "cordova-plugin-googleplus": {
-        "REVERSED_CLIENT_ID": "com.googleusercontent.apps.115291834996-o2ljah14rcap5unn7ll3ilrb153midgv",
-        "WEB_APPLICATION_CLIENT_ID": "115291834996-o2ljah14rcap5unn7ll3ilrb153midgv.apps.googleusercontent.com"
-      },
       "cordova-plugin-facebook4": {
         "APP_ID": "281842369495417",
         "APP_NAME": "Pickems",
@@ -115,7 +110,11 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-fcm-with-dependecy-updated": {}
+      "cordova-plugin-fcm-with-dependecy-updated": {},
+      "cordova-plugin-googleplus": {
+        "REVERSED_CLIENT_ID": "com.googleusercontent.apps.115291834996-o2ljah14rcap5unn7ll3ilrb153midgv",
+        "WEB_APPLICATION_CLIENT_ID": "115291834996-o2ljah14rcap5unn7ll3ilrb153midgv.apps.googleusercontent.com"
+      }
     },
     "platforms": [
       "ios"

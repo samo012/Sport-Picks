@@ -144,6 +144,14 @@ export class LeagueService {
       )
       .valueChanges();
   }
+  async getUsersByLeagueIDsOnce(leagueIDs: string[]) {
+    const data = await this.afs
+      .collection<League>("leagues", (ref) =>
+        ref.where("leagueId", "in", leagueIDs)
+      ).get().toPromise();
+      if (data.docs && data.docs.length > 0)
+      return data.docs.map((d) => d.data() as League);
+  }
   getPicksByEvent(eventId: string, teamId: string) {
     return this.afs
       .collection<League>("leagues", (ref) =>

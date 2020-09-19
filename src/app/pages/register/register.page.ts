@@ -53,9 +53,11 @@ export class RegisterPage implements OnInit {
     this.model.last = user.displayName.split(" ")[1];
     this.model.email = user.email;
     this.model.photo = user.photoURL;
+    return this.submit();
   }
-  async singUpWithApple() {
+  async signUpWithApple() {
     this.model = await this.as.signInWithApple();
+    return this.submit();
   }
   async signUpWithFacebook() {
     const user = await this.as.signInWithFacebook();
@@ -63,6 +65,7 @@ export class RegisterPage implements OnInit {
     this.model.last = user.displayName.split(" ")[1];
     this.model.email = user.email;
     this.model.photo = user.photoURL;
+    return this.submit();
   }
   async presentAlert(e) {
     var error = "Sign Up Error";

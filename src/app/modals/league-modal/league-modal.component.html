@@ -22,7 +22,7 @@
       </ion-list-header>
       <ion-list class="ion-margin-top">
         <ion-item *ngFor="let fl of filteredLeagues" (click)="selectedLeague=fl"
-          [color]="fl.id===selectedLeague?.id?'secondary':''">
+          [color]="fl.id===selectedLeague?.id?'primary':''">
           <ion-label> {{fl.name}}</ion-label>
         </ion-item>
       </ion-list>

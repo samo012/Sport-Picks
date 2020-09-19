@@ -5,6 +5,12 @@
 }
 ion-slides {
   height: 100%;
+  color: white
+}
+.ios{
+  ion-slides{
+    padding-top: 3rem;
+  }
 }
 .custom-p {
   bottom: 2rem;

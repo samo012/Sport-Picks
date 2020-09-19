@@ -96,7 +96,7 @@ export class AuthService {
       if (this.platform.is("cordova")) {
         const gplusUser = await this.gplus.login({
           webClientId:
-            "20229215758-kol6nk1v9hu1q0l79tkfn77v3l4uhlu6.apps.googleusercontent.com",
+            "115291834996-07gf5sk0jmvk9mmhttdnll726dgj7fk0.apps.googleusercontent.com",
           offline: true,
           scopes: "profile email",
         });

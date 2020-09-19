@@ -11,7 +11,9 @@ import { BehaviorSubject } from "rxjs";
 export class EspnService {
   base = "https://site.api.espn.com/apis/site/v2/sports/";
 
-  events = new BehaviorSubject<SportsEvent[]>([]);
+  // events = new BehaviorSubject<Map<string, SportsEvent[]>>(
+  //   new Map<string, SportsEvent[]>()
+  // );
 
   sports = {
     NFL: "football/nfl/",
@@ -25,7 +27,7 @@ export class EspnService {
 
   constructor(private httpClient: HttpClient) {}
 
-  async getEvents(
+  getEvents(
     sport: string,
     startDate?: string,
     endDate?: string
@@ -42,7 +44,7 @@ export class EspnService {
     if (!sport || sport === "NCAAF") params["groups"] = "80";
     // const conferences = ["1", "4", "8"];
     const url = this.base + this.sports[sport] + "scoreboard";
-    const events = await this.httpClient
+    return this.httpClient
       .get<any>(url, { params: params })
       .pipe(
         map((data) =>
@@ -83,8 +85,8 @@ export class EspnService {
         )
       )
       .toPromise();
-    this.events.next(events);
-    return events;
+    // this.events.next(this.events.value.set(sport, events));
+    // return events;
   }
 
   // async getRankings() {

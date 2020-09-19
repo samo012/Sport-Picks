@@ -111,8 +111,7 @@ export class AppComponent {
         console.log(data);
         if (data.wasTapped) {
           console.log("Received in background");
-          this.router.navigateByUrl("/home/tabs/events");
-          // /events/"  + data.leagueId
+          this.router.navigateByUrl(data.url);
         }
       });
     }

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button defaultHref="/home/tabs/leagues" (click)="goBack($event)"></ion-back-button>
     </ion-buttons>
     <ion-title>Notifications</ion-title>
     <ion-buttons slot="end">
@@ -19,8 +19,12 @@
       <ion-item-sliding *ngFor="let n of notifications">
         <ion-item>
           <ion-label>
-            {{n.title}}
+            <h1>
+              {{n.title}}
+            </h1>
+            <p>{{n.body}}</p>
           </ion-label>
+          <ion-note slot="end">{{n.created | date}}</ion-note>
         </ion-item>
         <ion-item-options side="end">
           <ion-item-option (click)="remove(n.id)" color="danger">

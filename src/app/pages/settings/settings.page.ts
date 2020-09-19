@@ -20,6 +20,7 @@ export class SettingsPage implements OnInit {
   deleteReady = false;
   err = false;
   leagues: League[];
+  allLeagues: League[];
   newAdmins = new Map<string, string>();
   oldIDs = new Map<string, string>();
   leagueUsers = new Map<string, League[]>();
@@ -55,10 +56,12 @@ export class SettingsPage implements OnInit {
     this.loading = true;
     this.err = false;
     this.as
-      .updatePassword(this.oldPassword, this.newPassword)
+      .reAuth(this.oldPassword)
       .then(() => {
-        form.resetForm();
-        this.presentToast();
+        this.as.updatePassword(this.newPassword).then(() => {
+          form.resetForm();
+          this.presentToast();
+        });
       })
       .catch((err) => {
         console.log("err: ", err);
@@ -70,40 +73,60 @@ export class SettingsPage implements OnInit {
   }
 
   getLeagueUsers() {
-    this.ls.getOwnersLeagues(this.as.getUserId).subscribe((leagues) => {
+    this.ls.getUsersLeaguesOnce(this.as.getUserId).then((leagues) => {
+      this.allLeagues = leagues;
       if (leagues) {
-        const ids = leagues.map((l) => l.leagueId);
-        console.log("ids: ", ids);
-        this.ls.getUsersByLeagueIDs(ids).subscribe((users) => {
-          console.log("users: ", users);
-          if (users) {
-            users.forEach((u) => {
-              if (u.uid !== this.as.getUserId) {
-                const arr = this.leagueUsers.get(u.leagueId) || [];
-                arr.push(u);
-                this.leagueUsers.set(u.leagueId, arr);
-              }
-            });
-          } else this.deleteReady = true;
-          this.leagues = leagues.filter((l) =>
-            this.leagueUsers.has(l.leagueId)
-          );
-        });
+        const ids = leagues.filter((l) => l.og).map((l) => l.leagueId);
+        if (ids && ids.length > 0) {
+          this.ls.getUsersByLeagueIDs(ids).subscribe((users) => {
+            if (users) {
+              users.forEach((u) => {
+                if (u.uid !== this.as.getUserId) {
+                  const arr = this.leagueUsers.get(u.leagueId) || [];
+                  arr.push(u);
+                  this.leagueUsers.set(u.leagueId, arr);
+                }
+              });
+            } else this.deleteReady = true;
+            this.leagues = leagues.filter((l) =>
+              this.leagueUsers.has(l.leagueId)
+            );
+          });
+        } else this.deleteReady = true;
       } else this.deleteReady = true;
     });
   }
 
-  async updateAdmins() {
-    this.newAdmins.forEach(async (uid: string, newID: string) => {
+  deleteLeagues() {
+    return Promise.all(this.allLeagues.map((a) => this.ls.delete(a.id)));
+  }
+
+  updateAdmins() {
+    const arr: { oldID: string; newID: string; uid: string }[] = [];
+    this.newAdmins.forEach((uid: string, newID: string) => {
       const oldID = this.oldIDs.get(newID);
-      await this.ls.updateAdmin(oldID, newID, uid);
+      arr.push({ oldID, newID, uid });
     });
+    return Promise.all(
+      arr.map((a) => this.ls.updateAdmin(a.oldID, a.newID, a.uid))
+    );
   }
 
   async deleteAccount() {
-    await this.updateAdmins();
+    this.loading = true;
+    if (this.newAdmins.size > 0) await this.updateAdmins();
+    if (this.allLeagues && this.allLeagues.length > 0)
+      await this.deleteLeagues();
     localStorage.clear();
-    await this.router.navigateByUrl("/", { replaceUrl: true });
-    await this.as.deleteUser();
+    this.as
+      .reAuth(this.oldPassword)
+      .then(async () => {
+        await this.as.deleteUser();
+        await this.router.navigateByUrl("/", { replaceUrl: true });
+      })
+      .catch(() => {
+        this.err = true;
+        this.loading = false;
+      });
   }
 }

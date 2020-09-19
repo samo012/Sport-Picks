@@ -68,7 +68,6 @@ export class ProfilePage {
     const res = await this.imagePicker
       .getPictures(options)
       .catch((err) => console.log("err: ", err));
-    console.log("res: ", res);
     this.user.photo = await this.as.uploadImg(res, this.user.uid);
     this.as.updateUser(this.user);
   }

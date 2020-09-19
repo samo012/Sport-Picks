@@ -65,17 +65,20 @@ export class AuthService {
     return this.getUserDetails(res.user.uid);
   }
 
-  async updatePassword(oldPassword: string, newPassword: string) {
+  reAuth(password: string) {
     const cred = firebase.auth.EmailAuthProvider.credential(
       this.user.email,
-      oldPassword
+      password
     );
-    await this.user.reauthenticateWithCredential(cred);
+    return this.user.reauthenticateWithCredential(cred);
+  }
+
+  async updatePassword(newPassword: string) {
     await this.user.updatePassword(newPassword);
   }
 
   async deleteUser() {
-    await this.afstore.doc(this.user.uid).delete();
+    await this.afstore.doc("users/" + this.user.uid).delete();
     return this.user.delete();
   }
 

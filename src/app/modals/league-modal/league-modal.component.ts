@@ -22,11 +22,13 @@ export class LeagueModalComponent implements OnInit {
   isPrivate = false;
   onlyAdmin = true;
   username: string;
+  loading = false;
 
   constructor(
     private as: AuthService,
     public modalController: ModalController,
-    private ls: LeagueService
+    private ls: LeagueService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -37,6 +39,7 @@ export class LeagueModalComponent implements OnInit {
     });
   }
   ionViewDidEnter() {
+    this.loading = false;
     if (this.state === 1) this.setListHeight();
   }
   getLeague() {
@@ -51,16 +54,18 @@ export class LeagueModalComponent implements OnInit {
     });
   }
   async submit() {
+    this.loading = true;
     if (this.state === 1) {
       this.model.uid = this.currUser.uid;
       this.model.token = this.currUser.token || "";
-      await this.ls.create(this.model);
+      this.model.leagueId = await this.ls.create(this.model);
     } else await this.ls.update(this.model);
-
     this.dismissModal();
   }
-  dismissModal() {
-    this.modalController.dismiss(this.model);
+  async dismissModal() {
+    const lId = this.model.leagueId || this.selectedLeague.leagueId;
+    await this.router.navigateByUrl("/home/tabs/leagues/" + lId);
+    this.modalController.dismiss(lId);
   }
 
   setListHeight() {
@@ -79,6 +84,7 @@ export class LeagueModalComponent implements OnInit {
   }
 
   async join() {
+    this.loading = true;
     this.selectedLeague.username = this.username;
     this.selectedLeague.uid = this.currUser.uid;
     await this.ls.join(this.selectedLeague, this.currUser.token);

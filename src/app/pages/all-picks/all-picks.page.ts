@@ -69,7 +69,7 @@ export class AllPicksPage implements OnInit {
   }
 
   getEvents() {
-    this.events = this.espn.events.value;
+    // this.events = this.espn.events.value;
     this.events.forEach((e) =>
       this.eventNames.set(e.teams[0].id, {
         teamName: e.teams[0].abbr,

@@ -6,7 +6,7 @@
     </ion-buttons>
     <ion-title>
       <ion-select [(ngModel)]="selectedLeague" name="leagueSelector" [interfaceOptions]="{header:'Select a League'}"
-        (ionChange)=getEvents(true)>
+        (ionChange)=getEvents()>
         <ion-label>Select a League</ion-label>
         <ion-select-option *ngFor="let l of leagues" [value]="l">
           {{l.name}}
@@ -14,27 +14,27 @@
       </ion-select>
     </ion-title>
     <ion-buttons slot="end">
-      <ion-icon *ngIf="!editMode" routerLink="notifications" class="ns" name="notifications" size="default"
+      <ion-icon *ngIf="!editMode" routerLink="/home/tabs/notifications" routerDirection="forward"  class="ns" name="notifications" size="default"
         color="primary"></ion-icon>
       <ion-button *ngIf="editMode" (click)="save()">Save</ion-button>
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-label>Conference</ion-label>
-      <ion-select (ionChange)="filterConf($event)" [interfaceOptions]="{header:'Filter By Conference'}">
-        <ion-select-option>All</ion-select-option>
-        <ion-select-option *ngFor="let conf of conferences | keyvalue" [value]="conf.key">{{conf.key}}
-        </ion-select-option>
-      </ion-select>
-    </ion-buttons>
-    <ion-buttons class="float-right">
       <ion-button *ngIf="!startDate" color="dark" (click)="openCalendar()">Date Range</ion-button>
       <ion-chip *ngIf="startDate" (click)="clearDate()">
         <ion-icon name="calendar" color="primary"></ion-icon>
         <ion-label id="dates">{{startDate}} - {{endDate}}</ion-label>
         <ion-icon name="close"></ion-icon>
       </ion-chip>
+    </ion-buttons>
+    <ion-buttons [hidden]="selectedLeague?.sport!='NCAAF'" class="float-right">
+      <ion-label>Conference</ion-label>
+      <ion-select (ionChange)="filterConf($event)" [interfaceOptions]="{header:'Filter By Conference'}">
+        <ion-select-option>All</ion-select-option>
+        <ion-select-option *ngFor="let conf of conferences | keyvalue" [value]="conf.key">{{conf.key}}
+        </ion-select-option>
+      </ion-select>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -66,7 +66,8 @@
               <ion-badge color="light" class="record l">{{event.teams[0].record ? event.teams[0].record : '0-0'}}
               </ion-badge>
             </ion-thumbnail>
-            <ion-label class="text-center" (click)="viewEvent(event)">
+            <ion-label class="text-center" routerLink="/home/tabs/detail" routerDirection="forward"
+              [state]="{event: event, selectedLeague: selectedLeague}">
               <ion-icon *ngIf="event.date | isPast; else notPast" name="lock-closed" size="small"></ion-icon>
               <ng-template #notPast>
                 <ion-icon *ngIf="picks.get(event.id)" slot="icon-only"

@@ -38,6 +38,7 @@ export class RegisterPage implements OnInit {
 
   async presentTutorial() {
     const modal = await this.modalController.create({
+      id:"TutorialModal",
       component: TutorialComponent,
     });
     return await modal.present();

@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content fullscreen>
-  <ng-container *ngIf="state===2; else notJoin">
+  <div [hidden]="loading" *ngIf="state===2; else notJoin">
     <ion-item class="ion-margin-vertical">
       <ion-label position="stacked">Personal Display Name</ion-label>
       <ion-input placeholder="Your name within the league" [(ngModel)]="username" name="display-name" #dName="ngModel"
@@ -15,22 +15,23 @@
       </ion-input>
       <p class="error" *ngIf="dName.touched&&dName.invalid">Display Name is required</p>
     </ion-item>
-    <ion-searchbar placeholder="Search Leagues" (ionChange)="searchLeagues($event)"></ion-searchbar>
-    <ion-list-header *ngIf="filteredLeagues">
-      <ion-label>{{filteredLeagues.length>0 ? 'Search Results':'No Results'}}</ion-label>
-    </ion-list-header>
-    <ion-list class="ion-margin-top">
-      <ion-item *ngFor="let fl of filteredLeagues" (click)="selectedLeague=fl"
-        [color]="fl.id===selectedLeague?.id?'secondary':''">
-        <ion-label> {{fl.name}}</ion-label>
-      </ion-item>
-    </ion-list>
-    <ion-button class="bottom" [disabled]="dName.invalid" *ngIf="selectedLeague" type="submit" (click)="join()"
-      expand="block">
-      Join League</ion-button>
-  </ng-container>
+    <div [hidden]="dName.pristine || dName.invalid">
+      <ion-searchbar placeholder="Search Leagues" (ionChange)="searchLeagues($event)"></ion-searchbar>
+      <ion-list-header *ngIf="filteredLeagues">
+        <ion-label>{{filteredLeagues.length>0 ? 'Search Results':'No Results'}}</ion-label>
+      </ion-list-header>
+      <ion-list class="ion-margin-top">
+        <ion-item *ngFor="let fl of filteredLeagues" (click)="selectedLeague=fl"
+          [color]="fl.id===selectedLeague?.id?'secondary':''">
+          <ion-label> {{fl.name}}</ion-label>
+        </ion-item>
+      </ion-list>
+      <ion-button class="bottom" *ngIf="selectedLeague" type="submit" (click)="join()" expand="block">
+        Join League</ion-button>
+    </div>
+  </div>
   <ng-template #notJoin>
-    <form #formValidator="ngForm" (ngSubmit)="submit()">
+    <form #formValidator="ngForm" [hidden]="loading" (ngSubmit)="submit()">
       <ion-item>
         <ion-label position="stacked">League Name</ion-label>
         <ion-input placeholder="Super Awesome League" [(ngModel)]="model.name" name="league-name" #lName="ngModel"
@@ -131,5 +132,7 @@
       </div>
     </form>
   </ng-template>
-
+  <div class="loader" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
 </ion-content>

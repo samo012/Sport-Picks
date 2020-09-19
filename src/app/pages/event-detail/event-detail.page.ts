@@ -30,7 +30,6 @@ export class EventDetailPage implements OnInit {
       const state = this.router.getCurrentNavigation().extras.state;
       if (state) {
         this.event = state.event;
-        console.log(" this.event: ", this.event);
         this.firstId = this.event.teams[0].id;
         this.league = state.selectedLeague;
         this.getDate();
@@ -75,7 +74,6 @@ export class EventDetailPage implements OnInit {
         // this.event.teams[1].stats = info.stats;
         this.event.teams[1].rank = info.rank;
       });
-    console.log("this.event.teams: ", this.event.teams);
   }
   getPicks() {
     this.ls.getUsersByLeagueId(this.league.leagueId).subscribe((users) => {
@@ -99,8 +97,6 @@ export class EventDetailPage implements OnInit {
           }
         }
       }
-      console.log("this.first: ", this.first);
-      console.log("this.second: ", this.second);
     });
     // this.ls
     //   .getPicksByEvent(this.event.id, this.event.teams[0].id)

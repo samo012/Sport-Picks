@@ -43,16 +43,19 @@ export class EventsPage {
   ionViewWillEnter() {
     this.getLeagues();
   }
-  ionViewWillLeave() {
-    // this.selectedLeague = undefined;
-  }
+  // ionViewWillLeave() {
+  // this.selectedLeague = undefined;
+  // }
 
   async getLeagues() {
     const leagues = await this.ls.getUsersLeaguesOnce(this.as.getUserId);
     if (leagues && leagues.length > 0) {
       this.leagues = leagues;
-      if (!this.selectedLeague) this.selectedLeague = leagues[0];
-      this.getEvents(false);
+      const id = this.route.snapshot.params.id;
+      this.selectedLeague = id
+        ? leagues.find((l) => l.leagueId == id)
+        : leagues[0];
+      this.getEvents();
     } else {
       this.loading = false;
       this.presentAlert(
@@ -62,15 +65,8 @@ export class EventsPage {
     }
   }
 
-  viewEvent(event: SportsEvent) {
-    this.router.navigate(["detail"], {
-      state: { event: event, selectedLeague: this.selectedLeague },
-      relativeTo: this.route,
-    });
-  }
-
   doRefresh(event) {
-    this.getEvents(true)
+    this.getEvents()
       .catch((err) => console.log("err: ", err))
       .finally(() => event.target.complete());
   }
@@ -83,12 +79,17 @@ export class EventsPage {
     });
     popover.onDidDismiss().then((data) => {
       if (data.data && data.data.endDate)
-        this.getEvents(true, data.data.startDate, data.data.endDate);
+        this.getEvents(data.data.startDate, data.data.endDate);
     });
     return await popover.present();
   }
 
-  async getEvents(fetch: boolean, startDate?: string, endDate?: string) {
+  async getEvents(startDate?: string, endDate?: string) {
+    if (!this.selectedLeague) {
+      this.loading = false;
+      return;
+    }
+    this.loading = true;
     this.picks = this.selectedLeague.picks
       ? new Map(
           this.selectedLeague.picks.map((i) => [
@@ -97,21 +98,16 @@ export class EventsPage {
           ])
         )
       : new Map();
-    let events: SportsEvent[] = [];
     this.dateEvents = [];
     this.ogDateEvents = [];
-    if (fetch || this.espn.events.value.length === 0) {
-      this.loading = true;
-      this.startDate = startDate;
-      this.endDate = endDate;
-      events = await this.espn.getEvents(
-        this.selectedLeague.sport,
-        startDate,
-        endDate
-      );
-    } else events = this.espn.events.value;
-
-    if (events)
+    this.startDate = startDate;
+    this.endDate = endDate;
+    const events = await this.espn.getEvents(
+      this.selectedLeague.sport,
+      startDate,
+      endDate
+    );
+    if (events && events.length > 0)
       events.forEach((ev) => {
         const sliceTime = ev.date.slice(0, 10);
         if (!this.dateEvents[sliceTime]) {
@@ -200,7 +196,7 @@ export class EventsPage {
   clearDate() {
     this.startDate = null;
     this.endDate = null;
-    this.getEvents(true);
+    this.getEvents();
   }
 
   filterWeek(event) {

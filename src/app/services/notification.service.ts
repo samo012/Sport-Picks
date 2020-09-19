@@ -30,6 +30,7 @@ export class NotificationService {
   }
   create(n: Notification) {
     n.id = this.afs.createId();
+    n.body = n.body || "";
     return this.nCollection.doc(n.id).set(Object.assign({}, n));
   }
   clear() {

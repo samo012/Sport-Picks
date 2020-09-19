@@ -132,8 +132,6 @@ export class TutorialComponent {
     return await modal.present();
   }
   dismiss() {
-    setTimeout(() => {
-      this.modalController.dismiss();
-    }, 200);
+    return this.modalController.dismiss(null, null, "TutorialModal");
   }
 }

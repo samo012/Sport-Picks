@@ -40,7 +40,7 @@ export class LeagueService {
     return this.afs.collection("leagues").doc<League>(id).valueChanges();
   }
 
-  create(l: League) {
+  async create(l: League) {
     l.creator = l.uid;
     l.og = true;
     l.created = Date.now();
@@ -50,14 +50,22 @@ export class LeagueService {
       l.name.length > 5
         ? l.name.replace(/[^A-Z0-9]/gi, "").slice(0, 5) + l.id.slice(0, 5)
         : l.name.replace(/[^A-Z0-9]/gi, "") + l.id.slice(0, 5);
-    return this.afs
+    await this.afs
       .collection("leagues")
       .doc<League>(l.id)
       .set(this.sanitize(l));
+    return l.leagueId;
   }
 
   update(l: League) {
-    return this.functions.httpsCallable("editLeague")({ l }).toPromise();
+    return this.functions
+      .httpsCallable("editLeague")({
+        leagueId: l.leagueId,
+        name: l.name,
+        permissions: l.permissions,
+        type: l.type,
+      })
+      .toPromise();
   }
 
   async updateAdmin(oldID: string, newID: string, uid: string) {

@@ -7,7 +7,7 @@ import { LeagueModalComponent } from "src/app/modals/league-modal/league-modal.c
 import { User } from "src/app/models/user";
 import { EllipsisPopover } from "src/app/modals/ellipsis-popover/ellipsis-popover.component";
 import { SocialSharing } from "@ionic-native/social-sharing/ngx";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: "app-leagues",
@@ -46,7 +46,8 @@ export class LeaguesPage {
         ? this.leagues.find((l) => l.leagueId == id)
         : this.leagues[0];
       this.noLeagues = !this.leagues || this.leagues.length === 0;
-      this.getLeagueUsers();
+      if (this.noLeagues) this.loading = false;
+      else this.getLeagueUsers();
     });
   }
 
@@ -84,8 +85,9 @@ export class LeaguesPage {
           } else this.players = [];
           this.loading = false;
         });
-    }
+    } else this.loading = false;
   }
+
   share() {
     const msg =
       this.user.name +
@@ -96,9 +98,19 @@ export class LeaguesPage {
       "https://pick-ems.web.app/join/" + this.selectedLeague.leagueId;
     return this.socialSharing.share(msg, subject, null, link);
   }
-  delete() {
-    this.ls.deleteLeague(this.selectedLeague.leagueId);
+
+  async delete() {
+    this.loading = true;
+    await this.ls.deleteLeague(this.selectedLeague.leagueId);
+    this.loading = false;
   }
+
+  async leave() {
+    this.loading = true;
+    await this.ls.delete(this.selectedLeague.id);
+    this.loading = false;
+  }
+
   async openModal(state: number) {
     const leagueId = this.selectedLeague ? this.selectedLeague.id : null;
     const modal = await this.modalController.create({
@@ -107,6 +119,7 @@ export class LeaguesPage {
     });
     return await modal.present();
   }
+
   async openPopover(ev: Event) {
     const popover = await this.popoverController.create({
       component: EllipsisPopover,
@@ -121,6 +134,7 @@ export class LeaguesPage {
       if (props.data == "share") this.share();
       else if (props.data == "edit") this.openModal(3);
       else if (props.data == "delete") this.delete();
+      else if (props.data == "leave") this.leave();
     });
     return await popover.present();
   }

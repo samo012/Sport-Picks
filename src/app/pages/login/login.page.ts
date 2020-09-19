@@ -103,6 +103,11 @@ export class LoginPage {
         ? localStorage.setItem("email", this.model.email)
         : localStorage.removeItem("email");
       this.user = await this.authService.signInRegular(this.model);
+      if (!this.user)
+        return this.presentAlert(
+          "Not Found",
+          "There is no user record corresponding to this email."
+        );
       this.goHome();
     } catch (e) {
       this.loading = false;
@@ -148,6 +153,7 @@ export class LoginPage {
     }
   }
   async presentAlert(title: string, content: string) {
+    this.loading = false;
     const alert = await this.alertController.create({
       header: title,
       message: content,

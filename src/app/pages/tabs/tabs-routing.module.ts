@@ -9,20 +9,8 @@ const routes: Routes = [
     children: [
       {
         path: "news",
-        children: [
-          {
-            path: "",
-            loadChildren: () =>
-              import("../news/news.module").then((m) => m.NewsPageModule),
-          },
-          {
-            path: "notifications",
-            loadChildren: () =>
-              import("../notifications/notifications.module").then(
-                (m) => m.NotificationsPageModule
-              ),
-          },
-        ],
+        loadChildren: () =>
+          import("../news/news.module").then((m) => m.NewsPageModule),
       },
       {
         path: "leagues",
@@ -41,20 +29,6 @@ const routes: Routes = [
                 (m) => m.LeaguesPageModule
               ),
           },
-          {
-            path: "all-picks",
-            loadChildren: () =>
-              import("../all-picks/all-picks.module").then(
-                (m) => m.AllPicksPageModule
-              ),
-          },
-          {
-            path: "notifications",
-            loadChildren: () =>
-              import("../notifications/notifications.module").then(
-                (m) => m.NotificationsPageModule
-              ),
-          },
         ],
       },
       {
@@ -70,21 +44,14 @@ const routes: Routes = [
             loadChildren: () =>
               import("../events/events.module").then((m) => m.EventsPageModule),
           },
-          {
-            path: "detail",
-            loadChildren: () =>
-              import("../event-detail/event-detail.module").then(
-                (m) => m.EventDetailPageModule
-              ),
-          },
-          {
-            path: "notifications",
-            loadChildren: () =>
-              import("../notifications/notifications.module").then(
-                (m) => m.NotificationsPageModule
-              ),
-          },
         ],
+      },
+      {
+        path: "detail",
+        loadChildren: () =>
+          import("../event-detail/event-detail.module").then(
+            (m) => m.EventDetailPageModule
+          ),
       },
       {
         path: "profile",
@@ -103,14 +70,21 @@ const routes: Routes = [
                 (m) => m.SettingsPageModule
               ),
           },
-          {
-            path: "notifications",
-            loadChildren: () =>
-              import("../notifications/notifications.module").then(
-                (m) => m.NotificationsPageModule
-              ),
-          },
         ],
+      },
+      // {
+      //   path: "all-picks",
+      //   loadChildren: () =>
+      //     import("../all-picks/all-picks.module").then(
+      //       (m) => m.AllPicksPageModule
+      //     ),
+      // },
+      {
+        path: "notifications",
+        loadChildren: () =>
+          import("../notifications/notifications.module").then(
+            (m) => m.NotificationsPageModule
+          ),
       },
       {
         path: "",

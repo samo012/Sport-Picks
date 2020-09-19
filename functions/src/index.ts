@@ -2,7 +2,8 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as moment from "moment";
 import fetch from "node-fetch";
-// import { League } from '../../src/app/models/league';
+// import { League } from "../../src/app/models/league";
+// import { Notification } from "../../src/app/models/notification";
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -15,21 +16,23 @@ export const editLeague = functions.https.onCall(async (data, context) => {
     );
   }
   try {
-    const batch = db.batch();
-    const snapshot = await db
-      .collection("leagues")
-      .where("leagueId", "==", data.leagueId)
-      .get();
-    if (snapshot && snapshot.docs) {
-      snapshot.docs.forEach((doc) => {
-        batch.update(doc.ref, {
-          name: data.name,
-          permissions: data.permissions,
-          type: data.type,
+    if (data.leagueId) {
+      const batch = db.batch();
+      const snapshot = await db
+        .collection("leagues")
+        .where("leagueId", "==", data.leagueId)
+        .get();
+      if (snapshot.docs && snapshot.docs.length > 0) {
+        snapshot.docs.forEach((doc) => {
+          batch.update(doc.ref, {
+            name: data.name,
+            permissions: data.permissions,
+            type: data.type,
+          });
         });
-      });
-      await batch.commit();
-      return { res: "success" };
+        await batch.commit();
+        return { res: "success" };
+      }
     }
     return { res: "no change" };
   } catch (err) {
@@ -45,17 +48,19 @@ export const deleteLeague = functions.https.onCall(async (data, context) => {
     );
   }
   try {
-    const batch = db.batch();
-    const snapshot = await db
-      .collection("leagues")
-      .where("leagueId", "==", data.leagueId)
-      .get();
-    if (snapshot && snapshot.docs) {
-      snapshot.docs.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
-      await batch.commit();
-      return { res: "success" };
+    if (data.leagueId) {
+      const batch = db.batch();
+      const snapshot = await db
+        .collection("leagues")
+        .where("leagueId", "==", data.leagueId)
+        .get();
+      if (snapshot.docs && snapshot.docs.length > 0) {
+        snapshot.docs.forEach((doc) => {
+          batch.delete(doc.ref);
+        });
+        await batch.commit();
+        return { res: "success" };
+      }
     }
     return { res: "no change" };
   } catch (err) {
@@ -78,7 +83,7 @@ export const clearNotifications = functions.https.onCall(
         .collection("notifications")
         .where("recipient", "==", uid)
         .get();
-      if (snapshot && snapshot.docs) {
+      if (snapshot.docs && snapshot.docs.length > 0) {
         snapshot.docs.forEach((doc) => {
           batch.delete(doc.ref);
         });
@@ -142,7 +147,7 @@ export const updatePrimary = functions
           .collection("leagues")
           .where("sport", "==", sport)
           .get();
-        if (collection && collection.docs && collection.docs.length > 0) {
+        if (collection.docs && collection.docs.length > 0) {
           const games = await getGames(sport);
           if (games.length > 0) {
             collection.docs.forEach((doc) => {
@@ -150,12 +155,7 @@ export const updatePrimary = functions
               const pickedGames: string[] = [];
               if (l.picks.length > 0) {
                 l.picks.forEach(
-                  (p: {
-                    eventId: string;
-                    win: boolean;
-                    teamId: string;
-                    notified: boolean;
-                  }) => {
+                  (p: { eventId: string; teamId: string; win?: boolean }) => {
                     pickedGames.push(p.eventId);
                     const game = games.find((e) => e.id == p.eventId);
                     if (game && p.win === undefined) {
@@ -227,23 +227,20 @@ export const updateSecondary = functions
           .collection("leagues")
           .where("sport", "==", sport)
           .get();
-        if (collection && collection.docs && collection.docs.length > 0) {
+        if (collection.docs && collection.docs.length > 0) {
           const games = await getGames(sport);
           if (games.length > 0) {
-            const eventIDs = games.map((g) => g.id);
             collection.docs.forEach((doc) => {
+              const pickedGames: string[] = [];
               const l = doc.data();
               if (l.picks.length > 0) {
-                l.picks
-                  .filter(
-                    (p: { eventId: string; win: boolean; teamId: string }) =>
-                      eventIDs.includes(p.eventId) && p.win === undefined
-                  )
-                  .forEach(
-                    (p: { eventId: string; win: boolean; teamId: string }) => {
-                      const game = games.find((e) => e.id == p.eventId);
+                l.picks.forEach(
+                  (p: { eventId: string; teamId: string; win?: boolean }) => {
+                    pickedGames.push(p.eventId);
+                    const game = games.find((e) => e.id == p.eventId);
+                    if (game && p.win === undefined) {
                       const teams = game.competitions[0].competitors;
-                      functions.logger.log("sec winner", teams[1].winner);
+                      functions.logger.log("sec winner:", teams[1].winner);
                       if (teams[0].winner !== undefined) {
                         if (teams[0].winner) {
                           p.win = p.teamId == teams[0].id;
@@ -254,8 +251,24 @@ export const updateSecondary = functions
                         }
                       }
                     }
-                  );
+                  }
+                );
                 batch.update(doc.ref, l);
+              }
+              // Make Notifications for unpicked games today
+              if (games.some((g) => !pickedGames.includes(g.id))) {
+                batch.create(db.collection("notifications").doc(), {
+                  title: "Unpicked games today",
+                  body:
+                    "Make your picks for the league, " +
+                    l.name +
+                    ", before the games lock",
+                  recipient: l.uid,
+                  created: Date.now(),
+                  day: new Date().toLocaleDateString(),
+                  leagueId: l.leagueId,
+                  token: l.token || "",
+                });
               }
             });
           }
@@ -283,14 +296,22 @@ export const deviceNotification = functions.firestore
   .document("notifications")
   .onCreate(async (change) => {
     const notification = change.data();
-    const nSnap = await db
-      .collection("notifications")
-      .where("recipient", "==", notification.recipient)
-      .where("leagueId", "==", notification.leagueId)
-      .where("day", "==", new Date().toLocaleDateString())
-      .get();
-    if (!nSnap.docs || (nSnap.docs && nSnap.docs.length < 2)) {
-      if (notification.token) {
+    if (
+      notification.token &&
+      notification.leagueId &&
+      notification.recipient &&
+      notification.title
+    ) {
+      const nSnap = await db
+        .collection("notifications")
+        .where("recipient", "==", notification.recipient)
+        .where("leagueId", "==", notification.leagueId)
+        .where("day", "==", new Date().toLocaleDateString())
+        .get();
+      if (nSnap.docs && nSnap.docs.length < 2) {
+        const page = notification.title.includes("joined")
+          ? "leagues/"
+          : "events/";
         const payload = {
           notification: {
             title: notification.title,
@@ -299,7 +320,7 @@ export const deviceNotification = functions.firestore
               "https://firebasestorage.googleapis.com/v0/b/pick-ems.appspot.com/o/fcm_icon.png?alt=media&token=cb501b5c-0ba7-4a36-9861-428d32e73c95",
           },
           data: {
-            leagueId: notification.leagueId,
+            url: "/home/tabs/" + page + notification.leagueId,
           },
         };
         try {

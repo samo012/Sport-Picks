@@ -44,7 +44,7 @@
   </ng-container>
 
   <ng-container *ngIf="!changePass">
-    <ng-container *ngIf="leagues?.length>0">
+    <ng-container *ngIf="leagues?.length>0 ;else noLeagues">
       <h6 class="ion-padding-horizontal">Before deleting your account, you must select new admins for your leagues
       </h6>
       <ion-list-header>
@@ -59,7 +59,20 @@
         </ion-item>
       </ion-list>
     </ng-container>
-    <ion-button class="bottom" color="danger" expand="block" [disabled]="!deleteReady" (click)="deleteAccount()">
+    <ng-template #noLeagues>
+      <div id="sorry">
+        <h2>Sorry to see you go</h2>
+        <p>Re-enter your password below to delete your account. Also, leave us a review on the App Store with any
+          feedback to help us improve.</p>
+      </div>
+    </ng-template>
+    <ion-item class="ion-margin-vertical">
+      <ion-label>Re-enter Password</ion-label>
+      <ion-input type="password" name="old" [(ngModel)]="oldPassword" #pswd="ngModel" required></ion-input>
+    </ion-item>
+    <p *ngIf="err" class="error">Invalid Password</p>
+    <ion-button class="bottom" color="danger" eqxpand="block" [disabled]="!deleteReady || pswd.invalid"
+      (click)="deleteAccount()">
       Delete Account</ion-button>
 
   </ng-container>

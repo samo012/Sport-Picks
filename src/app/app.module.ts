@@ -10,7 +10,7 @@ import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { Deeplinks } from "@ionic-native/deeplinks/ngx";
 import { FCM } from '@ionic-native/fcm/ngx';
-
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 
 import { AppRoutingModule } from "./app-routing.module";
@@ -60,6 +60,7 @@ export class CustomHammerConfig extends HammerGestureConfig {
     GooglePlus,
     Facebook,
     SignInWithApple,
+    Keyboard,
     { provide: ORIGIN, useValue: "https://pick-ems.web.app" },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: HAMMER_GESTURE_CONFIG, useClass: CustomHammerConfig },

@@ -4,6 +4,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { AlertController } from "@ionic/angular";
 import { ToastController } from "@ionic/angular";
 import { User } from "src/app/models/user";
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 @Component({
   selector: "app-login",
@@ -20,7 +21,8 @@ export class LoginPage {
     public authService: AuthService,
     public router: Router,
     public alertController: AlertController,
-    public toastController: ToastController
+    public toastController: ToastController,
+    private keyboard: Keyboard
   ) {}
 
   ionViewWillEnter() {
@@ -30,7 +32,7 @@ export class LoginPage {
       this.existing = true;
     } else this.existing = false;
   }
-  async singInWithApple() {
+  async signInWithApple() {
     try {
       const user = await this.authService.signInWithApple();
       if (user) {
@@ -99,6 +101,7 @@ export class LoginPage {
   async login() {
     this.loading = true;
     try {
+      this.keyboard.hide();
       this.model.remember
         ? localStorage.setItem("email", this.model.email)
         : localStorage.removeItem("email");

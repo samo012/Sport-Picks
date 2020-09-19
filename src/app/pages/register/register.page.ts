@@ -4,6 +4,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { Router } from "@angular/router";
 import { AlertController, ModalController } from "@ionic/angular";
 import { TutorialComponent } from 'src/app/modals/tutorial/tutorial.component';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 @Component({
   selector: "app-register",
@@ -19,13 +20,15 @@ export class RegisterPage implements OnInit {
     private as: AuthService,
     private router: Router,
     public alertController: AlertController,
-    public modalController: ModalController
+    public modalController: ModalController,
+    private keyboard: Keyboard
   ) {}
 
   ngOnInit() {}
 
   async submit() {
     this.loading = true;
+    this.keyboard.hide();
     try {
       console.log(this.model);
       await this.as.registerUser(this.model, this.socialRegister);

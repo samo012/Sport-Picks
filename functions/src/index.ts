@@ -142,72 +142,74 @@ export const updatePrimary = functions
     try {
       const primary = ["NFL", "NCAAF", "NBA"];
       const batch = db.batch();
-      primary.forEach(async (sport) => {
-        const collection = await db
-          .collection("leagues")
-          .where("sport", "==", sport)
-          .get();
-        if (collection.docs && collection.docs.length > 0) {
-          const games = await getGames(sport);
-          if (games.length > 0) {
-            collection.docs.forEach((doc) => {
-              const l = doc.data();
-              const pickedGames: string[] = [];
-              if (l.picks.length > 0) {
-                l.picks.forEach(
-                  (p: { eventId: string; teamId: string; win?: boolean }) => {
-                    pickedGames.push(p.eventId);
-                    const game = games.find((e) => e.id == p.eventId);
-                    if (game && p.win === undefined) {
-                      const teams = game.competitions[0].competitors;
-                      functions.logger.log("first winner:", teams[0].winner);
-                      if (teams[0].winner !== undefined) {
-                        if (teams[0].winner) {
-                          p.win = p.teamId == teams[0].id;
-                          if (p.win) {
-                            if (l.sport === "NCAAF" && l.type === "straight")
-                              l.points += pointSystem(
-                                teams[0].curatedRank.current,
-                                teams[1].curatedRank.current
-                              );
-                            else l.points += 1;
-                          }
-                        } else {
-                          p.win = p.teamId == teams[1].id;
-                          if (p.win) {
-                            if (l.sport === "NCAAF" && l.type === "straight")
-                              l.points += pointSystem(
-                                teams[1].curatedRank.current,
-                                teams[0].curatedRank.current
-                              );
-                            else l.points += 1;
+      await Promise.all(
+        primary.map(async (sport) => {
+          const collection = await db
+            .collection("leagues")
+            .where("sport", "==", sport)
+            .get();
+          if (collection.docs && collection.docs.length > 0) {
+            const games = await getGames(sport);
+            if (games.length > 0) {
+              collection.docs.forEach((doc) => {
+                const l = doc.data();
+                const pickedGames: string[] = [];
+                if (l.picks.length > 0) {
+                  l.picks.forEach(
+                    (p: { eventId: string; teamId: string; win?: boolean }) => {
+                      pickedGames.push(p.eventId);
+                      const game = games.find((e) => e.id == p.eventId);
+                      if (game && p.win === undefined) {
+                        const teams = game.competitions[0].competitors;
+                        functions.logger.log("first winner:", teams[0].winner);
+                        if (teams[0].winner !== undefined) {
+                          if (teams[0].winner) {
+                            p.win = p.teamId == teams[0].id;
+                            if (p.win) {
+                              if (l.sport === "NCAAF" && l.type === "straight")
+                                l.points += pointSystem(
+                                  teams[0].curatedRank.current,
+                                  teams[1].curatedRank.current
+                                );
+                              else l.points += 1;
+                            }
+                          } else {
+                            p.win = p.teamId == teams[1].id;
+                            if (p.win) {
+                              if (l.sport === "NCAAF" && l.type === "straight")
+                                l.points += pointSystem(
+                                  teams[1].curatedRank.current,
+                                  teams[0].curatedRank.current
+                                );
+                              else l.points += 1;
+                            }
                           }
                         }
                       }
                     }
-                  }
-                );
-                batch.update(doc.ref, l);
-              }
-              // Make Notifications for unpicked games today
-              if (games.some((g) => !pickedGames.includes(g.id))) {
-                batch.create(db.collection("notifications").doc(), {
-                  title: "Unpicked games today",
-                  body:
-                    "Make your picks for the league, " +
-                    l.name +
-                    ", before the games lock",
-                  recipient: l.uid,
-                  created: Date.now(),
-                  day: new Date().toLocaleDateString(),
-                  leagueId: l.leagueId,
-                  token: l.token || "",
-                });
-              }
-            });
+                  );
+                  batch.update(doc.ref, l);
+                }
+                // Make Notifications for unpicked games today
+                if (games.some((g) => !pickedGames.includes(g.id))) {
+                  batch.set(db.collection("notifications").doc(), {
+                    title: "Unpicked games today",
+                    body:
+                      "Make your picks for the league, " +
+                      l.name +
+                      ", before the games lock",
+                    recipient: l.uid,
+                    created: Date.now(),
+                    day: new Date().toLocaleDateString(),
+                    leagueId: l.leagueId,
+                    token: l.token || "",
+                  });
+                }
+              });
+            }
           }
-        }
-      });
+        })
+      );
       return batch.commit();
     } catch (err) {
       throw new functions.https.HttpsError("internal", err);
@@ -218,62 +220,64 @@ export const updateSecondary = functions
   .runWith({ memory: "2GB" })
   .pubsub.schedule("0 * * * *")
   .timeZone("America/New_York")
-  .onRun(async (context) => {
+  .onRun(async () => {
     try {
       const batch = db.batch();
       const secondary = ["NHL", "MLB", "NCAAB"];
-      secondary.forEach(async (sport) => {
-        const collection = await db
-          .collection("leagues")
-          .where("sport", "==", sport)
-          .get();
-        if (collection.docs && collection.docs.length > 0) {
-          const games = await getGames(sport);
-          if (games.length > 0) {
-            collection.docs.forEach((doc) => {
-              const pickedGames: string[] = [];
-              const l = doc.data();
-              if (l.picks.length > 0) {
-                l.picks.forEach(
-                  (p: { eventId: string; teamId: string; win?: boolean }) => {
-                    pickedGames.push(p.eventId);
-                    const game = games.find((e) => e.id == p.eventId);
-                    if (game && p.win === undefined) {
-                      const teams = game.competitions[0].competitors;
-                      functions.logger.log("sec winner:", teams[1].winner);
-                      if (teams[0].winner !== undefined) {
-                        if (teams[0].winner) {
-                          p.win = p.teamId == teams[0].id;
-                          if (p.win) l.points += 1;
-                        } else {
-                          p.win = p.teamId == teams[1].id;
-                          if (p.win) l.points += 1;
+      await Promise.all(
+        secondary.map(async (sport) => {
+          const collection = await db
+            .collection("leagues")
+            .where("sport", "==", sport)
+            .get();
+          if (collection.docs && collection.docs.length > 0) {
+            const games = await getGames(sport);
+            if (games.length > 0) {
+              collection.docs.forEach((doc) => {
+                const pickedGames: string[] = [];
+                const l = doc.data();
+                if (l.picks.length > 0) {
+                  l.picks.forEach(
+                    (p: { eventId: string; teamId: string; win?: boolean }) => {
+                      pickedGames.push(p.eventId);
+                      const game = games.find((e) => e.id == p.eventId);
+                      if (game && p.win === undefined) {
+                        const teams = game.competitions[0].competitors;
+                        functions.logger.log("sec winner:", teams[1].winner);
+                        if (teams[0].winner !== undefined) {
+                          if (teams[0].winner) {
+                            p.win = p.teamId == teams[0].id;
+                            if (p.win) l.points += 1;
+                          } else {
+                            p.win = p.teamId == teams[1].id;
+                            if (p.win) l.points += 1;
+                          }
                         }
                       }
                     }
-                  }
-                );
-                batch.update(doc.ref, l);
-              }
-              // Make Notifications for unpicked games today
-              if (games.some((g) => !pickedGames.includes(g.id))) {
-                batch.create(db.collection("notifications").doc(), {
-                  title: "Unpicked games today",
-                  body:
-                    "Make your picks for the league, " +
-                    l.name +
-                    ", before the games lock",
-                  recipient: l.uid,
-                  created: Date.now(),
-                  day: new Date().toLocaleDateString(),
-                  leagueId: l.leagueId,
-                  token: l.token || "",
-                });
-              }
-            });
+                  );
+                  batch.update(doc.ref, l);
+                }
+                // Make Notifications for unpicked games today
+                if (games.some((g) => !pickedGames.includes(g.id))) {
+                  batch.set(db.collection("notifications").doc(), {
+                    title: "Unpicked games today",
+                    body:
+                      "Make your picks for the league, " +
+                      l.name +
+                      ", before the games lock",
+                    recipient: l.uid,
+                    created: Date.now(),
+                    day: new Date().toLocaleDateString(),
+                    leagueId: l.leagueId,
+                    token: l.token || "",
+                  });
+                }
+              });
+            }
           }
-        }
-      });
+        })
+      );
       return batch.commit();
     } catch (err) {
       throw new functions.https.HttpsError("internal", err);
@@ -293,7 +297,7 @@ function pointSystem(firstRank: number, secondRank: number) {
 
 // Send Notification to Device
 export const deviceNotification = functions.firestore
-  .document("notifications")
+  .document("notifications/{id}")
   .onCreate(async (change) => {
     const notification = change.data();
     if (

@@ -26,6 +26,7 @@ export class LoginPage {
   ) {}
 
   ionViewWillEnter() {
+    this.loading=false
     const email = localStorage.getItem("email");
     if (email) {
       this.model.email = email;

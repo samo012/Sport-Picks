@@ -78,7 +78,7 @@ export class SettingsPage implements OnInit {
       if (leagues) {
         const ids = leagues.filter((l) => l.og).map((l) => l.leagueId);
         if (ids && ids.length > 0) {
-          this.ls.getUsersByLeagueIDs(ids).subscribe((users) => {
+          this.ls.getUsersByLeagueIDsOnce(ids).then((users) => {
             if (users) {
               users.forEach((u) => {
                 if (u.uid !== this.as.getUserId) {

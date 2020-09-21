@@ -42,10 +42,10 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       this.deepLinks(platform);
+      this.setUpFCM(platform);
       this.goHome();
       this.getLeagues();
       this.setUpDarkMode();
-      this.setUpFCM(platform);
     });
   }
 
@@ -56,7 +56,6 @@ export class AppComponent {
   }
 
   deepLinks(platform: string) {
-    console.log("platform: ", platform);
     if (platform === "cordova")
       this.dl
         .route({
@@ -104,6 +103,7 @@ export class AppComponent {
 
   setUpFCM(platform: string) {
     if (platform === "cordova") {
+      console.log("setting up FCM")
       this.fcm.getToken().then((token) => {
         this.as.updateFCMToken(token);
       });

@@ -63,7 +63,7 @@ export class LeagueModalComponent implements OnInit {
     this.dismissModal();
   }
   async dismissModal() {
-    const lId = this.model.leagueId || this.selectedLeague.leagueId;
+    const lId = this.model.leagueId || this.selectedLeague ?this.selectedLeague.leagueId:"";
     await this.router.navigateByUrl("/home/tabs/leagues/" + lId);
     this.modalController.dismiss(lId);
   }

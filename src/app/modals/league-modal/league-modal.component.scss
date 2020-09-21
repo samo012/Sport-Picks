@@ -1,5 +1,14 @@
 ion-item {
   --background: transparent;
+  background: transparent;
+  --color:white;
+}
+ion-list{
+  --background: transparent;
+  background: transparent;
+}
+h3{
+  color:white;
 }
 .active {
   --background: lightblue;

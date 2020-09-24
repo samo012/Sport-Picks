@@ -98,7 +98,6 @@ export const clearNotifications = functions.https.onCall(
 );
 
 async function getGames(sport: string) {
-  const today = moment().format("YYYYMMDD");
   const sports = {
     NFL: "football/nfl/",
     NBA: "basketball/nba/",
@@ -109,11 +108,16 @@ async function getGames(sport: string) {
   } as {
     [key: string]: string;
   };
-  const url =
+  const start = moment().subtract(1, "day").format("YYYYMMDD");
+  const end = moment().add(1, "day").format("YYYYMMDD");
+  let url =
     "https://site.api.espn.com/apis/site/v2/sports/" +
     sports[sport] +
-    "/scoreboard?group=80&limit=900&dates=" +
-    today;
+    "scoreboard?limit=900&dates=" +
+    start +
+    "-" +
+    end;
+  if (sport == "NCAAF") url += "&group=80";
   const settings = { method: "Get" };
   const res = await fetch(url, settings);
   const obj = await res.json();
@@ -161,9 +165,9 @@ export const updatePrimary = functions
                       const game = games.find((e) => e.id == p.eventId);
                       if (game && p.win === undefined) {
                         const teams = game.competitions[0].competitors;
-                        functions.logger.log("first winner:", teams[0].winner);
                         if (teams[0].winner !== undefined) {
                           if (teams[0].winner) {
+                            functions.logger.log("teams[0].id", teams[0].id);
                             p.win = p.teamId == teams[0].id;
                             if (p.win) {
                               if (l.sport === "NCAAF" && l.type === "straight")
@@ -174,6 +178,7 @@ export const updatePrimary = functions
                               else l.points += 1;
                             }
                           } else {
+                            functions.logger.log("teams[1].id", teams[1].id);
                             p.win = p.teamId == teams[1].id;
                             if (p.win) {
                               if (l.sport === "NCAAF" && l.type === "straight")

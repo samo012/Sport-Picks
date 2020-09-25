@@ -2,15 +2,15 @@
 
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="news">
-      <ion-icon name="newspaper"></ion-icon>
+      <ion-icon class="small" name="newspaper"></ion-icon>
     </ion-tab-button>
 
     <ion-tab-button tab="leagues">
-      <ion-icon name="home"></ion-icon>
+      <ion-icon class="small" name="home"></ion-icon>
     </ion-tab-button>
 
     <ion-tab-button tab="events">
-      <ion-icon name="people"></ion-icon>
+      <ion-icon class="not-so-small" src="assets/icon/tab-logo.svg"></ion-icon>
     </ion-tab-button>
 
     <ion-tab-button tab="profile">
@@ -19,7 +19,7 @@
           <img [src]="user.photo">
         </ion-avatar>
         <ng-template #noPhoto>
-          <ion-icon name="person-circle"></ion-icon>
+          <ion-icon class="small" name="person-circle"></ion-icon>
         </ng-template>
       </ng-container>
     </ion-tab-button>

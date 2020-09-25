@@ -17,6 +17,7 @@ export class ProfilePage {
   leagues: League[];
   isThird = this.as.isThirdParty();
   oldUsername: string;
+  showAll = false;
 
   constructor(
     public as: AuthService,
@@ -70,5 +71,8 @@ export class ProfilePage {
       .catch((err) => console.log("err: ", err));
     this.user.photo = await this.as.uploadImg(res, this.user.uid);
     this.as.updateUser(this.user);
+  }
+  allPicks() {
+    localStorage.setItem("showAll", this.showAll + "");
   }
 }

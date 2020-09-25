@@ -40,3 +40,6 @@ ion-label ion-skeleton-text {
   white-space: nowrap;
   font-size: small;
 }
+ion-label:focus {
+  outline: none;
+}

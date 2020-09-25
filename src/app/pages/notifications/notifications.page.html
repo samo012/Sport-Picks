@@ -18,11 +18,11 @@
     <ion-list>
       <ion-item-sliding *ngFor="let n of notifications">
         <ion-item>
-          <ion-label>
+          <ion-label class="ion-text-wrap">
             <h1>
               {{n.title}}
             </h1>
-            <p>{{n.body}}</p>
+            <h2>{{n.body}}</h2>
             <p>{{n.created | date:'short'}}</p>
           </ion-label>
         </ion-item>

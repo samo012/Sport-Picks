@@ -1,6 +1,7 @@
 export class Team {
   id: string;
   winner: boolean;
+  linescores: { value: number }[];
   name: string;
   abbr: string;
   logo: string;
@@ -11,5 +12,5 @@ export class Team {
   selected: boolean;
   record?: string;
   standingSummary?: string;
-  stats?: { name: string; value: number }[];
+  stats?;
 }

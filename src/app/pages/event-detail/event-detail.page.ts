@@ -5,6 +5,7 @@ import { EspnService } from "src/app/services/espn.service";
 import { LeagueService } from "src/app/services/league.service";
 import * as moment from "moment";
 import { League } from "src/app/models/league";
+import { Location } from "@angular/common";
 
 @Component({
   selector: "app-event-detail",
@@ -20,6 +21,9 @@ export class EventDetailPage implements OnInit {
   segment = "stats";
   gameStart: string;
   started = false;
+  odds: string;
+  teams = new Map<string, string>();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -30,15 +34,38 @@ export class EventDetailPage implements OnInit {
       const state = this.router.getCurrentNavigation().extras.state;
       if (state) {
         this.event = state.event;
+        console.log(" this.event: ", this.event);
         this.firstId = this.event.teams[0].id;
         this.league = state.selectedLeague;
+        this.event.teams.forEach((t) => {
+          this.teams.set(t.id, t.abbr);
+        });
         this.getDate();
-        this.getTeamsInfo();
+        this.getGameInfo();
         this.getPicks();
       } else this.router.navigate(["/tabs/events"]);
     });
   }
 
+  async getGameInfo() {
+    const info = await this.espn.getGameInfo(this.league.sport, this.event.id);
+    const game = info.header.competitions[0];
+    this.event.teams[0].score = game.competitors[0].score;
+    this.event.teams[0].linescores = game.competitors[0].linescores;
+    this.event.teams[0].stats = info.boxscore.teams[0].statistics;
+    this.event.teams[1].score = game.competitors[1].score;
+    this.event.teams[1].linescores = game.competitors[1].linescores;
+    this.event.teams[1].stats = info.boxscore.teams[1].statistics;
+    this.event.clock = game.status.displayClock;
+    this.odds = info.pickcenter[0]?.details;
+    if (game.status.period) this.event.period = game.status.period;
+  }
+
+  doRefresh(event) {
+    this.getGameInfo()
+      .catch((err) => console.log("err: ", err))
+      .finally(() => event.target.complete());
+  }
   getDate() {
     if (this.event.status == "Postponed") {
       this.started = false;
@@ -57,24 +84,7 @@ export class EventDetailPage implements OnInit {
           : "Game starts " + moment(this.event.date).calendar();
     }
   }
-  getTeamsInfo() {
-    this.espn
-      .getTeamInfo(this.league.sport, this.event.teams[0].id)
-      .then((info) => {
-        this.event.teams[0].record = info.record;
-        this.event.teams[0].standingSummary = info.summary;
-        // this.event.teams[0].stats = info.stats;
-        this.event.teams[0].rank = info.rank;
-      });
-    this.espn
-      .getTeamInfo(this.league.sport, this.event.teams[1].id)
-      .then((info) => {
-        this.event.teams[1].record = info.record;
-        this.event.teams[1].standingSummary = info.summary;
-        // this.event.teams[1].stats = info.stats;
-        this.event.teams[1].rank = info.rank;
-      });
-  }
+
   getPicks() {
     this.ls.getUsersByLeagueId(this.league.leagueId).subscribe((users) => {
       this.first = [];
@@ -98,18 +108,6 @@ export class EventDetailPage implements OnInit {
         }
       }
     });
-    // this.ls
-    //   .getPicksByEvent(this.event.id, this.event.teams[0].id)
-    //   .subscribe((first) => {
-    //     this.first = first;
-    //     console.log("first: ", first);
-    //   });
-    // this.ls
-    //   .getPicksByEvent(this.event.id, this.event.teams[1].id)
-    //   .subscribe((second) => {
-    //     this.second = second;
-    //     console.log("second: ", second);
-    //   });
   }
   ngOnInit() {}
 }

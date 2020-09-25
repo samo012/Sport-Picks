@@ -5,8 +5,8 @@
       <ion-button *ngIf="editMode" (click)="cancel()">Cancel</ion-button>
     </ion-buttons>
     <ion-title>
-      <ion-select [(ngModel)]="selectedLeague" name="leagueSelector" [interfaceOptions]="{header:'Select a League'}"
-        (ionChange)=getEvents()>
+      <ion-select *ngIf="!loading" [(ngModel)]="selectedLeague" name="leagueSelector"
+        [interfaceOptions]="{header:'Select a League'}" (ionChange)=getEvents()>
         <ion-label>Select a League</ion-label>
         <ion-select-option *ngFor="let l of leagues" [value]="l">
           {{l.name}}
@@ -14,8 +14,8 @@
       </ion-select>
     </ion-title>
     <ion-buttons slot="end">
-      <ion-icon *ngIf="!editMode" routerLink="/home/tabs/notifications" routerDirection="forward"  class="ns" name="notifications" size="default"
-        color="primary"></ion-icon>
+      <ion-icon *ngIf="!editMode" routerLink="/home/tabs/notifications" routerDirection="forward" class="ns"
+        name="notifications" size="default" color="primary"></ion-icon>
       <ion-button *ngIf="editMode" (click)="save()">Save</ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -74,7 +74,7 @@
                   [name]="picks.get(event.id).visible?'eye':'eye-off'"></ion-icon>
               </ng-template>
               <h2>{{event.shortName}}</h2>
-              <p>{{event.venue}}</p>
+              <p>{{event.odds}}</p>
             </ion-label>
             <ion-thumbnail slot="end"
               [ngClass]="{'selected': picks.get(event.id)?.teamId === event.teams[1].id, 'winner': event.teams[1].winner}"

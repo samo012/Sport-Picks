@@ -26,6 +26,7 @@
     "@ionic-native/facebook": "^5.28.0",
     "@ionic-native/fcm": "^5.28.0",
     "@ionic-native/firebase": "^5.24.0",
+    "@ionic-native/firebase-crashlytics": "^5.28.0",
     "@ionic-native/google-plus": "^5.28.0",
     "@ionic-native/image-picker": "^5.28.0",
     "@ionic-native/keyboard": "^5.28.0",
@@ -70,6 +71,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
     "codelyzer": "^5.0.0",
+    "cordova-plugin-firebase-crashlytics": "^1.2.0",
     "jasmine-core": "~3.4.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "^4.4.1",
@@ -114,7 +116,8 @@
       "cordova-plugin-googleplus": {
         "REVERSED_CLIENT_ID": "com.googleusercontent.apps.115291834996-o2ljah14rcap5unn7ll3ilrb153midgv",
         "WEB_APPLICATION_CLIENT_ID": "115291834996-o2ljah14rcap5unn7ll3ilrb153midgv.apps.googleusercontent.com"
-      }
+      },
+      "cordova-plugin-firebase-crashlytics": {}
     },
     "platforms": [
       "ios"

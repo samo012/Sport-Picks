@@ -7,6 +7,7 @@ export class SportsEvent {
   date: string;
   venue: string;
   visible: boolean;
+  odds: string;
   headlines: {
     description: string;
     shortLinkText: string;

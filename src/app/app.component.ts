@@ -96,14 +96,18 @@ export class AppComponent {
           this.leagues = leagues;
         });
         const token = localStorage.getItem("token");
-        if (!user.token && token) this.as.updateFCMToken(token);
+        if (!user.token && token) {
+          this.as.updateFCMToken(token);
+          localStorage.removeItem("token");
+        }
       }
     });
   }
 
   setUpFCM(platform: string) {
+    console.log("platform-",platform);
     if (platform === "cordova") {
-      console.log("setting up FCM")
+      console.log("setting up FCM");
       this.fcm.getToken().then((token) => {
         this.as.updateFCMToken(token);
       });

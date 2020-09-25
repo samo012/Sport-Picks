@@ -29,19 +29,17 @@ export class EspnService {
 
   getEvents(
     sport: string,
-    startDate?: string,
-    endDate?: string
+    startDate: string,
+    endDate: string
   ): Promise<SportsEvent[]> {
     let params = {
       limit: "900",
-    };
-    if (startDate && endDate)
-      params["dates"] =
+      dates:
         moment(startDate).format("YYYYMMDD") +
         "-" +
-        moment(endDate).format("YYYYMMDD");
-    else params["dates"] = "2020" + moment().format("MM");
-    if (!sport || sport === "NCAAF") params["groups"] = "80";
+        moment(endDate).format("YYYYMMDD"),
+    };
+    if (sport === "NCAAF") params["groups"] = "80";
     // const conferences = ["1", "4", "8"];
     const url = this.base + this.sports[sport] + "scoreboard";
     return this.httpClient
@@ -57,6 +55,9 @@ export class EspnService {
               venue: ev.competitions[0].venue
                 ? ev.competitions[0].venue.fullName
                 : "",
+              odds: ev.competitions[0].odds
+                ? ev.competitions[0].odds[0].details
+                : "",
               headlines: ev.competitions[0].headlines,
               leaders: ev.competitions[0].leaders,
               visible: false,
@@ -68,6 +69,7 @@ export class EspnService {
                   return {
                     id: teams.id,
                     winner: teams.winner,
+                    linescores: teams.linescores,
                     name: teams.team.name,
                     abbr: teams.team.abbreviation,
                     group: teams.team.conferenceId,
@@ -89,6 +91,30 @@ export class EspnService {
     // return events;
   }
 
+  getGameInfo(sport: string, eventId: string) {
+    const url = this.base + this.sports[sport] + "summary?event=" + eventId;
+    return this.httpClient.get<SingleEvent>(url).toPromise();
+  }
+
+  getNews(sport: string) {
+    const url = this.base + this.sports[sport] + "news";
+    return this.httpClient
+      .get<any>(url)
+      .pipe(
+        map((data) =>
+          data.articles.map((a) => {
+            return {
+              images: a.images,
+              description: a.description,
+              links: a.links,
+              headline: a.headline,
+            };
+          })
+        )
+      )
+      .toPromise();
+  }
+
   // async getRankings() {
   //   const url = this.base  + "rankings";
   //   let ranks = new Map<string, { record: string; rank: number }>();
@@ -108,45 +134,28 @@ export class EspnService {
   //   return ranks;
   // }
 
-  getTeamInfo(sport: string, teamId: string) {
-    const url = this.base + this.sports[sport] + "teams/" + teamId;
-    return this.httpClient
-      .get<any>(url)
-      .pipe(
-        map((data) => {
-          return {
-            id: data.team.id,
-            record: data.team.record.items
-              ? data.team.record.items[0].summary
-              : "NA",
-            // stats: data.team.record.items
-            //   ? data.team.record.items[0].stats
-            //   : "NA",
-            summary: data.team.standingSummary,
-            rank: data.team.rank as number,
-          };
-        })
-      )
-      .toPromise();
-  }
-  getNews(sport: string) {
-    const url = this.base + this.sports[sport] + "news";
-    return this.httpClient
-      .get<any>(url)
-      .pipe(
-        map((data) =>
-          data.articles.map((a) => {
-            return {
-              images: a.images,
-              description: a.description,
-              links: a.links,
-              headline: a.headline,
-            };
-          })
-        )
-      )
-      .toPromise();
-  }
+  // getTeamInfo(sport: string, teamId: string) {
+  //   const url = this.base + this.sports[sport] + "teams/" + teamId;
+  //   return this.httpClient
+  //     .get<any>(url)
+  //     .pipe(
+  //       map((data) => {
+  //         return {
+  //           id: data.team.id,
+  //           record: data.team.record.items
+  //             ? data.team.record.items[0].summary
+  //             : "NA",
+  //           // stats: data.team.record.items
+  //           //   ? data.team.record.items[0].stats
+  //           //   : "NA",
+  //           summary: data.team.standingSummary,
+  //           rank: data.team.rank as number,
+  //         };
+  //       })
+  //     )
+  //     .toPromise();
+  // }
+
   // async getAllEvents(): Promise<SportsEvent[]> {
   //   // https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?group=80&limit=900&dates=20200901-20201001
   //   console.log("getting all");
@@ -161,4 +170,28 @@ export class EspnService {
   //   this.events.next(events);
   //   return events;
   // }
+}
+export interface SingleEvent {
+  boxscore: {
+    players: any[];
+    teams: { statistics: { displayValue: string; label: string }[] }[];
+  };
+  gameInfo;
+  drives;
+  leaders: any[];
+  broadcasts: any[];
+  predictor;
+  pickcenter: any[];
+  againstTheSpread: any[];
+  winprobability: any[];
+  scoringPlays: any[];
+  videos: any[];
+  header: {
+    competitions: {
+      status: { displayClock: string; period: number };
+      competitors: any[];
+    }[];
+  };
+  news;
+  standings;
 }

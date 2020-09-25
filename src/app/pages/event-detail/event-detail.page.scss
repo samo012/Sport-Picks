@@ -31,3 +31,48 @@ h1 {
   font-size: 50px;
   margin: 0;
 }
+.text-right {
+  text-align: right;
+}
+.ml-auto {
+  margin-left: auto;
+}
+.p-0 {
+  padding: 0;
+}
+.my-1 {
+  margin: 2px 0;
+}
+.venue {
+  max-width: 114px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.border {
+  border-top: 1px solid #757575;
+  border-bottom: 1px solid #757575;
+  margin: 0.7rem 0;
+  padding: 0.2rem;
+}
+.score-padding {
+  padding: 0.3rem 0;
+}
+.custom-padding {
+  padding: 5px 0 4px;
+}
+th {
+  font-weight: normal;
+  color: var(--ion-color-medium, #92949c);
+}
+th,
+td {
+  padding: 2px 6px;
+  text-align: center;
+}
+.flex-center {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}

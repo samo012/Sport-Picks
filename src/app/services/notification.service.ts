@@ -22,7 +22,8 @@ export class NotificationService {
       if (user) {
         this.nCollection = this.afs.collection<Notification>(
           "notifications",
-          (ref) => ref.where("recipient", "==", user.uid).orderBy("created")
+          (ref) =>
+            ref.where("recipient", "==", user.uid).orderBy("created", "desc")
         );
         this.notifications$ = this.nCollection.valueChanges();
       }

@@ -17,15 +17,19 @@ ion-content ion-toolbar {
   width: 50%;
   margin: 16px 0;
 }
-ion-card-subtitle {
+ion-card-subtitle.ios {
   position: absolute;
   top: 16px;
+}
+ion-card-subtitle.md {
+  position: absolute;
+  top: -4px;
 }
 ion-select {
   width: 100%;
   justify-content: center;
 }
-h2{
+h2 {
   line-height: 1.5;
   margin-bottom: 2rem;
 }

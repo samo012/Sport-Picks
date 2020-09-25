@@ -30,6 +30,7 @@ export class EventsPage {
   picks = new Map<string, { teamId: string; visible: boolean }>();
   startDate: string;
   endDate: string;
+  showAll = false;
   constructor(
     private as: AuthService,
     private espn: EspnService,
@@ -42,20 +43,25 @@ export class EventsPage {
 
   ionViewWillEnter() {
     this.getLeagues();
+    this.showAll = localStorage.getItem("showAll") === "true";
   }
-  // ionViewWillLeave() {
-  // this.selectedLeague = undefined;
-  // }
 
   async getLeagues() {
     const leagues = await this.ls.getUsersLeaguesOnce(this.as.getUserId);
     if (leagues && leagues.length > 0) {
       this.leagues = leagues;
       const id = this.route.snapshot.params.id;
-      this.selectedLeague = id
-        ? leagues.find((l) => l.leagueId == id)
-        : leagues[0];
-      this.getEvents();
+      if (id) this.selectedLeague = leagues.find((l) => l.leagueId == id);
+      if (!this.selectedLeague) this.selectedLeague = leagues[0];
+      this.picks = this.selectedLeague.picks
+        ? new Map(
+            this.selectedLeague.picks.map((i) => [
+              i.eventId,
+              { teamId: i.teamId, visible: i.visible || false },
+            ])
+          )
+        : new Map();
+      this.getEvents(this.startDate, this.endDate);
     } else {
       this.loading = false;
       this.presentAlert(
@@ -90,22 +96,14 @@ export class EventsPage {
       return;
     }
     this.loading = true;
-    this.picks = this.selectedLeague.picks
-      ? new Map(
-          this.selectedLeague.picks.map((i) => [
-            i.eventId,
-            { teamId: i.teamId, visible: i.visible || false },
-          ])
-        )
-      : new Map();
     this.dateEvents = [];
     this.ogDateEvents = [];
     this.startDate = startDate;
     this.endDate = endDate;
     const events = await this.espn.getEvents(
       this.selectedLeague.sport,
-      startDate,
-      endDate
+      startDate || moment().format("l"),
+      endDate || moment().add("1", "month").format("l")
     );
     if (events && events.length > 0)
       events.forEach((ev) => {
@@ -157,7 +155,7 @@ export class EventsPage {
     }
     if (moment().isBefore(date)) {
       this.editMode = true;
-      this.picks.set(eventId, { teamId, visible: false });
+      this.picks.set(eventId, { teamId, visible: this.showAll });
     }
   }
 

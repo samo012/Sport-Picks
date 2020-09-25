@@ -337,7 +337,7 @@ export const deviceNotification = functions.firestore
         } catch (err) {
           throw new functions.https.HttpsError("unknown", err);
         }
-      }
+      } else return db.doc(change.id).delete();
     }
     return;
   });

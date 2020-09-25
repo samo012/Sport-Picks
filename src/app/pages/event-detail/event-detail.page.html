@@ -1,13 +1,16 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home/tabs/events"></ion-back-button>
+      <ion-back-button [defaultHref]="['/home/tabs/events',league?.leagueId]"></ion-back-button>
     </ion-buttons>
     <ion-title>{{event?.shortName}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <div *ngIf="event">
     <ion-grid class="ion-margin-vertical">
       <ion-row>
@@ -15,19 +18,27 @@
           <ion-thumbnail>
             <img [src]="event.teams[0].logo">
           </ion-thumbnail>
-          <h6><span *ngIf="event.teams[0].rank">#{{event.teams[0].rank}}</span>{{event.teams[0].name}}</h6>
+          <h6>
+            <span *ngIf="event.teams[0].rank&&event.teams[0].rank<99">#{{event.teams[0].rank}}</span>
+            {{event.teams[0].name}}
+          </h6>
           <p class="record">{{event.teams[0].record}}</p>
         </ion-col>
         <ion-col class="align-center">
           {{event.date | date:'EEE, MMM d'}}
-          <p class="record" *ngIf="event.status!='TBA'">{{event.date | date: 'h:mm a'}}</p>
-          <p class="record" *ngIf="event.status | notNumber">{{event.status}}</p>
+          <p class="record my-1" *ngIf="event.status!='TBA'">{{event.date | date: 'h:mm a'}}</p>
+          <p class="record my-1" *ngIf="event.status | notNumber">{{event.status}}</p>
+          <p class="record my-1 venue">{{event.venue}}</p>
+          <p class="record my-1">{{odds}}</p>
         </ion-col>
         <ion-col class="align-center">
           <ion-thumbnail>
             <img [src]="event.teams[1].logo">
           </ion-thumbnail>
-          <h6><span *ngIf="event.teams[1].rank">#{{event.teams[1].rank}}</span>{{event.teams[1].name}}</h6>
+          <h6>
+            <span *ngIf="event.teams[1].rank&&event.teams[1].rank<99">#{{event.teams[1].rank}}</span>
+            {{event.teams[1].name}}
+          </h6>
           <p class="record"> {{event.teams[1].record}}</p>
         </ion-col>
       </ion-row>
@@ -42,8 +53,8 @@
     </ion-segment>
     <div *ngIf="segment=='stats'">
       <ng-container *ngIf="started; else notStarted">
-        <ion-grid class="ion-margin-vertical">
-          <ion-row>
+        <ion-grid class="p-0">
+          <ion-row class="score-padding">
             <ion-col class="align-center">
               <h1>{{event.teams[0].score}}</h1>
             </ion-col>
@@ -60,39 +71,76 @@
               <h1>{{event.teams[1].score}}</h1>
             </ion-col>
           </ion-row>
+          <ion-row class="border">
+            <ion-col>
+              <ion-label color="medium">Team</ion-label>
+              <p class="ion-no-margin custom-padding">{{event.teams[0].abbr}} {{event.teams[0].name}}</p>
+              <p class="ion-no-margin">{{event.teams[1].abbr}} {{event.teams[1].name}}</p>
+            </ion-col>
+            <ion-col>
+              <table class="ml-auto">
+                <tr>
+                  <th *ngFor="let l of event.teams[0].linescores; index as i">{{i > 3 ? 'T' + (i - 3) : i + 1}}</th>
+                </tr>
+                <tr>
+                  <td *ngFor="let l of event.teams[0].linescores">{{l.displayValue || l.value}}</td>
+                </tr>
+                <tr>
+                  <td *ngFor="let l of event.teams[1].linescores">{{l.displayValue || l.value}}</td>
+                </tr>
+              </table>
+            </ion-col>
+          </ion-row>
+          <ion-row class="custom-padding" *ngFor="let stat of event.teams[0].stats; index as i">
+            <ion-col class="flex-center">
+              {{stat.displayValue}}
+            </ion-col>
+            <ion-col class="flex-center">
+              {{stat.label}}
+            </ion-col>
+            <ion-col class="flex-center">
+              {{event.teams[1].stats[i].displayValue}}
+            </ion-col>
+          </ion-row>
         </ion-grid>
-        <ng-container *ngFor="let item of event.headlines">
-        <ion-card *ngIf="item.video[0]" [href]="item.video[0]?.links?.mobile?.href">
-          <ion-card-header>
-            <ion-card-title>{{item.shortLinkText}}</ion-card-title>
-          </ion-card-header>
-          <div class="text-center w-100">
-            <img [src]="item.video[0]?.thumbnail" />
-          </div>
-          <ion-card-content>
-            {{item.description}}
-          </ion-card-content>
-        </ion-card>
-        </ng-container>
-        <ion-list *ngIf="event.leaders">
+
+        <!-- Leaders -->
+        <ion-list class="ion-margin-top" *ngIf="event.leaders">
           <ion-list-header>
             <ion-label>Leaders</ion-label>
           </ion-list-header>
           <ion-item *ngFor="let item of event.leaders">
             <ion-label>
               <h2>{{item.leaders[0]?.athlete.displayName}}</h2>
-              <p>{{item.displayName}}</p>
+              <p>{{teams.get(item.leaders[0]?.team.id)}} {{item.displayName}}</p>
             </ion-label>
             <ion-note>
               {{item.leaders[0]?.value}} YDS
             </ion-note>
           </ion-item>
         </ion-list>
+
+        <!-- Headlines -->
+        <ng-container *ngFor="let item of event.headlines">
+          <ion-card *ngIf="item.video[0]" [href]="item.video[0]?.links?.mobile?.href">
+            <ion-card-header>
+              <ion-card-title>{{item.shortLinkText}}</ion-card-title>
+            </ion-card-header>
+            <div class="text-center w-100">
+              <img [src]="item.video[0]?.thumbnail" />
+            </div>
+            <ion-card-content>
+              {{item.description}}
+            </ion-card-content>
+          </ion-card>
+        </ng-container>
       </ng-container>
       <ng-template #notStarted>
         <h5 class="ion-margin ion-padding-top text-center">{{gameStart}}</h5>
       </ng-template>
     </div>
+
+    <!-- Picks -->
     <ion-grid *ngIf="segment=='picks'">
       <ion-row>
         <ion-col>
@@ -114,5 +162,4 @@
       </ion-row>
     </ion-grid>
   </div>
-
 </ion-content>

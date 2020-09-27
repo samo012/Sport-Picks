@@ -1,4 +1,4 @@
-import { NgModule } from "@angular/core";
+import { ErrorHandler, NgModule } from "@angular/core";
 import {
   BrowserModule,
   HAMMER_GESTURE_CONFIG,
@@ -9,8 +9,8 @@ import { RouteReuseStrategy } from "@angular/router";
 import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { Deeplinks } from "@ionic-native/deeplinks/ngx";
-import { FCM } from "cordova-plugin-fcm-with-dependecy-updated/ionic/ngx"
-import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { FCM } from "cordova-plugin-fcm-with-dependecy-updated/ionic/ngx";
+import { Keyboard } from "@ionic-native/keyboard/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 
 import { AppRoutingModule } from "./app-routing.module";
@@ -28,6 +28,8 @@ import { AuthGuard } from "./services/auth.guard";
 import { LeagueModalComponent } from "./modals/league-modal/league-modal.component";
 import { FormsModule } from "@angular/forms";
 import { AngularFireFunctionsModule, ORIGIN } from "@angular/fire/functions";
+import { MyErrorHandler } from "./services/error-handler";
+import { FirebaseCrashlytics } from "@ionic-native/firebase-crashlytics/ngx";
 
 export class CustomHammerConfig extends HammerGestureConfig {
   overrides = {
@@ -61,6 +63,8 @@ export class CustomHammerConfig extends HammerGestureConfig {
     Facebook,
     SignInWithApple,
     Keyboard,
+    FirebaseCrashlytics,
+    { provide: ErrorHandler, useClass: MyErrorHandler },
     { provide: ORIGIN, useValue: "https://pick-ems.web.app" },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: HAMMER_GESTURE_CONFIG, useClass: CustomHammerConfig },

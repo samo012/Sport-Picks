@@ -20,7 +20,7 @@ import { PopLeaveAnimation } from "src/app/modals/calendar/pop-leave-animation";
   templateUrl: "events.page.html",
   styleUrls: ["events.page.scss"],
 })
-export class EventsPage {
+export class EventsPage implements OnInit {
   loading = true;
   editMode = false;
   dateEvents = [];
@@ -41,8 +41,11 @@ export class EventsPage {
     public popoverController: PopoverController
   ) {}
 
-  ionViewWillEnter() {
+  ngOnInit() {
     this.getLeagues();
+  }
+
+  ionViewWillEnter() {
     this.showAll = localStorage.getItem("showAll") === "true";
   }
 
@@ -53,14 +56,6 @@ export class EventsPage {
       const id = this.route.snapshot.params.id;
       if (id) this.selectedLeague = leagues.find((l) => l.leagueId == id);
       if (!this.selectedLeague) this.selectedLeague = leagues[0];
-      this.picks = this.selectedLeague.picks
-        ? new Map(
-            this.selectedLeague.picks.map((i) => [
-              i.eventId,
-              { teamId: i.teamId, visible: i.visible || false },
-            ])
-          )
-        : new Map();
       this.getEvents(this.startDate, this.endDate);
     } else {
       this.loading = false;
@@ -117,6 +112,14 @@ export class EventsPage {
           this.ogDateEvents[sliceTime].push(ev);
         }
       });
+    this.picks = this.selectedLeague.picks
+      ? new Map(
+          this.selectedLeague.picks.map((i) => [
+            i.eventId,
+            { teamId: i.teamId, visible: i.visible || false },
+          ])
+        )
+      : new Map();
     this.loading = false;
   }
 

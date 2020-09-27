@@ -21,12 +21,11 @@
         <ion-label>{{filteredLeagues.length>0 ? 'Search Results':'No Results'}}</ion-label>
       </ion-list-header>
       <ion-list class="ion-margin-top">
-        <ion-item *ngFor="let fl of filteredLeagues" (click)="selectedLeague=fl"
-          [color]="fl.id===selectedLeague?.id?'primary':''">
+        <ion-item *ngFor="let fl of filteredLeagues" (click)="league=fl" [color]="fl.id===league?.id?'primary':''">
           <ion-label> {{fl.name}}</ion-label>
         </ion-item>
       </ion-list>
-      <ion-button class="bottom" *ngIf="selectedLeague" type="submit" (click)="join()" expand="block">
+      <ion-button class="bottom" *ngIf="league" type="submit" (click)="join()" expand="block">
         Join League</ion-button>
     </div>
   </div>
@@ -34,22 +33,22 @@
     <form #formValidator="ngForm" [hidden]="loading" (ngSubmit)="submit()">
       <ion-item>
         <ion-label position="stacked">League Name</ion-label>
-        <ion-input placeholder="Super Awesome League" [(ngModel)]="model.name" name="league-name" #lName="ngModel"
+        <ion-input placeholder="Super Awesome League" [(ngModel)]="league.name" name="league-name" #lName="ngModel"
           required>
         </ion-input>
         <p class="error" *ngIf="lName.touched&&lName.invalid">League Name is required</p>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Personal Display Name</ion-label>
-        <ion-input placeholder="Your name within this league" [(ngModel)]="model.username" name="display-name"
+        <ion-input placeholder="Your name within this league" [(ngModel)]="league.username" name="display-name"
           #dName="ngModel" required>
         </ion-input>
         <p class="error" *ngIf="dName.touched&&dName.invalid">Display Name is required</p>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Sport</ion-label>
-        <ion-select placeholder="College Football" [(ngModel)]="model.sport" name="sport" required #sprt="ngModel"
-          (ionChange)="setListHeight()">
+        <ion-select placeholder="College Football" [(ngModel)]="league.sport" name="sport" required
+          #sprt="ngModel" (ionChange)="setListHeight()">
           <ion-select-option value="NFL">NFL</ion-select-option>
           <ion-select-option value="NBA">NBA</ion-select-option>
           <ion-select-option value="NHL">NHL</ion-select-option>
@@ -61,7 +60,7 @@
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Privacy</ion-label>
-        <ion-select [(ngModel)]="model.permissions" name="privacy">
+        <ion-select [(ngModel)]="league.permissions" name="privacy">
           <ion-select-option [value]="0">Public</ion-select-option>
           <ion-select-option [value]="1">Invite Only</ion-select-option>
           <ion-select-option [value]="2">Admin Invite Only</ion-select-option>
@@ -69,26 +68,26 @@
       </ion-item>
       <ion-item>
         <ion-label position="stacked">League Type</ion-label>
-        <ion-select [(ngModel)]="model.type" name="leagueType">
+        <ion-select [(ngModel)]="league.type" name="leagueType">
           <ion-select-option value="straight">Pick the winner</ion-select-option>
           <ion-select-option value="spread">Pick the correct spread</ion-select-option>
         </ion-select>
       </ion-item>
       <h3 id="list-header" class="ion-text-capitalize">Point System</h3>
-      <!-- {{model.type=='spread'?'Spread':'Win/Lose'}} -->
-      <ion-list *ngIf="model.type=='spread'">
+      <!-- {{league.type=='spread'?'Spread':'Win/Lose'}} -->
+      <ion-list *ngIf="league.type=='spread'">
         <ion-item>
           <ion-label>Correct Spread Prediction</ion-label>
           <ion-note color="primary" slot="end">1</ion-note>
         </ion-item>
       </ion-list>
-      <ion-list *ngIf="model.type=='straight' && model.sport!='NCAAF'">
+      <ion-list *ngIf="league.type=='straight' && league.sport!='NCAAF'">
         <ion-item>
           <ion-label>Correct Winner</ion-label>
           <ion-note color="primary" slot="end">1</ion-note>
         </ion-item>
       </ion-list>
-      <ion-list id="small-list" *ngIf="model.type=='straight' && model.sport=='NCAAF'">
+      <ion-list id="small-list" *ngIf="league.type=='straight' && league.sport=='NCAAF'">
         <ion-item>
           <ion-label>Both Unranked</ion-label>
           <ion-note color="primary" slot="end">1</ion-note>

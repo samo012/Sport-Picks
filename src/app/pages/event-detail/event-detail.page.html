@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button [defaultHref]="['/home/tabs/events',league?.leagueId]"></ion-back-button>
+      <ion-back-button defaultHref="/home/tabs/events"></ion-back-button>
     </ion-buttons>
     <ion-title>{{event?.shortName}}</ion-title>
   </ion-toolbar>
@@ -141,7 +141,7 @@
     </div>
 
     <!-- Picks -->
-    <ion-grid *ngIf="segment=='picks'">
+    <ion-grid *ngIf="segment=='picks' && (first?.length>0 || second?.length>0)">
       <ion-row>
         <ion-col>
           <ion-list>

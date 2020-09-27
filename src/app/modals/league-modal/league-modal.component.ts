@@ -14,10 +14,9 @@ import { Router } from "@angular/router";
 export class LeagueModalComponent implements OnInit {
   @Input() state: number;
   @Input() leagueId: string;
-  model = new League();
+  league = new League();
   leagues: League[] = [];
   filteredLeagues: League[];
-  selectedLeague: League;
   currUser: User;
   isPrivate = false;
   onlyAdmin = true;
@@ -45,7 +44,7 @@ export class LeagueModalComponent implements OnInit {
   getLeague() {
     this.ls
       .getLeagueById(this.leagueId)
-      .subscribe((league) => (this.model = league));
+      .subscribe((league) => (this.league = league));
   }
   getPublicLeagues() {
     this.ls.getPublicLeagues().subscribe((leagues) => {
@@ -56,16 +55,17 @@ export class LeagueModalComponent implements OnInit {
   async submit() {
     this.loading = true;
     if (this.state === 1) {
-      this.model.uid = this.currUser.uid;
-      this.model.token = this.currUser.token || "";
-      this.model.leagueId = await this.ls.create(this.model);
-    } else await this.ls.update(this.model);
+      this.league.uid = this.currUser.uid;
+      this.league.token = this.currUser.token || "";
+      this.league.leagueId = await this.ls.create(this.league);
+    } else await this.ls.update(this.league);
     this.dismissModal();
   }
   async dismissModal() {
-    const lId = this.model.leagueId || this.selectedLeague ?this.selectedLeague.leagueId:"";
-    await this.router.navigateByUrl("/home/tabs/leagues/" + lId);
-    this.modalController.dismiss(lId);
+    await this.router.navigateByUrl(
+      "/home/tabs/leagues/" + this.league.leagueId
+    );
+    this.modalController.dismiss(this.league.leagueId);
   }
 
   setListHeight() {
@@ -85,9 +85,10 @@ export class LeagueModalComponent implements OnInit {
 
   async join() {
     this.loading = true;
-    this.selectedLeague.username = this.username;
-    this.selectedLeague.uid = this.currUser.uid;
-    await this.ls.join(this.selectedLeague, this.currUser.token);
+    this.league.username = this.username;
+    this.league.uid = this.currUser.uid;
+    this.league.token = this.currUser.token || "";
+    await this.ls.join(this.league);
     this.dismissModal();
   }
 }

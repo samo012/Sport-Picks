@@ -10,10 +10,6 @@ import { LeagueModalComponent } from "./modals/league-modal/league-modal.compone
 import { LeagueService } from "./services/league.service";
 import { League } from "./models/league";
 import { Deeplinks } from "@ionic-native/deeplinks/ngx";
-import { FCM } from "cordova-plugin-fcm-with-dependecy-updated/ionic/ngx"
-// import { EspnService } from "./services/espn.service";
-// import * as moment from "moment";
-// import { AngularFirestore } from "@angular/fire/firestore";
 
 @Component({
   selector: "app-root",
@@ -31,7 +27,6 @@ export class AppComponent {
     private ls: LeagueService,
     private router: Router,
     private dl: Deeplinks,
-    private fcm: FCM,
     private zone: NgZone,
     public modalController: ModalController // private espn: EspnService, // private afs: AngularFirestore
   ) {
@@ -42,7 +37,6 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       this.deepLinks(platform);
-      this.setUpFCM(platform);
       this.goHome();
       this.getLeagues();
       this.setUpDarkMode();
@@ -63,25 +57,27 @@ export class AppComponent {
         })
         .subscribe(
           (match) => {
-            console.log("match: ", match);
+            const leagueId = match.$args.leagueId;
             this.as.getUser().then((user) => {
-              if (user)
-                this.ls.getLeaguesOnce(match.$args.leagueId).then((leagues) => {
+              if (user) {
+                this.ls.getLeaguesOnce(leagueId).then((leagues) => {
                   if (
                     leagues &&
                     leagues.findIndex((f) => f.uid == user.uid) < 0
                   ) {
                     leagues[0].uid = user.uid;
                     leagues[0].username = user.name;
-                    this.ls.join(leagues[0], user.token).then(() => {
+                    leagues[0].token = user.token || "";
+                    this.ls.join(leagues[0]).then(() => {
                       this.zone.run(() => {
                         this.router.navigateByUrl(
-                          "/home/tabs/leagues/" + match.$args.leagueId
+                          "/home/tabs/leagues/" + leagueId
                         );
                       });
                     });
                   }
                 });
+              } else localStorage.setItem("leagueId", leagueId);
             });
           },
           (err) => console.log("err: ", err)
@@ -95,30 +91,8 @@ export class AppComponent {
         this.ls.getUsersLeagues(user.uid).subscribe((leagues) => {
           this.leagues = leagues;
         });
-        const token = localStorage.getItem("token");
-        if (!user.token && token) {
-          this.as.updateFCMToken(token);
-          localStorage.removeItem("token");
-        }
       }
     });
-  }
-
-  setUpFCM(platform: string) {
-    console.log("platform-",platform);
-    if (platform === "cordova") {
-      console.log("setting up FCM");
-      this.fcm.getToken().then((token) => {
-        this.as.updateFCMToken(token);
-      });
-      this.fcm.onNotification().subscribe((data) => {
-        console.log(data);
-        if (data.wasTapped) {
-          console.log("Received in background");
-          this.router.navigateByUrl(data.url);
-        }
-      });
-    }
   }
 
   dark = false;

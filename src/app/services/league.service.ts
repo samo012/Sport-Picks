@@ -148,8 +148,10 @@ export class LeagueService {
     const data = await this.afs
       .collection<League>("leagues", (ref) =>
         ref.where("leagueId", "in", leagueIDs)
-      ).get().toPromise();
-      if (data.docs && data.docs.length > 0)
+      )
+      .get()
+      .toPromise();
+    if (data.docs && data.docs.length > 0)
       return data.docs.map((d) => d.data() as League);
   }
   getPicksByEvent(eventId: string, teamId: string) {
@@ -166,17 +168,14 @@ export class LeagueService {
     l.points;
     return this.savePicks(l);
   }
-  join(l: League, userToken: string) {
+  join(l: League) {
     l.og = false;
     l.added = Date.now();
     l.id = this.afs.createId();
     l.picks = [];
     l.points = 0;
     const title = l.username + " has joined your league, " + l.name;
-    this.ns.create(
-      new Notification(title, l.creator, l.token || "", l.leagueId)
-    );
-    l.token = userToken || "";
+    this.ns.create(new Notification(title, l.creator, l.token, l.leagueId));
     return this.afs
       .collection("leagues")
       .doc<League>(l.id)

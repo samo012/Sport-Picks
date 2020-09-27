@@ -4,8 +4,13 @@ import {
   IonSlides,
   ModalController,
   AnimationController,
-  Animation,
+  Platform,
 } from "@ionic/angular";
+import { League } from "src/app/models/league";
+import { User } from "src/app/models/user";
+import { AuthService } from "src/app/services/auth.service";
+import { LeagueService } from "src/app/services/league.service";
+import { NotificationService } from "src/app/services/notification.service";
 import { LeagueModalComponent } from "../league-modal/league-modal.component";
 
 @Component({
@@ -14,19 +19,28 @@ import { LeagueModalComponent } from "../league-modal/league-modal.component";
   styleUrls: ["./tutorial.component.scss"],
 })
 export class TutorialComponent {
-  constructor(
-    public modalController: ModalController,
-    private animationCtrl: AnimationController
-  ) {}
+  leagueToJoin: League;
+  currUser: User;
   isVisible = false;
   slideOpts = {
     initialSlide: 0,
     slidesPerView: 1,
   };
 
-  ngAfterViewInit() {
-    this.firstPageAnimations();
+  constructor(
+    public modalController: ModalController,
+    private animationCtrl: AnimationController,
+    private ls: LeagueService,
+    private as: AuthService,
+    private ns: NotificationService
+  ) {
+    this.getLeague();
   }
+
+  ngAfterViewInit() {
+    this.ns.getToken().finally(() => this.firstPageAnimations());
+  }
+
   async firstPageAnimations() {
     const first = this.animationCtrl
       .create()
@@ -131,7 +145,28 @@ export class TutorialComponent {
     });
     return await modal.present();
   }
+
   dismiss() {
     return this.modalController.dismiss(null, null, "TutorialModal");
+  }
+
+  async getLeague() {
+    const leagueId = localStorage.getItem("leagueId");
+    if (leagueId) {
+      const ls = await this.ls.getLeaguesOnce(leagueId);
+      if (ls) {
+        ls[0].username = "";
+        this.leagueToJoin = ls[0];
+      }
+      this.currUser = await this.as.getUser();
+    }
+  }
+
+  async join() {
+    this.leagueToJoin.uid = this.currUser.uid;
+    this.leagueToJoin.token = this.currUser.token;
+    await this.ls.join(this.leagueToJoin);
+    localStorage.removeItem("leagueId");
+    this.dismiss();
   }
 }

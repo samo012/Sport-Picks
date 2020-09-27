@@ -213,12 +213,10 @@ export class AuthService {
   }
 
   updateFCMToken(token: string) {
-    if (this.getUserId)
-      this.afstore
-        .collection("users")
-        .doc(this.getUserId)
-        .update({ token: token });
-    else localStorage.setItem("token", token);
+    return this.afstore
+      .collection("users")
+      .doc(this.getUserId)
+      .update({ token: token });
   }
 
   async webSignIn(isGoogle: boolean) {

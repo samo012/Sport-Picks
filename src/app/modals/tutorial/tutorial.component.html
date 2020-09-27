@@ -95,10 +95,22 @@
       </div>
     </ion-slide>
     <ion-slide>
-      <div class="flex-container">
+      <div class="flex-container" *ngIf="!leagueToJoin">
         <h5 class="ion-padding-bottom">Create or join a league to get started</h5>
         <ion-button color="primary" (click)="openModal(1)">Create a League</ion-button>
         <ion-button color="tertiary" (click)="openModal(2)">Join a League</ion-button>
+      </div>
+      <div class="flex-container" *ngIf="leagueToJoin">
+        <h5 class="ion-padding-bottom">You were invited to join the following league:</h5>
+        <h2>{{leagueToJoin.name}}</h2>
+        <ion-item>
+          <ion-label position="stacked">Personal Display Name</ion-label>
+          <ion-input placeholder="Your name within this league" [(ngModel)]="leagueToJoin.username" name="display-name"
+            #dName="ngModel" required>
+          </ion-input>
+          <p class="error" *ngIf="dName.touched&&dName.invalid">Display Name is required</p>
+        </ion-item>
+        <ion-button color="primary" [disabled]="dName.pristine||dName.invalid" (click)="join()">Join</ion-button>
       </div>
     </ion-slide>
   </ion-slides>

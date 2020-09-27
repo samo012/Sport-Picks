@@ -35,6 +35,7 @@ export class LeaguesPage {
     this.as.getUser().then((user) => {
       this.user = user;
       this.getLeagues();
+      this.checkInvites();
     });
   }
 
@@ -49,6 +50,14 @@ export class LeaguesPage {
       if (this.noLeagues) this.loading = false;
       else this.getLeagueUsers();
     });
+  }
+
+  async checkInvites() {
+    const leagueId = localStorage.getItem("leagueId");
+    if (leagueId) {
+      const ls = await this.ls.getLeaguesOnce(leagueId);
+      if (ls) this.join(ls[0]);
+    }
   }
 
   getSubtitle() {
@@ -109,6 +118,14 @@ export class LeaguesPage {
     this.loading = true;
     await this.ls.delete(this.selectedLeague.id);
     this.loading = false;
+  }
+
+  async join(l: League) {
+    l.uid = this.user.uid;
+    l.username = this.user.name;
+    l.token = this.user.token;
+    await this.ls.join(l);
+    localStorage.removeItem("leagueId");
   }
 
   async openModal(state: number) {

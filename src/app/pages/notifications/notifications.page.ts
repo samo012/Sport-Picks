@@ -3,6 +3,7 @@ import { NotificationService } from "src/app/services/notification.service";
 import { Notification } from "src/app/models/notification";
 import { Location } from "@angular/common";
 import { Router } from "@angular/router";
+import { AuthService } from "src/app/services/auth.service";
 
 @Component({
   selector: "app-notifications",
@@ -10,12 +11,23 @@ import { Router } from "@angular/router";
   styleUrls: ["./notifications.page.scss"],
 })
 export class NotificationsPage {
-  loading = false;
+  loading = true;
+  notifications: Notification[];
   constructor(
-    public ns: NotificationService,
+    private ns: NotificationService,
+    private as: AuthService,
     private location: Location,
     private router: Router
-  ) {}
+  ) {
+    this.getNotifications();
+  }
+
+  getNotifications() {
+    this.ns.getNotificaitons(this.as.getUserId).subscribe((ns) => {
+      this.notifications = ns;
+      this.loading = false;
+    });
+  }
 
   goBack(event: Event) {
     event.preventDefault();

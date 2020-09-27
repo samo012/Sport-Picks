@@ -40,6 +40,7 @@ export class ProfilePage {
     l.edit = true;
     setTimeout(() => {
       this.input.setFocus();
+      l.username = "";
     }, 500);
   }
   async cancel(l: League, slider: IonItemSliding) {

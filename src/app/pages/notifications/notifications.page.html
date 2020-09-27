@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content>
-  <ng-container *ngIf="ns.notifications$ | async as notifications">
+  <ng-container *ngIf="!loading">
     <h2 class="ion-padding text-center" *ngIf="notifications?.length===0">No Notifications</h2>
     <ion-list>
       <ion-item-sliding *ngFor="let n of notifications">
@@ -34,5 +34,20 @@
       </ion-item-sliding>
     </ion-list>
   </ng-container>
-
+  <ion-list *ngIf="loading">
+    <ion-item lines="full" *ngFor="let x of [].constructor(8)">
+      <ion-label>
+        <h1>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </h1>
+        <h2>
+          <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        </h2>
+        <p>
+          <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>

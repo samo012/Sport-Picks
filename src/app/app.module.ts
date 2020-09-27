@@ -9,7 +9,7 @@ import { RouteReuseStrategy } from "@angular/router";
 import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { Deeplinks } from "@ionic-native/deeplinks/ngx";
-import { FCM } from '@ionic-native/fcm/ngx';
+import { FCM } from "cordova-plugin-fcm-with-dependecy-updated/ionic/ngx"
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 

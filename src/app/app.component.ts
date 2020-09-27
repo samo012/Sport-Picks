@@ -10,7 +10,7 @@ import { LeagueModalComponent } from "./modals/league-modal/league-modal.compone
 import { LeagueService } from "./services/league.service";
 import { League } from "./models/league";
 import { Deeplinks } from "@ionic-native/deeplinks/ngx";
-import { FCM } from "@ionic-native/fcm/ngx";
+import { FCM } from "cordova-plugin-fcm-with-dependecy-updated/ionic/ngx"
 // import { EspnService } from "./services/espn.service";
 // import * as moment from "moment";
 // import { AngularFirestore } from "@angular/fire/firestore";

@@ -16,7 +16,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 })
 export class LeaguesPage {
   selectedLeague: League;
-  subtitle: string;
   noLeagues: boolean;
   loading = true;
   players: League[] = [];
@@ -60,23 +59,8 @@ export class LeaguesPage {
     }
   }
 
-  getSubtitle() {
-    const second =
-      this.selectedLeague.type === "spread"
-        ? " - Spread - "
-        : " - Straight Up - ";
-    const third =
-      this.selectedLeague.permissions === 2
-        ? "Admin Invite Only"
-        : this.selectedLeague.permissions === 1
-        ? "Invite Only"
-        : "Public";
-    this.subtitle = this.selectedLeague.sport || "NCAAF" + second + third;
-  }
-
   getLeagueUsers() {
     if (this.selectedLeague) {
-      this.getSubtitle();
       this.ls
         .getUsersByLeagueId(this.selectedLeague.leagueId)
         .subscribe((users) => {

@@ -7,7 +7,8 @@
       Fantasy Pick'ems
     </ion-title>
     <ion-buttons slot="end">
-      <ion-icon class="ns" name="notifications" routerLink="/home/tabs/notifications" size="default" color="primary"></ion-icon>
+      <ion-icon class="ns" name="notifications" routerLink="/home/tabs/notifications" size="default" color="primary">
+      </ion-icon>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -31,7 +32,12 @@
 
     <ion-list>
       <ion-list-header>
-        <ion-card-subtitle>{{subtitle}}</ion-card-subtitle>
+        <ion-card-subtitle>
+          <span>{{selectedLeague?.sport}}&nbsp; - &nbsp;{{selectedLeague?.type === 'spread' ? 'Spread' : 'Straight Up'}}
+          </span>
+          <span>{{selectedLeague?.permissions === 2 ? 'Admin Invite Only' : selectedLeague?.permissions === 1
+          ? 'Invite Only' : 'Public'}}</span>
+        </ion-card-subtitle>
         <ion-label class="ion-text-capitalize">{{selectedLeague?.name}}</ion-label>
         <ion-button fill="clear" (click)="openPopover($event)">
           <ion-icon name="ellipsis-horizontal" slot="icon-only"></ion-icon>

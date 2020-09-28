@@ -107,7 +107,7 @@ export class EventsPage implements OnInit {
           this.dateEvents[sliceTime] = [];
           this.ogDateEvents[sliceTime] = [];
         }
-        if (this.dateEvents[sliceTime].findIndex((f) => f.id === ev.id) < 0) {
+        if (this.selectedLeague.type !== "spread" || ev.odds) {
           this.dateEvents[sliceTime].push(ev);
           this.ogDateEvents[sliceTime].push(ev);
         }

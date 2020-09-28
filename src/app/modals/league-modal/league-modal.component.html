@@ -10,7 +10,7 @@
   <div [hidden]="loading" *ngIf="state===2; else notJoin">
     <ion-item class="ion-margin-vertical">
       <ion-label position="stacked">Personal Display Name</ion-label>
-      <ion-input placeholder="Your name within the league" [(ngModel)]="username" name="display-name" #dName="ngModel"
+      <ion-input class="ion-text-capitalize" placeholder="Your name within the league" [(ngModel)]="username" name="display-name" #dName="ngModel"
         required>
       </ion-input>
       <p class="error" *ngIf="dName.touched&&dName.invalid">Display Name is required</p>
@@ -18,10 +18,11 @@
     <div [hidden]="dName.pristine || dName.invalid">
       <ion-searchbar placeholder="Search Leagues" (ionChange)="searchLeagues($event)"></ion-searchbar>
       <ion-list-header *ngIf="filteredLeagues">
-        <ion-label>{{filteredLeagues.length>0 ? 'Search Results':'No Results'}}</ion-label>
+        <ion-label class="white">{{filteredLeagues.length>0 ? 'Search Results':'No Results'}}</ion-label>
       </ion-list-header>
       <ion-list class="ion-margin-top">
-        <ion-item *ngFor="let fl of filteredLeagues" (click)="league=fl" [color]="fl.id===league?.id?'primary':''">
+        <ion-item *ngFor="let fl of filteredLeagues" (click)="selectLeague(fl)"
+          [color]="fl.id===league?.id?'primary':''">
           <ion-label> {{fl.name}}</ion-label>
         </ion-item>
       </ion-list>
@@ -33,30 +34,39 @@
     <form #formValidator="ngForm" [hidden]="loading" (ngSubmit)="submit()">
       <ion-item>
         <ion-label position="stacked">League Name</ion-label>
-        <ion-input placeholder="Super Awesome League" [(ngModel)]="league.name" name="league-name" #lName="ngModel"
+        <ion-input class="ion-text-capitalize" placeholder="Super Awesome League" [(ngModel)]="league.name" name="league-name" #lName="ngModel"
           required>
         </ion-input>
         <p class="error" *ngIf="lName.touched&&lName.invalid">League Name is required</p>
       </ion-item>
-      <ion-item>
+      <ion-item *ngIf="state!==3">
         <ion-label position="stacked">Personal Display Name</ion-label>
-        <ion-input placeholder="Your name within this league" [(ngModel)]="league.username" name="display-name"
+        <ion-input class="ion-text-capitalize" placeholder="Your name within this league" [(ngModel)]="league.username" name="display-name"
           #dName="ngModel" required>
         </ion-input>
         <p class="error" *ngIf="dName.touched&&dName.invalid">Display Name is required</p>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Sport</ion-label>
-        <ion-select placeholder="College Football" [(ngModel)]="league.sport" name="sport" required
-          #sprt="ngModel" (ionChange)="setListHeight()">
-          <ion-select-option value="NFL">NFL</ion-select-option>
-          <ion-select-option value="NBA">NBA</ion-select-option>
-          <ion-select-option value="NHL">NHL</ion-select-option>
-          <ion-select-option value="MLB">MLB</ion-select-option>
-          <ion-select-option value="NCAAF">NCAAF</ion-select-option>
-          <ion-select-option value="NCAAB">NCAAB</ion-select-option>
+        <ion-select [disabled]="state===3" placeholder="Football" [(ngModel)]="sport" name="sport" required
+          #sprt="ngModel" (ionChange)="selectSport(sprtSelect)">
+          <ion-select-option value="Football">Football</ion-select-option>
+          <ion-select-option value="Basketball">Basketball</ion-select-option>
+          <ion-select-option value="Baseball">Baseball</ion-select-option>
+          <ion-select-option value="Soccer">Soccer</ion-select-option>
+          <ion-select-option value="Hockey">Hockey</ion-select-option>
+          <ion-select-option value="Lacrosse">Lacrosse</ion-select-option>
         </ion-select>
         <p class="error" *ngIf="sprt.touched&&sprt.invalid">Sport is required</p>
+      </ion-item>
+      <ion-item [hidden]="!sport">
+        <ion-label position="stacked">{{sport}} League</ion-label>
+        <ion-select [disabled]="state===3" placeholder="NCAAF" [(ngModel)]="league.sport" name="sportLeague" required
+          #sprtSelect #sprtL="ngModel" (ionChange)="setListHeight()">
+          <ion-select-option *ngFor="let l of sportLeagues[sport]" [value]="l.value">{{l.display}}
+          </ion-select-option>
+        </ion-select>
+        <p class="error" *ngIf="sprtL.touched&&sprtL.invalid">League is required</p>
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Privacy</ion-label>

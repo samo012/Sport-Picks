@@ -19,13 +19,10 @@
       <ion-toolbar>
         <ion-title size="large" class="white"> {{user.name}}
         </ion-title>
-        <!-- <ion-buttons slot="start">
-        <ion-back-button></ion-back-button>
-      </ion-buttons> -->
         <ion-buttons slot="end" (click)="openPictures()">
           <ion-avatar id="icon" *ngIf="user.photo; else noPhoto"><img [src]="user.photo"></ion-avatar>
           <ng-template #noPhoto>
-            <ion-icon color="light" id="icon" slot="icon-only" name="person-circle-outline"></ion-icon>
+            <ion-icon id="icon" slot="icon-only" name="person-circle-outline"></ion-icon>
           </ng-template>
           <span id="edit">edit</span>
         </ion-buttons>
@@ -34,7 +31,7 @@
     <ion-list class="ion-margin-top">
       <ion-item>
         <ion-label>Email</ion-label>
-        <ion-label slot="end">{{user.email}}</ion-label>
+        <ion-label id="email">{{user.email}}</ion-label>
       </ion-item>
       <ion-item *ngIf="!isThird" routerLink="settings" [queryParams]="{type:'change'}">
         <ion-label>Change Password</ion-label>
@@ -45,6 +42,10 @@
       <ion-item>
         <ion-label>Show All Picks by Default</ion-label>
         <ion-toggle [(ngModel)]="showAll" (ionChange)="allPicks()"></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-label>Dark Mode</ion-label>
+        <ion-toggle name="dToggle" [(ngModel)]="dark" (ionChange)="toggleDark()"></ion-toggle>
       </ion-item>
     </ion-list>
     <ion-list-header>

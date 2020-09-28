@@ -103,8 +103,12 @@ async function getGames(sport: string) {
     NBA: "basketball/nba/",
     NHL: "hockey/nhl/",
     MLB: "baseball/mlb/",
+    MLS: "soccer/usa.1/",
+    EPL: "soccer/eng.1/",
     NCAAF: "football/college-football/",
     NCAAB: "basketball/mens-college-basketball/",
+    NCAABaseball: "baseball/college-baseball/",
+    NCAAL: "lacrosse/mens-college-lacrosse/",
   } as {
     [key: string]: string;
   };
@@ -144,7 +148,7 @@ export const updatePrimary = functions
   .timeZone("America/New_York")
   .onRun(async () => {
     try {
-      const primary = ["NFL", "NCAAF", "NBA"];
+      const primary = ["NFL", "NCAAF", "NHL"];
       const batch = db.batch();
       await Promise.all(
         primary.map(async (sport) => {
@@ -167,7 +171,7 @@ export const updatePrimary = functions
                         const teams = game.competitions[0].competitors;
                         if (teams[0].winner !== undefined) {
                           if (teams[0].winner) {
-                            functions.logger.log("teams[0].id", teams[0].id);
+                            functions.logger.log("first winner", teams[0].id);
                             p.win = p.teamId == teams[0].id;
                             if (p.win) {
                               if (l.sport === "NCAAF" && l.type === "straight")
@@ -178,7 +182,7 @@ export const updatePrimary = functions
                               else l.points += 1;
                             }
                           } else {
-                            functions.logger.log("teams[1].id", teams[1].id);
+                            functions.logger.log("first winner", teams[1].id);
                             p.win = p.teamId == teams[1].id;
                             if (p.win) {
                               if (l.sport === "NCAAF" && l.type === "straight")
@@ -198,7 +202,7 @@ export const updatePrimary = functions
                 // Make Notifications for unpicked games today
                 if (games.some((g) => !pickedGames.includes(g.id))) {
                   batch.set(db.collection("notifications").doc(), {
-                    title: "Unpicked games today",
+                    title: "Unpicked Games",
                     body:
                       "Make your picks for the league, " +
                       l.name +
@@ -228,7 +232,7 @@ export const updateSecondary = functions
   .onRun(async () => {
     try {
       const batch = db.batch();
-      const secondary = ["NHL", "MLB", "NCAAB"];
+      const secondary = ["MLB", "EPL", "MLS"];
       await Promise.all(
         secondary.map(async (sport) => {
           const collection = await db
@@ -248,12 +252,13 @@ export const updateSecondary = functions
                       const game = games.find((e) => e.id == p.eventId);
                       if (game && p.win === undefined) {
                         const teams = game.competitions[0].competitors;
-                        functions.logger.log("sec winner:", teams[1].winner);
                         if (teams[0].winner !== undefined) {
                           if (teams[0].winner) {
+                            functions.logger.log("sec winner:", teams[0].id);
                             p.win = p.teamId == teams[0].id;
                             if (p.win) l.points += 1;
                           } else {
+                            functions.logger.log("sec winner:", teams[1].id);
                             p.win = p.teamId == teams[1].id;
                             if (p.win) l.points += 1;
                           }
@@ -263,10 +268,79 @@ export const updateSecondary = functions
                   );
                   batch.update(doc.ref, l);
                 }
-                // Make Notifications for unpicked games today
+                // Make Notifications for unpicked games
                 if (games.some((g) => !pickedGames.includes(g.id))) {
                   batch.set(db.collection("notifications").doc(), {
-                    title: "Unpicked games today",
+                    title: "Unpicked Games",
+                    body:
+                      "Make your picks for the league, " +
+                      l.name +
+                      ", before the games lock",
+                    recipient: l.uid,
+                    created: Date.now(),
+                    day: new Date().toLocaleDateString(),
+                    leagueId: l.leagueId,
+                    token: l.token || "",
+                  });
+                }
+              });
+            }
+          }
+        })
+      );
+      return batch.commit();
+    } catch (err) {
+      throw new functions.https.HttpsError("internal", err);
+    }
+  });
+
+export const updateTertiary = functions
+  .runWith({ memory: "2GB" })
+  .pubsub.schedule("0 * * * *")
+  .timeZone("America/New_York")
+  .onRun(async () => {
+    try {
+      const batch = db.batch();
+      const tertiary = ["NBA", "NCAAB", "NCAABaseball", "NCAAL"];
+      await Promise.all(
+        tertiary.map(async (sport) => {
+          const collection = await db
+            .collection("leagues")
+            .where("sport", "==", sport)
+            .get();
+          if (collection.docs && collection.docs.length > 0) {
+            const games = await getGames(sport);
+            if (games.length > 0) {
+              collection.docs.forEach((doc) => {
+                const pickedGames: string[] = [];
+                const l = doc.data();
+                if (l.picks.length > 0) {
+                  l.picks.forEach(
+                    (p: { eventId: string; teamId: string; win?: boolean }) => {
+                      pickedGames.push(p.eventId);
+                      const game = games.find((e) => e.id == p.eventId);
+                      if (game && p.win === undefined) {
+                        const teams = game.competitions[0].competitors;
+                        if (teams[0].winner !== undefined) {
+                          if (teams[0].winner) {
+                            functions.logger.log("ter winner:", teams[0].id);
+                            p.win = p.teamId == teams[0].id;
+                            if (p.win) l.points += 1;
+                          } else {
+                            functions.logger.log("ter winner:", teams[1].id);
+                            p.win = p.teamId == teams[1].id;
+                            if (p.win) l.points += 1;
+                          }
+                        }
+                      }
+                    }
+                  );
+                  batch.update(doc.ref, l);
+                }
+                // Make Notifications for unpicked games
+                if (games.some((g) => !pickedGames.includes(g.id))) {
+                  batch.set(db.collection("notifications").doc(), {
+                    title: "Unpicked Games",
                     body:
                       "Make your picks for the league, " +
                       l.name +

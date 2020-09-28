@@ -1,3 +1,10 @@
+ion-content > * {
+  color: white;
+}
+ion-segment {
+  --color: white;
+  color: white;
+}
 .align-center {
   display: flex;
   flex-direction: column;

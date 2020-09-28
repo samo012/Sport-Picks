@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import {
   AngularFirestore,
-  AngularFirestoreCollection
+  AngularFirestoreCollection,
 } from "@angular/fire/firestore";
 import { AngularFireFunctions } from "@angular/fire/functions";
 import { Notification } from "../models/notification";
@@ -12,7 +12,7 @@ import { Platform } from "@ionic/angular";
 import { Observable } from "rxjs";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class NotificationService {
   private nCollection: AngularFirestoreCollection<Notification>;
@@ -25,26 +25,24 @@ export class NotificationService {
     private as: AuthService,
     private platform: Platform
   ) {
-    if (this.platform.is("cordova")) {
-      this.as.user$.subscribe(user => {
-        if (user) {
-          this.nCollection = this.afs.collection<Notification>(
-            "notifications",
-            ref =>
-              ref.where("recipient", "==", user.uid).orderBy("created", "desc")
-          );
-          this.ntfns$ = this.nCollection.valueChanges({ idField: "id" });
-          if (user.token)
-            this.fcm.onNotification().subscribe(data => {
-              console.log(data);
-              if (data.wasTapped) {
-                console.log("Received in background");
-                this.router.navigateByUrl(data.url);
-              }
-            });
-        }
-      });
-    }
+    this.as.user$.subscribe((user) => {
+      if (user) {
+        this.nCollection = this.afs.collection<Notification>(
+          "notifications",
+          (ref) =>
+            ref.where("recipient", "==", user.uid).orderBy("created", "desc")
+        );
+        this.ntfns$ = this.nCollection.valueChanges({ idField: "id" });
+        if (user.token && this.platform.is("cordova"))
+          this.fcm.onNotification().subscribe((data) => {
+            console.log(data);
+            if (data.wasTapped) {
+              console.log("Received in background");
+              this.router.navigateByUrl(data.url);
+            }
+          });
+      }
+    });
   }
 
   async getToken() {
@@ -63,9 +61,7 @@ export class NotificationService {
       .set(Object.assign({}, n));
   }
   clear() {
-    return this.functions
-      .httpsCallable("clearNotifications")({})
-      .toPromise();
+    return this.functions.httpsCallable("clearNotifications")({}).toPromise();
   }
   delete(id: string) {
     return this.nCollection.doc(id).delete();

@@ -122,7 +122,7 @@
 
         <!-- Headlines -->
         <ng-container *ngFor="let item of event.headlines">
-          <ion-card *ngIf="item.video[0]" [href]="item.video[0]?.links?.mobile?.href">
+          <ion-card *ngIf="item.video" [href]="item.video[0].links?.mobile?.href">
             <ion-card-header>
               <ion-card-title>{{item.shortLinkText}}</ion-card-title>
             </ion-card-header>

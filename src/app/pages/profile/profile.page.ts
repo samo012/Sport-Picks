@@ -18,7 +18,7 @@ export class ProfilePage {
   isThird = this.as.isThirdParty();
   oldUsername: string;
   showAll = false;
-
+  dark = false;
   constructor(
     public as: AuthService,
     private ls: LeagueService,
@@ -26,7 +26,13 @@ export class ProfilePage {
   ) {
     this.getUser();
     this.getLeagues();
+    this.darkListener();
   }
+
+  ionViewWillEnter() {
+    this.showAll = localStorage.getItem("showAll") === "true";
+  }
+
   getLeagues() {
     this.ls
       .getUsersLeagues(this.as.getUserId)
@@ -75,5 +81,18 @@ export class ProfilePage {
   }
   allPicks() {
     localStorage.setItem("showAll", this.showAll + "");
+  }
+  darkListener() {
+    const prefersColor = window.matchMedia("(prefers-color-scheme: dark)");
+    if (prefersColor) {
+      this.dark = prefersColor.matches;
+      prefersColor.addEventListener("change", (mediaQuery) => {
+        this.dark = mediaQuery.matches;
+        this.toggleDark();
+      });
+    }
+  }
+  toggleDark() {
+    document.body.classList.toggle("dark", this.dark);
   }
 }

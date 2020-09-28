@@ -1,14 +1,20 @@
 ion-item {
   --background: transparent;
   background: transparent;
-  --color:white;
+  --color: white;
 }
-ion-list{
+ion-searchbar {
+  color: white;
+}
+.white {
+  color: white;
+}
+ion-list {
   --background: transparent;
   background: transparent;
 }
-h3{
-  color:white;
+h3 {
+  color: white;
 }
 .active {
   --background: lightblue;

@@ -95,18 +95,10 @@ export class AppComponent {
     });
   }
 
-  dark = false;
   setUpDarkMode() {
     const prefersColor = window.matchMedia("(prefers-color-scheme: dark)");
-    this.dark = prefersColor.matches;
-    this.toggleDark();
-    prefersColor.addEventListener("change", (mediaQuery) => {
-      this.dark = mediaQuery.matches;
-      this.toggleDark();
-    });
-  }
-  toggleDark() {
-    document.body.classList.toggle("dark", this.dark);
+    if (prefersColor)
+      document.body.classList.toggle("dark", prefersColor.matches);
   }
 
   async openModal(state: number) {

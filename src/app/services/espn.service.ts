@@ -20,9 +20,12 @@ export class EspnService {
     NBA: "basketball/nba/",
     NHL: "hockey/nhl/",
     MLB: "baseball/mlb/",
+    MLS: "soccer/usa.1/",
+    EPL: "soccer/eng.1/",
     NCAAF: "football/college-football/",
     NCAAB: "basketball/mens-college-basketball/",
-    undefined: "football/college-football/",
+    NCAABaseball: "baseball/college-baseball/",
+    NCAAL: "lacrosse/mens-college-lacrosse/",
   };
 
   constructor(private httpClient: HttpClient) {}
@@ -155,6 +158,12 @@ export class EspnService {
   //     )
   //     .toPromise();
   // }
+
+  // College Basketball Conferences
+  //http://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/groups
+
+  // GET all soccer leagues
+  // https://site.api.espn.com/apis/site/v2/leagues/dropdown?lang=en&region=us&calendartype=whitelist&limit=100&sport=soccer
 
   // async getAllEvents(): Promise<SportsEvent[]> {
   //   // https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?group=80&limit=900&dates=20200901-20201001

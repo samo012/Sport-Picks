@@ -12,9 +12,9 @@ import { SocialSharing } from "@ionic-native/social-sharing/ngx";
     IonicModule,
     CommonModule,
     FormsModule,
-    RouterModule.forChild([{ path: "", component: LeaguesPage }])
+    RouterModule.forChild([{ path: "", component: LeaguesPage }]),
   ],
   declarations: [LeaguesPage, EllipsisPopover],
-  providers: [SocialSharing]
+  providers: [SocialSharing ],
 })
 export class LeaguesPageModule {}

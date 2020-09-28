@@ -4,7 +4,6 @@ import {
   IonSlides,
   ModalController,
   AnimationController,
-  Platform,
 } from "@ionic/angular";
 import { League } from "src/app/models/league";
 import { User } from "src/app/models/user";

@@ -110,12 +110,14 @@ export class LeaguesPage {
 
   async delete() {
     this.loading = true;
+    this.route.snapshot.params = {};
     await this.ls.deleteLeague(this.selectedLeague.leagueId);
     this.loading = false;
   }
 
   async leave() {
     this.loading = true;
+    this.route.snapshot.params = {};
     await this.ls.delete(this.selectedLeague.id);
     this.loading = false;
   }

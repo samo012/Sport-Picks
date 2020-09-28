@@ -33,7 +33,7 @@
           </ion-menu-toggle>
         </ion-list>
         <div id="img-container">
-          <a href="http://espn.go.com/">
+          <a href="http://espn.go.com/" >
             <ion-img src="assets/espn-api-sm.png"></ion-img>
           </a>
           <div id="toggle-container">
@@ -49,6 +49,6 @@
         <ion-label>Logout</ion-label>
       </ion-item>
     </ion-menu>
-    <ion-router-outlet id="main-content"></ion-router-outlet>
+    <ion-router-outlet id="main-content" [swipeGesture]="false"></ion-router-outlet>
   </ion-split-pane>
 </ion-app>

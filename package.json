@@ -1,5 +1,5 @@
 {
-  "name": "PickEms",
+  "name": "pick-ems",
   "version": "0.0.1",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
@@ -25,7 +25,6 @@
     "@ionic-native/deeplinks": "^5.28.0",
     "@ionic-native/facebook": "^5.28.0",
     "@ionic-native/firebase": "^5.24.0",
-    "@ionic-native/firebase-crashlytics": "^5.28.0",
     "@ionic-native/google-plus": "^5.28.0",
     "@ionic-native/image-picker": "^5.28.0",
     "@ionic-native/keyboard": "^5.28.0",
@@ -38,8 +37,8 @@
     "cordova": "^10.0.0",
     "cordova-ios": "^6.1.1",
     "cordova-plugin-device": "^2.0.2",
-    "cordova-plugin-fcm-with-dependecy-updated": "^7.2.0",
     "cordova-plugin-facebook4": "^6.4.0",
+    "cordova-plugin-fcm-with-dependecy-updated": "^7.2.0",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-ionic-webview": "^4.2.1",
     "cordova-plugin-sign-in-with-apple": "^0.1.2",
@@ -70,7 +69,6 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
     "codelyzer": "^5.0.0",
-    "cordova-plugin-firebase-crashlytics": "^1.2.0",
     "jasmine-core": "~3.4.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "^4.4.1",
@@ -115,8 +113,7 @@
         "REVERSED_CLIENT_ID": "com.googleusercontent.apps.115291834996-o2ljah14rcap5unn7ll3ilrb153midgv",
         "WEB_APPLICATION_CLIENT_ID": "115291834996-o2ljah14rcap5unn7ll3ilrb153midgv.apps.googleusercontent.com"
       },
-      "cordova-plugin-fcm-with-dependecy-updated": {},
-      "cordova-plugin-firebase-crashlytics": {}
+      "cordova-plugin-fcm-with-dependecy-updated": {}
     },
     "platforms": [
       "ios"

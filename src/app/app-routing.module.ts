@@ -26,11 +26,6 @@ const routes: Routes = [
     loadChildren: () =>
       import("./pages/news/news.module").then((m) => m.NewsPageModule),
   },
-  {
-    path: "news",
-    loadChildren: () =>
-      import("./pages/news/news.module").then((m) => m.NewsPageModule),
-  },
 ];
 @NgModule({
   imports: [

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home/tabs/leagues" (click)="goBack($event)"></ion-back-button>
+      <ion-back-button defaultHref="/home/tabs/leagues"></ion-back-button>
     </ion-buttons>
     <ion-title>Notifications</ion-title>
     <ion-buttons slot="end">
@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content>
-  <ng-container *ngIf="!loading">
+  <ng-container *ngIf="!loading && (ns.ntfns$ | async) as notifications">
     <h2 class="ion-padding text-center" *ngIf="notifications?.length===0">No Notifications</h2>
     <ion-list>
       <ion-item-sliding *ngFor="let n of notifications">

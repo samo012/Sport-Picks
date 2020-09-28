@@ -29,7 +29,6 @@ import { LeagueModalComponent } from "./modals/league-modal/league-modal.compone
 import { FormsModule } from "@angular/forms";
 import { AngularFireFunctionsModule, ORIGIN } from "@angular/fire/functions";
 import { MyErrorHandler } from "./services/error-handler";
-import { FirebaseCrashlytics } from "@ionic-native/firebase-crashlytics/ngx";
 
 export class CustomHammerConfig extends HammerGestureConfig {
   overrides = {
@@ -63,7 +62,6 @@ export class CustomHammerConfig extends HammerGestureConfig {
     Facebook,
     SignInWithApple,
     Keyboard,
-    FirebaseCrashlytics,
     { provide: ErrorHandler, useClass: MyErrorHandler },
     { provide: ORIGIN, useValue: "https://pick-ems.web.app" },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

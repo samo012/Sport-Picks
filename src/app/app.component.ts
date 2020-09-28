@@ -28,7 +28,7 @@ export class AppComponent {
     private router: Router,
     private dl: Deeplinks,
     private zone: NgZone,
-    public modalController: ModalController // private espn: EspnService, // private afs: AngularFirestore
+    public mc: ModalController // private espn: EspnService, // private afs: AngularFirestore
   ) {
     this.initializeApp();
   }
@@ -110,7 +110,7 @@ export class AppComponent {
   }
 
   async openModal(state: number) {
-    const modal = await this.modalController.create({
+    const modal = await this.mc.create({
       component: LeagueModalComponent,
       componentProps: { state },
     });

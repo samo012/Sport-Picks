@@ -83,13 +83,23 @@ export class ProfilePage {
     localStorage.setItem("showAll", this.showAll + "");
   }
   darkListener() {
-    const prefersColor = window.matchMedia("(prefers-color-scheme: dark)");
-    if (prefersColor) {
-      this.dark = prefersColor.matches;
-      prefersColor.addEventListener("change", (mediaQuery) => {
-        this.dark = mediaQuery.matches;
+    const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    try {
+      // Chrome & Firefox
+      darkMediaQuery.addEventListener('change', () => {
+        this.dark = darkMediaQuery.matches;
         this.toggleDark();
       });
+    } catch (e1) {
+      try {
+        // Safari
+        darkMediaQuery.addListener(() => {
+          this.dark = darkMediaQuery.matches;
+          this.toggleDark();
+        });
+      } catch (e2) {
+        console.error(e2);
+      }
     }
   }
   toggleDark() {

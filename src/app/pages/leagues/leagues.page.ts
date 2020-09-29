@@ -95,6 +95,10 @@ export class LeaguesPage {
   async delete() {
     this.loading = true;
     this.route.snapshot.params = {};
+    const arr = this.ls.usersLeagues.value || [];
+    const i = arr.findIndex((a) => a.leagueId === this.selectedLeague.leagueId);
+    arr.splice(i, 1);
+    this.ls.usersLeagues.next(arr);
     await this.ls.deleteLeague(this.selectedLeague.leagueId);
     this.loading = false;
   }

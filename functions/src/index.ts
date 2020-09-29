@@ -170,27 +170,46 @@ export const updatePrimary = functions
                       if (game && p.win === undefined) {
                         const teams = game.competitions[0].competitors;
                         if (teams[0].winner !== undefined) {
+                          const odds = game.competitions[0].odds
+                            ? game.competitions[0].odds[0].details
+                            : null;
                           if (teams[0].winner) {
                             functions.logger.log("first winner", teams[0].id);
                             p.win = p.teamId == teams[0].id;
                             if (p.win) {
-                              if (l.sport === "NCAAF" && l.type === "straight")
-                                l.points += pointSystem(
-                                  teams[0].curatedRank.current,
-                                  teams[1].curatedRank.current
+                              if (l.type === "straight") {
+                                if (l.sport === "NCAAF")
+                                  l.points += cfbPoints(
+                                    teams[0].curatedRank.current,
+                                    teams[1].curatedRank.current
+                                  );
+                                else l.points += 1;
+                              } else if (odds)
+                                l.points += spreadPoints(
+                                  teams[0].team.abbreviation,
+                                  teams[0].score,
+                                  teams[1].score,
+                                  odds
                                 );
-                              else l.points += 1;
                             }
                           } else {
                             functions.logger.log("first winner", teams[1].id);
                             p.win = p.teamId == teams[1].id;
                             if (p.win) {
-                              if (l.sport === "NCAAF" && l.type === "straight")
-                                l.points += pointSystem(
-                                  teams[1].curatedRank.current,
-                                  teams[0].curatedRank.current
+                              if (l.type === "straight") {
+                                if (l.sport === "NCAAF")
+                                  l.points += cfbPoints(
+                                    teams[1].curatedRank.current,
+                                    teams[0].curatedRank.current
+                                  );
+                                else l.points += 1;
+                              } else if (odds)
+                                l.points += spreadPoints(
+                                  teams[1].team.abbreviation,
+                                  teams[1].score,
+                                  teams[0].score,
+                                  odds
                                 );
-                              else l.points += 1;
                             }
                           }
                         }
@@ -253,14 +272,35 @@ export const updateSecondary = functions
                       if (game && p.win === undefined) {
                         const teams = game.competitions[0].competitors;
                         if (teams[0].winner !== undefined) {
+                          const odds = game.competitions[0].odds
+                            ? game.competitions[0].odds[0].details
+                            : null;
                           if (teams[0].winner) {
                             functions.logger.log("sec winner:", teams[0].id);
                             p.win = p.teamId == teams[0].id;
-                            if (p.win) l.points += 1;
+                            if (p.win) {
+                              if (l.type === "straight") l.points += 1;
+                              else if (odds)
+                                l.points += spreadPoints(
+                                  teams[0].team.abbreviation,
+                                  teams[0].score,
+                                  teams[1].score,
+                                  odds
+                                );
+                            }
                           } else {
                             functions.logger.log("sec winner:", teams[1].id);
                             p.win = p.teamId == teams[1].id;
-                            if (p.win) l.points += 1;
+                            if (p.win) {
+                              if (l.type === "straight") l.points += 1;
+                              else if (odds)
+                                l.points += spreadPoints(
+                                  teams[1].team.abbreviation,
+                                  teams[1].score,
+                                  teams[0].score,
+                                  odds
+                                );
+                            }
                           }
                         }
                       }
@@ -322,14 +362,35 @@ export const updateTertiary = functions
                       if (game && p.win === undefined) {
                         const teams = game.competitions[0].competitors;
                         if (teams[0].winner !== undefined) {
+                          const odds = game.competitions[0].odds
+                            ? game.competitions[0].odds[0].details
+                            : null;
                           if (teams[0].winner) {
                             functions.logger.log("ter winner:", teams[0].id);
                             p.win = p.teamId == teams[0].id;
-                            if (p.win) l.points += 1;
+                            if (p.win) {
+                              if (l.type === "straight") l.points += 1;
+                              else if (odds)
+                                l.points += spreadPoints(
+                                  teams[0].team.abbreviation,
+                                  teams[0].score,
+                                  teams[1].score,
+                                  odds
+                                );
+                            }
                           } else {
                             functions.logger.log("ter winner:", teams[1].id);
                             p.win = p.teamId == teams[1].id;
-                            if (p.win) l.points += 1;
+                            if (p.win) {
+                              if (l.type === "straight") l.points += 1;
+                              else if (odds)
+                                l.points += spreadPoints(
+                                  teams[1].team.abbreviation,
+                                  teams[1].score,
+                                  teams[0].score,
+                                  odds
+                                );
+                            }
                           }
                         }
                       }
@@ -363,7 +424,7 @@ export const updateTertiary = functions
     }
   });
 
-function pointSystem(firstRank: number, secondRank: number) {
+function cfbPoints(firstRank: number, secondRank: number) {
   // first is winner
   if (firstRank <= 15 && secondRank <= 15) return 3;
   else if (firstRank <= 25 && secondRank <= 25) return 2;
@@ -372,6 +433,20 @@ function pointSystem(firstRank: number, secondRank: number) {
   else if (firstRank > 25 && secondRank <= 15) return 3;
   else if (firstRank > 25 && secondRank <= 25) return 2;
   else return 0;
+}
+
+function spreadPoints(
+  winningTeam: string,
+  firstScore: number,
+  secondScore: number,
+  oddString: string
+) {
+  const split = oddString.split(" ");
+  const abbr = split[0];
+  const odd = Number(split[1]);
+  const diff = firstScore - secondScore;
+  if (winningTeam === abbr && diff > odd) return "";
+  return "";
 }
 
 // Send Notification to Device

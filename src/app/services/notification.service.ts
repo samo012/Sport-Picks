@@ -25,6 +25,21 @@ export class NotificationService {
     private as: AuthService,
     private platform: Platform
   ) {
+    if (this.platform.is("cordova")) {
+      this.fcm.getToken().then((token) => {
+        this.as.updateFCMToken(token);
+      });
+      this.fcm.onNotification().subscribe((data) => {
+        // From Device Push Notification
+        if (data.wasTapped) {
+          this.router.navigate([data.url]);
+        }
+      });
+      // this.fcm.subscribeToTopic("iOS");
+      this.fcm.onTokenRefresh().subscribe((token) => {
+        this.as.updateFCMToken(token);
+      });
+    }
     this.as.user$.subscribe((user) => {
       if (user) {
         this.nCollection = this.afs.collection<Notification>(
@@ -33,14 +48,6 @@ export class NotificationService {
             ref.where("recipient", "==", user.uid).orderBy("created", "desc")
         );
         this.ntfns$ = this.nCollection.valueChanges({ idField: "id" });
-        if (user.token && this.platform.is("cordova"))
-          this.fcm.onNotification().subscribe((data) => {
-            console.log(data);
-            if (data.wasTapped) {
-              console.log("Received in background");
-              this.router.navigateByUrl(data.url);
-            }
-          });
       }
     });
   }

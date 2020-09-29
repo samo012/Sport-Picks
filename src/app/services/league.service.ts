@@ -4,7 +4,7 @@ import {
   AngularFirestoreCollection,
 } from "@angular/fire/firestore";
 import { League } from "../models/league";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { User } from "../models/user";
 import { NotificationService } from "./notification.service";
 import { Notification } from "../models/notification";
@@ -19,6 +19,7 @@ export class LeagueService {
     private ns: NotificationService,
     private functions: AngularFireFunctions
   ) {}
+  usersLeagues = new BehaviorSubject<League[]>(null);
 
   getPublicLeagues() {
     return this.afs
@@ -99,7 +100,13 @@ export class LeagueService {
       .collection<League>("leagues", (ref) => ref.where("uid", "==", uid))
       .get()
       .toPromise();
-    return data.docs.map((d) => d.data() as League);
+    if (data.docs && data.docs.length > 0) {
+      const leagues = data.docs.map((d) => d.data() as League);
+      this.usersLeagues.next(leagues);
+      return leagues;
+    }
+    this.usersLeagues.next([]);
+    return [];
   }
   async getLeaguesOnce(leagueId: string) {
     const data = await this.afs

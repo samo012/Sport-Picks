@@ -5,14 +5,12 @@ import { LeagueService } from "src/app/services/league.service";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "src/app/models/user";
 import { Router } from "@angular/router";
-import { EventsPage } from "src/app/pages/events/events.page";
 import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-league-modal",
   templateUrl: "./league-modal.component.html",
   styleUrls: ["./league-modal.component.scss"],
-  providers: [EventsPage],
 })
 export class LeagueModalComponent implements OnDestroy {
   @Input() state: number;
@@ -65,7 +63,6 @@ export class LeagueModalComponent implements OnDestroy {
     public modalController: ModalController,
     private ls: LeagueService,
     private router: Router,
-    private ec: EventsPage,
     public ac: AlertController
   ) {
     this.as.getUser().then((user) => {
@@ -106,19 +103,19 @@ export class LeagueModalComponent implements OnDestroy {
   }
   async submit() {
     this.loading = true;
+    const arr = this.ls.usersLeagues.value || [];
     if (this.state === 1) {
       this.league.uid = this.currUser.uid;
       this.league.token = this.currUser.token || "";
       this.league.leagueId = await this.ls.create(this.league);
-      this.ec.leagues.unshift(this.league);
+      arr.unshift(this.league);
     } else {
       console.log("this.league: ", this.league);
       await this.ls.update(this.league);
-      const i = this.ec.leagues.findIndex(
-        (l) => l.leagueId == this.league.leagueId
-      );
-      if (i >= 0) this.ec.leagues[i] = this.league;
+      const i = arr.findIndex((l) => l.leagueId == this.league.leagueId);
+      if (i >= 0) arr[i] = this.league;
     }
+    this.ls.usersLeagues.next(arr);
     this.dismissModal();
   }
   async dismissModal() {
@@ -168,7 +165,9 @@ export class LeagueModalComponent implements OnDestroy {
     this.league.uid = this.currUser.uid;
     this.league.token = this.currUser.token || "";
     await this.ls.join(this.league);
-    this.ec.leagues.push(this.league);
+    const arr = this.ls.usersLeagues.value || [];
+    arr.unshift(this.league);
+    this.ls.usersLeagues.next(arr);
     this.dismissModal();
   }
 }

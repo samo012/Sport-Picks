@@ -50,20 +50,24 @@ export class EventsPage implements OnInit {
   }
 
   async getLeagues() {
-    const leagues = await this.ls.getUsersLeaguesOnce(this.as.getUserId);
-    if (leagues && leagues.length > 0) {
-      this.leagues = leagues;
-      const id = this.route.snapshot.params.id;
-      if (id) this.selectedLeague = leagues.find((l) => l.leagueId == id);
-      if (!this.selectedLeague) this.selectedLeague = leagues[0];
-      this.getEvents(this.startDate, this.endDate);
-    } else {
-      this.loading = false;
-      this.presentAlert(
-        "No League",
-        "Either create or join a league to start making your picks"
-      );
-    }
+    this.ls.usersLeagues.subscribe(async (leagues) => {
+      if (leagues === null)
+        await this.ls.getUsersLeaguesOnce(this.as.getUserId);
+      else if (leagues.length > 0) {
+        this.leagues = leagues;
+        this.selectedLeague = leagues[0];
+        const id = this.route.snapshot.params.id;
+        if (id) this.selectedLeague = leagues.find((l) => l.leagueId == id);
+        if (!this.selectedLeague) this.selectedLeague = leagues[0];
+        this.getEvents(this.startDate, this.endDate);
+      } else {
+        this.loading = false;
+        this.presentAlert(
+          "No League",
+          "Either create or join a league to start making your picks"
+        );
+      }
+    });
   }
 
   doRefresh(event) {
